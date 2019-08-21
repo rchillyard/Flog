@@ -1,3 +1,6 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2d89f95b27b246e3bd1c3c116ff24004)](https://www.codacy.com/app/scalaprof/DecisionTree?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rchillyard/DecisionTree&amp;utm_campaign=Badge_Grade)
+[![CircleCI](https://circleci.com/gh/rchillyard/DecisionTree.svg?style=svg)](https://circleci.com/gh/rchillyard/DecisionTree)
+
 # DecisionTree
 This is a decision tree framework for evaluating game-playing strategies
 
