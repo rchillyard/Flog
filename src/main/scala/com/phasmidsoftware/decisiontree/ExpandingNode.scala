@@ -66,10 +66,6 @@ abstract class ExpandingNode[T: Expandable : GoalDriven : Ordering : Loggable : 
    */
   def unit(_t: T, _so: Option[T], tns: Seq[Node[T]]): ExpandingNode[T]
 
-  implicit val expandingNodeLogger: Loggable[ExpandingNode[T]] = ExpandingNode.expandingNodeLogger[T]
-  implicit val optionTLogger: Loggable[Option[T]] = new Loggables {}.optionLoggable[T]
-  implicit val optionExpandingNodeLogger: Loggable[Option[ExpandingNode[T]]] = new Loggables {}.optionLoggable[ExpandingNode[T]]
-
   /**
    * Method to expand a branch of a tree, by taking this ExpandingNode and (potentially) adding child nodes which are themselves recursively expanded.
    * The algorithm operates in a depth-first-search manner.
@@ -90,18 +86,14 @@ abstract class ExpandingNode[T: Expandable : GoalDriven : Ordering : Loggable : 
         None
       }
       else {
-        implicit val y: Loggable[List[T]] = new Loggables {}.listLoggable[T]
-        implicit val z: Loggable[Either[T, List[T]]] = new Loggables {}.eitherLoggable[T, List[T]]
         implicitly[Expandable[T]].result(t, _so, moves) match {
-          // XXX terminating condition found? Mark and return this.
           case Left(b) =>
-            Some(solve(b))
-          // XXX situation with no descendants: return None.
-          case Right(Nil) => None
-          // XXX normal situation with (possibly empty) descendants? Recursively expand them.
+            Some(solve(b)) // XXX terminating condition found--mark and return this.
+          case Right(Nil) =>
+            None // XXX situation with no descendants: return None.
           case Right(ts) =>
-            val z: List[T] = ts.distinct
-            if (z.size != ts.size) println("non-distinct states")
+            // XXX normal situation with (possibly empty) descendants?
+            // XXX Recursively expand them, ensuring that the elements are unique.
             import com.phasmidsoftware.util.SmartValueOps._
             Some(expandSuccessors(ts.invariant(z => z.distinct.size == z.size), moves - 1, _so))
         }
