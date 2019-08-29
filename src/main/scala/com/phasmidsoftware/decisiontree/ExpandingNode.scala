@@ -5,6 +5,7 @@
 package com.phasmidsoftware.decisiontree
 
 import com.phasmidsoftware.util.{Loggable, Loggables, Show}
+import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.mutable
 
@@ -22,12 +23,8 @@ import scala.collection.mutable
 abstract class ExpandingNode[T: Expandable : GoalDriven : Ordering : Loggable : Show]
 (val t: T, val so: Option[T], val children: List[ExpandingNode[T]]) extends Node[T] {
 
-  // TODO try to be careful that we don't keep re-constructing nodes that are the same.
-
   /**
    * Method to add the given node to the children of this Node.
-   *
-   * CONSIDER: adding the node at the head of the list of children.
    *
    * @param node the node to add as a child.
    * @return a copy of this Node but with node as an additional child, and the so value corresponding to this.
@@ -69,12 +66,6 @@ abstract class ExpandingNode[T: Expandable : GoalDriven : Ordering : Loggable : 
    */
   def unit(_t: T, _so: Option[T], tns: Seq[Node[T]]): ExpandingNode[T]
 
-  import com.phasmidsoftware.util.Flog._
-
-  implicit val expandingNodeLogger: Loggable[ExpandingNode[T]] = ExpandingNode.expandingNodeLogger[T]
-  implicit val optionTLogger: Loggable[Option[T]] = new Loggables {}.optionLoggable[T]
-  implicit val optionExpandingNodeLogger: Loggable[Option[ExpandingNode[T]]] = new Loggables {}.optionLoggable[ExpandingNode[T]]
-
   /**
    * Method to expand a branch of a tree, by taking this ExpandingNode and (potentially) adding child nodes which are themselves recursively expanded.
    * The algorithm operates in a depth-first-search manner.
@@ -88,31 +79,25 @@ abstract class ExpandingNode[T: Expandable : GoalDriven : Ordering : Loggable : 
    *         Some(n) => n is either this but marked as solved; or this with expanded children added.
    */
   def expand(_so: Option[T], moves: Int): Option[ExpandingNode[T]] = {
-    s"expand: t=${implicitly[Loggable[T]].toLog(t)}; so=$so; # children=${children.size}; _so=${_so}; moves=$moves" !!
-      (if (moves < 0)
+    if (moves < 0)
         None
       else if (implicitly[Expandable[T]].runaway(t)) {
         Console.println(s"expand: runaway condition detected for $t")
         None
       }
       else {
-        import com.phasmidsoftware.util.Flog._
-        implicit val y: Loggable[List[T]] = new Loggables {}.listLoggable[T]
-        implicit val z: Loggable[Either[T, List[T]]] = new Loggables {}.eitherLoggable[T, List[T]]
-        s"result" !! implicitly[Expandable[T]].result(t, _so, moves) match {
-          // XXX terminating condition found? Mark and return this.
+        implicitly[Expandable[T]].result(t, _so, moves) match {
           case Left(b) =>
-            Some(solve(b))
-          // XXX normal situation with (possibly empty) descendants? Recursively expand them.
-          // CONSIDER we should eliminate a node that has no expansion, but it doesn't really seem to matter.
-          case Right(Nil) => Some(this)
+            Some(solve(b)) // XXX terminating condition found--mark and return this.
+          case Right(Nil) =>
+            None // XXX situation with no descendants: return None.
           case Right(ts) =>
-            val z: List[T] = ts.distinct
-            if (z.size != ts.size) println("non-distinct states")
+            // XXX normal situation with (possibly empty) descendants?
+            // XXX Recursively expand them, ensuring that the elements are unique.
             import com.phasmidsoftware.util.SmartValueOps._
             Some(expandSuccessors(ts.invariant(z => z.distinct.size == z.size), moves - 1, _so))
         }
-      })
+      }
   }
 
   /**
@@ -243,9 +228,17 @@ trait Expandable[T] {
    */
   def result(t: T, to: Option[T], moves: Int)(implicit ev1: GoalDriven[T], ev2: Ordering[T], ev3: Show[T]): Either[T, List[T]] = {
     val sT = ev3.show(t)
-    if (ev1.goalAchieved(t)) Left(t).debug(s"$sT Left")
-    else if (ev1.goalOutOfReach(t, to, moves)) Right(Nil).debug(s"$sT Right(Nil)")
-    else Right(successors(t)).debug(s"$sT Right($t)")
+    count += 1
+    if (count % 100000 == 0) logger.debug(s"Testing ${count}th state: $sT")
+    if (ev1.goalAchieved(t)) {
+      logger.info(s"Goal achieved for state: $sT")
+      Left(t)
+    }
+    else if (ev1.goalOutOfReach(t, to, moves)) {
+      logger.trace(s"Goal impossible for state: $sT")
+      Right(Nil)
+    }
+    else Right(successors(t))
   }
 
   /**
@@ -255,9 +248,19 @@ trait Expandable[T] {
    * @return true if running away, else false.
    */
   def runaway(t: T): Boolean = false // NOTE: if your application takes a very long time expanding, you might want to set this to true on some condition
+
+  var count = 0
+
+  /**
+   * Method to initialize this Expandable.
+   */
+  def init(): Unit = {
+    count = 0
+  }
 }
 
 object Expandable {
+  val logger: Logger = LoggerFactory.getLogger(getClass)
 
   def cache[T]: mutable.HashMap[(T, Option[T], Int), Either[T, List[T]]] = mutable.HashMap[(T, Option[T], Int), Either[T, List[T]]]()
 }
