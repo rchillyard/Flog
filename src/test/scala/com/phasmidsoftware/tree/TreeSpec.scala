@@ -64,4 +64,26 @@ class TreeSpec extends FlatSpec with Matchers {
     val target = Tree(1, Seq(Tree(2, Seq(Tree(3), Tree(4))), Tree(5, Seq(Tree(6), Tree(7)))))
     target.postOrder(x => x % 2 == 0) shouldBe Queue.empty
   }
+
+  behavior of "BFS"
+  it should "work (1))" in {
+    val target = Tree(1, Seq(Tree(2, Seq(Tree(3)))))
+    target.bfs() shouldBe Queue(1, 2, 3)
+  }
+  it should "work (2)" in {
+    val target = Tree(45, Seq(Tree(25, Seq(Tree(15), Tree(35))), Tree(75)))
+    target.bfs() shouldBe Queue(45, 25, 75, 15, 35)
+  }
+  it should "work (3)" in {
+    val target = Tree(1, Seq(Tree(2, Seq(Tree(4), Tree(5))), Tree(3, Seq(Tree(6), Tree(7)))))
+    target.bfs() shouldBe Queue(1, 2, 3, 4, 5, 6, 7)
+  }
+  it should "work when pruning away even branches" in {
+    val target = Tree(1, Seq(Tree(2, Seq(Tree(3), Tree(4))), Tree(5, Seq(Tree(6), Tree(7)))))
+    target.bfs(x => x % 2 != 0) shouldBe Queue(1, 5, 7)
+  }
+  it should "work when pruning away odd branches" in {
+    val target = Tree(1, Seq(Tree(2, Seq(Tree(3), Tree(4))), Tree(5, Seq(Tree(6), Tree(7)))))
+    target.bfs(x => x % 2 == 0) shouldBe Queue.empty
+  }
 }
