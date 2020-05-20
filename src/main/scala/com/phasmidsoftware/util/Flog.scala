@@ -65,6 +65,21 @@ object Flog {
     /**
      * Method to generate a log entry.
      * Logging is performed as a side effect.
+     * Rendering of the x value is via the toLog method of the implicit Loggable[X].
+     *
+     * @param xs the value to be logged.
+     * @tparam X the type of x, which must provide evidence of being Loggable.
+     * @return the value of x.
+     */
+    def !|[X: Loggable](xs: => Iterable[X]): Iterable[X] = {
+      implicit object loggableIterableX extends Loggable.LoggableIterable[X]
+      Flog.logLoggable(logFunc, message)(xs)
+      xs
+    }
+
+    /**
+     * Method to generate a log entry.
+     * Logging is performed as a side effect.
      * Rendering of the x value is via the toString method.
      *
      * @param x the value to be logged.
