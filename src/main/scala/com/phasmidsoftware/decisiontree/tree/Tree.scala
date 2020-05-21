@@ -81,8 +81,6 @@ object Tree {
      */
     def preOrder(p: T => Boolean = always): Iterable[T] = traversePre(Queue.empty[T], p, Seq(node))
 
-    type Item = Either[Node[T], T]
-
     /**
      * Method to get the "inOrder" of a tree via depth-first search.
      * In inOrder, any node will have its value recorded AFTER processing its first child,
@@ -91,7 +89,7 @@ object Tree {
      * @param p a predicate that determines whether a subtree with its value t will be processed at all.
      * @return an Iterable of T values in the order they were visited.
      */
-    def inOrder(p: T => Boolean = always): Iterable[T] = traverse(Queue.empty[T], p)(Seq(Left(node)))
+    def inOrder(p: T => Boolean = always): Iterable[T] = traverse(Queue.empty[T], p, inOrderFunc)(Seq(Left(node)))
 
     /**
      * Method to get the "postOrder" of a tree via depth-first search.
@@ -100,7 +98,7 @@ object Tree {
      * @param p a predicate that determines whether a subtree with its value t will be processed at all.
      * @return an Iterable of T values in the proper order.
      */
-    def postOrder(p: T => Boolean = always): Iterable[T] = traverse2(Queue.empty[T], p)(Seq(Left(node)))
+    def postOrder(p: T => Boolean = always): Iterable[T] = traverse(Queue.empty[T], p, postOrderFunc)(Seq(Left(node)))
 
     /**
      * Method to get the breadth-first order of a tree.
@@ -109,6 +107,8 @@ object Tree {
      */
     def bfs(p: T => Boolean = always): Iterable[T] = bfs(Queue.empty[T], p)(Queue(node))
 
+    type Item = Either[Node[T], T]
+
     @tailrec
     private final def traversePre[V](visitor: V, p: T => Boolean, nodes: Seq[Node[T]])(implicit tVv: Visitor[T, V]): V = nodes match {
       case Nil => visitor
@@ -116,41 +116,32 @@ object Tree {
       case _ :: tns => traversePre(visitor, p, tns)
     }
 
-    // CONSIDER merging traverse and traverse1
+    private def inOrderFunc[V](ws: Seq[Item], tn: Node[T]) = tn.children match {
+      case Nil =>
+        Right(tn.key) +: ws
+      case first :: rest =>
+        Left(first) +: Right(tn.key) +: (rest.map(Left(_)) ++ ws)
+    }
+
+    private def postOrderFunc[V](ws: Seq[Item], tn: Node[T]) = tn.children.map(Left(_)) ++ (Right(tn.key) +: ws)
+
     @tailrec
-    private final def traverse[V](visitor: V, p: T => Boolean)(work: Seq[Item])(implicit tVv: Visitor[T, V]): V = work match {
-      case Nil => visitor
-      case w :: ws => w match {
-        case Left(tn) =>
-          if (tn.filter(p))
-            tn.children match {
-              case Nil =>
-                traverse(visitor, p)(Right(tn.key) +: ws)
-              case first :: rest =>
-                traverse(visitor, p)(Left(first) +: Right(tn.key) +: (rest.map(Left(_)) ++ ws))
-            }
-          else traverse(visitor, p)(ws)
-        case Right(t) =>
-          traverse(tVv.visit(visitor, t), p)(ws)
-      }
+    private final def traverse[V](visitor: V, p: T => Boolean, f: (Seq[Item], Node[T]) => Seq[Item])(work: Seq[Item])(implicit tVv: Visitor[T, V]): V =
+      work match {
+        case Nil => visitor
+        case w :: ws => w match {
+          case Left(tn) =>
+            if (tn.filter(p))
+              traverse(visitor, p, f)(f(ws, tn))
+            else
+              traverse(visitor, p, f)(ws)
+          case Right(t) =>
+            traverse(tVv.visit(visitor, t), p, f)(ws)
+        }
     }
 
     @tailrec
-    private final def traverse2[V](visitor: V, p: T => Boolean)(work: Seq[Item])(implicit tVv: Visitor[T, V]): V = work match {
-      case Nil => visitor
-      case w :: ws => w match {
-        case Left(tn) =>
-          if (tn.filter(p))
-            traverse2(visitor, p)(tn.children.map(Left(_)) ++ (Right(tn.key) +: ws))
-          else
-            traverse2(visitor, p)(ws)
-        case Right(t) =>
-          traverse2(tVv.visit(visitor, t), p)(ws)
-      }
-    }
-
-    @tailrec
-    private final def bfs[V](visitor: V, p: T => Boolean)(queue2: Queue[Node[T]])(implicit tVv: Visitor[T, V]): V = {
+    private final def bfs[V](visitor: V, p: T => Boolean)(queue2: Queue[Node[T]])(implicit tVv: Visitor[T, V]): V =
       queue2.dequeueOption match {
         case None => visitor
         case Some((tn, q)) =>
@@ -158,7 +149,6 @@ object Tree {
             bfs(tVv.visit(visitor, tn.key), p)(tn.children.foldLeft(q)(_.enqueue(_)))
           else bfs(visitor, p)(q)
       }
-    }
   }
 
   private val always: Any => Boolean = _ => true

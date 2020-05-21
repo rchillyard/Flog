@@ -24,6 +24,12 @@ class TreeSpec extends FlatSpec with Matchers {
     val target = Tree(1, Seq(Tree(2, Seq(Tree(3), Tree(4))), Tree(5, Seq(Tree(6), Tree(7)))))
     target.preOrder(x => x % 2 == 0) shouldBe Queue.empty
   }
+  it should "work for a very deep tree" in {
+    val n = 1000000
+    val target: Tree[Int] = Stream.from(1).take(n).foldLeft(Tree(0))((t, x) => Tree(x, Seq(t)))
+    val preOrder = target.preOrder()
+    preOrder.size shouldBe (n+1)
+  }
 
   behavior of "inOrder"
   it should "work (1))" in {
@@ -41,6 +47,12 @@ class TreeSpec extends FlatSpec with Matchers {
   it should "work when pruning away odd branches" in {
     val target = Tree(1, Seq(Tree(2, Seq(Tree(3), Tree(4))), Tree(5, Seq(Tree(6), Tree(7)))))
     target.inOrder(x => x % 2 == 0) shouldBe Queue.empty
+  }
+  it should "work for a very deep tree" in {
+    val n = 1000000
+    val target: Tree[Int] = Stream.from(1).take(n).foldLeft(Tree(0))((t, x) => Tree(x, Seq(t)))
+    val inOrder = target.inOrder()
+    inOrder.size shouldBe (n+1)
   }
 
   behavior of "postOrder"
@@ -63,6 +75,13 @@ class TreeSpec extends FlatSpec with Matchers {
   it should "work when pruning away odd branches" in {
     val target = Tree(1, Seq(Tree(2, Seq(Tree(3), Tree(4))), Tree(5, Seq(Tree(6), Tree(7)))))
     target.postOrder(x => x % 2 == 0) shouldBe Queue.empty
+  }
+  // FIXME why does this test not work?
+  ignore should "work for a very deep tree" in {
+    val n = 1000000
+    val target: Tree[Int] = Stream.from(1).take(n).foldLeft(Tree(0))((t, x) => Tree(x, Seq(t)))
+    val postOrder = target.postOrder()
+    postOrder.size shouldBe (n + 1)
   }
 
   behavior of "BFS"
