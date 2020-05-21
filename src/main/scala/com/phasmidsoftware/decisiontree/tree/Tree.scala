@@ -1,21 +1,46 @@
 package com.phasmidsoftware.decisiontree.tree
 
+import com.phasmidsoftware.decisiontree.tree.Tree.TreeOps
+
 import scala.annotation.tailrec
 import scala.collection.immutable.Queue
 
 trait Monadic[T] {
-//  def map[U](f: T => U): Node[U] = ???
-//
-//  def flatMap[U](f: T => Node[U]): Node[U] = ???
+  def map[U](f: T => U): Monadic[U]
+
+//  def flatMap[U](f: T => Monadic[U]): Monadic[U]
 
   def filter(p: T => Boolean): Boolean
 }
 
 trait Node[T] extends Monadic[T] {
+  /**
+   * The key of this Node.
+   */
   val key: T
+
+  /**
+   * The children of this Node.
+   */
   val children: Seq[Node[T]]
 
+  /**
+   * A method to filter this Node, based on its key.
+   * @param p a Predicate on the key.
+   * @return a Boolean.
+   */
   def filter(p: T => Boolean): Boolean = p(key)
+
+  /**
+   * A method to transform this Node and its children (deep), according to the function f.
+   *
+   * @param f a function of T => U.
+   * @tparam U the underlying type of the result.
+   * @return a Node[V].
+   */
+  def map[U](f: T => U): Node[U] = new TreeOps(this).doMap(f)
+
+//  override def flatMap[U](f: T => Monadic[U]): Node[U] = new TreeOps(this).doFlatMap(f)
 }
 
 object Node {
@@ -47,19 +72,6 @@ object Node {
  * @tparam T the underlying type of the key.
  */
 case class Tree[T](key: T, children: Seq[Node[T]] = Nil) extends Node[T]
-
-trait Visitor[T, V] {
-  def visit(v: V, t: T): V
-}
-
-object Visitor {
-
-  trait QueueVisitor[T] extends Visitor[T, Queue[T]] {
-    def visit(v: Queue[T], t: T): Queue[T] = v.enqueue(t)
-  }
-
-  implicit def queueVisitor[T]: QueueVisitor[T] = new QueueVisitor[T] {}
-}
 
 object Tree {
 
@@ -106,6 +118,18 @@ object Tree {
      * @param p a predicate that determines whether a subtree with its value t will be processed at all.
      */
     def bfs(p: T => Boolean = always): Iterable[T] = bfs(Queue.empty[T], p)(Queue(node))
+
+    def doMap[U](f: T => U): Tree[U] = {
+      def inner( tn: Node[T]): Tree[U] = Tree(f(tn.key), tn.children.map(inner))
+
+      inner(node)
+    }
+
+//    def doFlatMap[U](f: T => Monadic[U]): Tree[U] = {
+//      def inner( tn: Node[T]): Tree[U] = Tree(f(tn.key).asInstanceOf[Node[T]], tn.children.map(inner))
+//
+//      inner(node)
+//    }
 
     type Item = Either[Node[T], T]
 

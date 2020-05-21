@@ -76,7 +76,7 @@ class TreeSpec extends FlatSpec with Matchers {
     val target = Tree(1, Seq(Tree(2, Seq(Tree(3), Tree(4))), Tree(5, Seq(Tree(6), Tree(7)))))
     target.postOrder(x => x % 2 == 0) shouldBe Queue.empty
   }
-  // FIXME why does this test not work?
+  // FIXME why does this test not work? The tree builds OK but the postOrder never completes.
   ignore should "work for a very deep tree" in {
     val n = 1000000
     val target: Tree[Int] = Stream.from(1).take(n).foldLeft(Tree(0))((t, x) => Tree(x, Seq(t)))
@@ -105,4 +105,16 @@ class TreeSpec extends FlatSpec with Matchers {
     val target = Tree(1, Seq(Tree(2, Seq(Tree(3), Tree(4))), Tree(5, Seq(Tree(6), Tree(7)))))
     target.bfs(x => x % 2 == 0) shouldBe Queue.empty
   }
+
+  behavior of "map"
+  it should "work" in {
+    val target = Tree(1, Seq(Tree(2, Seq(Tree(3)))))
+    target.map(_.toString) shouldBe Tree("1", Seq(Tree("2", Seq(Tree("3")))))
+  }
+
+//  behavior of "flatMap"
+//  it should "work" in {
+//    val target = Tree(1, Seq(Tree(2, Seq(Tree(3)))))
+//    target.flatMap(Tree(_)) shouldBe Tree("1", Seq(Tree("2", Seq(Tree("3")))))
+//  }
 }
