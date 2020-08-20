@@ -7,7 +7,14 @@ package com.phasmidsoftware.decisiontree
 import com.phasmidsoftware.util.{Loggable, Loggables, Show}
 import org.slf4j.{Logger, LoggerFactory}
 
-import scala.collection.mutable
+/**
+ * This case class is used for the result of expand method of ExpandingNode.
+ *
+ * @param evaluated either Some(expanding node) or: None
+ * @param unevaluated a sequence of unevaluated states.
+ * @tparam T the underlying type of the expansion.
+ */
+case class Expansion[T](evaluated: Option[ExpandingNode[T]], unevaluated: Seq[T])
 
 /**
  *
@@ -72,7 +79,7 @@ abstract class ExpandingNode[T: Expandable : GoalDriven : Ordering : Loggable : 
    *
    * CONSIDER make this tail-recursive
    *
-   * @param _so   the currently satisfied goal.
+   * @param _so   the (optional) currently satisfied goal.
    * @param moves the number of possible moves remaining.
    * @return an Option of ExpandingNode[T]:
    *         None => we have run out of moves
@@ -187,6 +194,12 @@ abstract class ExpandingNode[T: Expandable : GoalDriven : Ordering : Loggable : 
 
 object ExpandingNode extends Loggables {
 
+  /**
+   * TEST this doesn't seem to be used anywhere.
+   *
+   * @tparam T the underlying type.
+   * @return a Loggable of ExpandingNode[T].
+   */
   def expandingNodeLogger[T: Loggable]: Loggable[ExpandingNode[T]] = (t: ExpandingNode[T]) => {
 
     val wT = implicitly[Loggable[T]].toLog(t.t)
@@ -239,7 +252,7 @@ trait Expandable[T] {
     count += 1
     if (count % 100000 == 0) logger.debug(s"Testing ${count}th state: $sT")
     if (ev1.goalAchieved(t)) {
-      logger.info(s"Goal achieved for state: $sT")
+      logger.debug(s"Goal achieved for state: $sT")
       Left(t)
     }
     else if (ev1.goalOutOfReach(t, to, moves)) {
@@ -270,7 +283,7 @@ trait Expandable[T] {
 object Expandable {
   val logger: Logger = LoggerFactory.getLogger(getClass)
 
-  def cache[T]: mutable.HashMap[(T, Option[T], Int), Either[T, List[T]]] = mutable.HashMap[(T, Option[T], Int), Either[T, List[T]]]()
+//  def cache[T]: mutable.HashMap[(T, Option[T], Int), Either[T, List[T]]] = mutable.HashMap[(T, Option[T], Int), Either[T, List[T]]]()
 }
 
 case class ExpandingNodeException(str: String) extends Exception(str)
