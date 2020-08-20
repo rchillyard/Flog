@@ -28,11 +28,35 @@ object Loggable {
 
   implicit object LoggableBoolean extends LoggableBoolean
 
+  trait LoggableByte extends Loggable[Byte] {
+    def toLog(t: Byte): String = t.toString
+  }
+
+  implicit object LoggableByte extends LoggableByte
+
+  trait LoggableShort extends Loggable[Short] {
+    def toLog(t: Short): String = t.toString
+  }
+
+  implicit object LoggableShort extends LoggableShort
+
   trait LoggableInt extends Loggable[Int] {
     def toLog(t: Int): String = t.toString
   }
 
   implicit object LoggableInt extends LoggableInt
+
+  trait LoggableLong extends Loggable[Long] {
+    def toLog(t: Long): String = t.toString
+  }
+
+  implicit object LoggableLong extends LoggableLong
+
+  trait LoggableBigInt extends Loggable[BigInt] {
+    def toLog(t: BigInt): String = t.toString
+  }
+
+  implicit object LoggableBigInt extends LoggableBigInt
 
   trait LoggableString extends Loggable[String] {
     def toLog(t: String): String = t
@@ -46,11 +70,17 @@ object Loggable {
 
   implicit object LoggableDouble extends LoggableDouble
 
-  trait LoggableLong extends Loggable[Long] {
-    def toLog(t: Long): String = t.toString
+  implicit object LoggableBigDecimal extends LoggableBigDecimal
+
+  trait LoggableBigDecimal extends Loggable[BigDecimal] {
+    def toLog(t: BigDecimal): String = t.toString
   }
 
-  implicit object LoggableLong extends LoggableLong
+  trait LoggableIterable[X] extends Loggable[Iterable[X]] {
+    def toLog(t: Iterable[X]): String = t.toString()
+  }
+
+  implicit object LoggableIterableAny extends LoggableIterable[Any]
 
   trait LoggableUnit extends Loggable[Unit] {
     def toLog(t: Unit): String = ""

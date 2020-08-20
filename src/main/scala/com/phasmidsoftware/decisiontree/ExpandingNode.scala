@@ -79,25 +79,25 @@ abstract class ExpandingNode[T: Expandable : GoalDriven : Ordering : Loggable : 
    *         Some(n) => n is either this but marked as solved; or this with expanded children added.
    */
   def expand(_so: Option[T], moves: Int): Option[ExpandingNode[T]] = {
+    val te = implicitly[Expandable[T]]
     if (moves < 0)
-        None
-      else if (implicitly[Expandable[T]].runaway(t)) {
-        Console.println(s"expand: runaway condition detected for $t")
-        None
-      }
-      else {
-        implicitly[Expandable[T]].result(t, _so, moves) match {
-          case Left(b) =>
-            Some(solve(b)) // XXX terminating condition found--mark and return this.
-          case Right(Nil) =>
-            None // XXX situation with no descendants: return None.
-          case Right(ts) =>
-            // XXX normal situation with (possibly empty) descendants?
-            // XXX Recursively expand them, ensuring that the elements are unique.
-            import com.phasmidsoftware.util.SmartValueOps._
-            Some(expandSuccessors(ts.invariant(z => z.distinct.size == z.size), moves - 1, _so))
-        }
-      }
+      None
+    else if (te.runaway(t)) {
+      Console.println(s"expand: runaway condition detected for $t")
+      None
+    }
+    else te.result(t, _so, moves) match {
+      case Left(b) =>
+        Some(solve(b)) // XXX terminating condition found--mark and return this.
+      case Right(Nil) =>
+        None // XXX situation with no descendants: return None.
+      case Right(ts) =>
+        // XXX normal situation with (possibly empty) descendants?
+        // XXX Recursively expand them, ensuring that the elements are unique.
+        import com.phasmidsoftware.util.SmartValueOps._
+        val verifiedStates = ts.invariant(z => z.distinct.size == z.size)
+        Some(expandSuccessors(verifiedStates, moves - 1, _so))
+    }
   }
 
   /**
@@ -141,6 +141,14 @@ abstract class ExpandingNode[T: Expandable : GoalDriven : Ordering : Loggable : 
    * Private Methods...
    */
 
+  /**
+   * Expand the successors in the list ts to form a new node.
+   *
+   * @param ts    the list of states.
+   * @param moves the remaining number of moves.
+   * @param _so   any satisfied state.
+   * @return a new ExpandingNode[T].
+   */
   private def expandSuccessors(ts: List[T], moves: Int, _so: Option[T]) = {
 
     def getBestSolution(_sor: Option[T]) = _sor match {
