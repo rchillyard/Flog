@@ -1,6 +1,7 @@
 package com.phasmidsoftware.decisiontree.tree
 
-import scala.collection.immutable.{Queue, Stack}
+import com.phasmidsoftware.util.PriorityQueue
+import scala.collection.immutable.Queue
 
 /**
  * Type class to define a visitor for the nodes of a Tree.
@@ -10,6 +11,7 @@ import scala.collection.immutable.{Queue, Stack}
 trait Visitor[T, V] {
   /**
    * Method to be called when visiting a Node[T] of a Tree[T].
+   *
    * @param v the visitor, of type V.
    * @param t the key of the current Node.
    * @return a new visitor, based on v and t.
@@ -32,6 +34,17 @@ object Visitor {
   }
 
   implicit def queueVisitor[T]: QueueVisitor[T] = new QueueVisitor[T] {}
+
+  /**
+   * PriorityQueueVisitor.
+   *
+   * @tparam T the underlying type.
+   */
+  trait PriorityQueueVisitor[T] extends Visitor[T, PriorityQueue[T]] {
+    def visit(tq: PriorityQueue[T], t: T): PriorityQueue[T] = tq.insert(t)
+  }
+
+  implicit def priorityQueueVisitor[T]: PriorityQueueVisitor[T] = new PriorityQueueVisitor[T] {}
 
   /**
    * This is the equivalent of StackVisitor.

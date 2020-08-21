@@ -2,7 +2,7 @@ package com.phasmidsoftware.decisiontree.tree
 
 import com.phasmidsoftware.decisiontree.tree.Tree.TreeOps
 import com.phasmidsoftware.decisiontree.tree.Visitor.QueueVisitor
-
+import com.phasmidsoftware.util.PriorityQueue
 import scala.annotation.tailrec
 import scala.collection.immutable.Queue
 
@@ -162,15 +162,32 @@ object Tree {
 
   private def bfsQueue[T](p: T => Boolean, n: Node[T]): Queue[T] = bfs(Queue.empty[T], p)(Queue(n))(new QueueVisitor[T] {})
 
+  private def bfsPriorityQueue[T: Ordering](p: T => Boolean, n: Node[T])(implicit tno: Ordering[Node[T]]): PriorityQueue[Node[T]] = {
+    bfsPQ(new PriorityQueue[Node[T]](), p)(new PriorityQueue(n))
+  }
+
   @tailrec
-  private final def bfs[T, V](visitor: V, p: T => Boolean)(queue2: Queue[Node[T]])(implicit tVv: Visitor[T, V]): V =
-    queue2.dequeueOption match {
+  private final def bfs[T, V](visitor: V, p: T => Boolean)(queue: Queue[Node[T]])(implicit tVv: Visitor[T, V]): V =
+    queue.dequeueOption match {
       case None => visitor
       case Some((tn, q)) =>
         if (tn.filter(p))
           bfs(tVv.visit(visitor, tn.key), p)(tn.children.foldLeft(q)(_.enqueue(_)))
         else bfs(visitor, p)(q)
     }
+
+  @tailrec
+  private final def bfsPQ[T, V](visitor: V, p: T => Boolean)(queue: PriorityQueue[Node[T]])(implicit tVv: Visitor[Node[T], V]): V =
+    delOption(queue) match {
+      case None => visitor
+      case Some((q, tn)) =>
+        if (tn.filter(p))
+          bfsPQ(tVv.visit(visitor, tn), p)(tn.children.foldLeft(q)(_.insert(_)))
+        else bfsPQ(visitor, p)(q)
+    }
+
+  private def delOption[X](pq: PriorityQueue[X]): Option[(PriorityQueue[X], X)] =
+    for (v <- Option(pq.del().getValue)) yield (pq.del().getPq, v)
 
   private val always: Any => Boolean = _ => true
 }

@@ -5,10 +5,10 @@
 package com.phasmidsoftware.util
 
 import java.io.OutputStream
+import org.scalatest.{BeforeAndAfterEach, flatspec, matchers}
 
-import org.scalatest.{BeforeAndAfterEach, FlatSpec, Matchers}
-
-class PipeSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
+class PipeSpec extends flatspec.AnyFlatSpec with matchers.should.Matchers
+        with BeforeAndAfterEach {
 
   implicit val logger: MockLogger = MockLogger("PipeSpec", "Warn")
 

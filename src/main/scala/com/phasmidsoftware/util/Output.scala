@@ -5,7 +5,6 @@
 package com.phasmidsoftware.util
 
 import java.io._
-
 import scala.collection.mutable
 import scala.language.postfixOps
 
@@ -236,7 +235,7 @@ sealed trait CharacterOutput extends TypedOutput {
 
   def asOutputType(x: Any): CharSequence = x.toString
 
-  def asLine(x: Any): Output = :+(x) insertBreak()
+  def asLine(x: Any): Output = this.:+(x).insertBreak()
 }
 
 sealed trait BackedOutput[A <: Appendable with AutoCloseable] extends TypedOutput {

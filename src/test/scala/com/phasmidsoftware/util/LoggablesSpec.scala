@@ -4,10 +4,11 @@
 
 package com.phasmidsoftware.util
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{flatspec, matchers}
 
 //noinspection ScalaStyle
-class LoggablesSpec extends FlatSpec with Matchers with Loggables {
+class LoggablesSpec extends flatspec.AnyFlatSpec with matchers.should.Matchers
+        with Loggables {
 
   behavior of "Loggables"
 

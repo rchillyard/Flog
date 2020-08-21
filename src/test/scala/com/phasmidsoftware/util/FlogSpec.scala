@@ -4,11 +4,10 @@
 
 package com.phasmidsoftware.util
 
-import org.scalatest.{BeforeAndAfterEach, FlatSpec, Matchers}
-
+import org.scalatest.{BeforeAndAfterEach, flatspec, matchers}
 import scala.language.implicitConversions
 
-class FlogSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
+class FlogSpec extends flatspec.AnyFlatSpec with matchers.should.Matchers with BeforeAndAfterEach {
 
   var evaluated = false
 
