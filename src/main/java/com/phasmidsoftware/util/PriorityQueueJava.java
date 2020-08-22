@@ -42,7 +42,7 @@ import java.util.function.Consumer;
  * traversal, consider using {@code Arrays.sort(pq.toArray())}.
  *
  * <p><strong>Note that this implementation is not synchronized.</strong>
- * Multiple threads should not access a {@code PriorityQueue}
+ * Multiple threads should not access a {@code PriorityQueueJava}
  * instance concurrently if any of the threads modifies the queue.
  * Instead, use the thread-safe {@link
  * java.util.concurrent.PriorityBlockingQueue} class.
@@ -62,14 +62,14 @@ import java.util.function.Consumer;
  * @author Josh Bloch, Doug Lea
  * @since 1.5
  */
-public class PriorityQueue<E> extends AbstractQueue<E>
+public class PriorityQueueJava<E> extends AbstractQueue<E>
         implements java.io.Serializable {
 
     @Override
     public String toString() {
         Object[] objects = new Object[size];
         System.arraycopy(heap, 0, objects, 0, size);
-        return "PriorityQueue{" +
+        return "PriorityQueueJava{" +
                 "size=" + size +
                 ", queue=" + Arrays.toString(objects) +
                 '}';
@@ -78,31 +78,35 @@ public class PriorityQueue<E> extends AbstractQueue<E>
     /**
      * Immutably, inserts the specified element into this priority queue and returns the new priority queue.
      *
-     * @return a new PriorityQueue
+     * @return a new PriorityQueueJava
      * @throws ClassCastException   if the specified element cannot be
      *                              compared with elements currently in this priority queue
      *                              according to the priority queue's ordering
      * @throws NullPointerException if the specified element is null
      */
-    public PriorityQueue<E> insert(E e) {
+    public PriorityQueueJava<E> insert(E e) {
         if (e == null)
             throw new NullPointerException();
-        PriorityQueue<E> result = (size >= this.heap.length) ? grow(heap.length * 2) : new PriorityQueue<>(this);
+        System.out.println("insert: this: " + this);
+        PriorityQueueJava<E> result = (size >= this.heap.length) ? grow(heap.length * 2) : new PriorityQueueJava<>(this);
         result.doInsert(e);
+        System.out.println("insert: result: " + result);
         return result;
     }
 
     /**
      * Immutably, removes and returns the smallest element from this priority queue.
      *
-     * @return a tuple of the new PriorityQueue (without its smallest element) and the smallest element.
+     * @return a tuple of the new PriorityQueueJava (without its smallest element) and the smallest element.
      */
     public DeleteResult<E> del() {
-        System.out.println("del: this" + this);
+        System.out.println("del: this: " + this);
         if (size == 0)
             return new DeleteResult<>(this, null);
-        PriorityQueue<E> result = new PriorityQueue<>(this);
+        PriorityQueueJava<E> result = new PriorityQueueJava<>(this);
+        System.out.println("del: result (1): " + result);
         E e = result.doDel();
+        System.out.println("del: result (2): " + result);
         return new DeleteResult<>(result, e);
     }
 
@@ -127,7 +131,7 @@ public class PriorityQueue<E> extends AbstractQueue<E>
     }
 
     /**
-     * Method to peek at the smalles element, without affecting the priority queue.
+     * Method to peek at the smallest element, without affecting the priority queue.
      *
      * @return the smallest element.
      */
@@ -263,7 +267,7 @@ public class PriorityQueue<E> extends AbstractQueue<E>
      * @return an iterator over the elements.
      */
     public Iterator<E> iterator() {
-        return new PriorityQueue.Itr<>(new PriorityQueue<E>(this));
+        return new PriorityQueueIterator<>(new PriorityQueueJava<>(this));
     }
 
     /**
@@ -280,11 +284,11 @@ public class PriorityQueue<E> extends AbstractQueue<E>
      * @since 1.8
      */
     public final Spliterator<E> spliterator() {
-        return new PriorityQueue.PriorityQueueSpliterator<>(this, 0, -1, 0);
+        return new PriorityQueueJava.PriorityQueueSpliterator<>(this, 0, -1, 0);
     }
 
     /**
-     * Creates a {@code PriorityQueue} with the default initial
+     * Creates a {@code PriorityQueueJava} with the default initial
      * capacity (11) that orders its elements according to their
      * {@linkplain Comparable natural ordering}.
      *
@@ -292,14 +296,14 @@ public class PriorityQueue<E> extends AbstractQueue<E>
      * @param size       the number of elements in the binary heap.
      * @param comparator the comparator: if null, then E will be cast to Comparable.
      */
-    public PriorityQueue(Object[] heap, Comparator<? super E> comparator, int size) {
-        this.heap = heap;
+    public PriorityQueueJava(Object[] heap, Comparator<? super E> comparator, int size) {
+        this.heap = checkNoNulls(heap, size);
         this.comparator = comparator;
         this.size = size;
     }
 
     /**
-     * Creates a {@code PriorityQueue} with the specified initial capacity
+     * Creates a {@code PriorityQueueJava} with the specified initial capacity
      * that orders its elements according to the specified comparator.
      *
      * @param initialCapacity the initial capacity for this priority queue
@@ -309,67 +313,78 @@ public class PriorityQueue<E> extends AbstractQueue<E>
      * @throws IllegalArgumentException if {@code initialCapacity} is
      *                                  less than 1
      */
-    public PriorityQueue(int initialCapacity,
-                         Comparator<? super E> comparator) {
+    public PriorityQueueJava(int initialCapacity,
+                             Comparator<? super E> comparator) {
         this(new Object[initialCapacity], comparator, 0);
     }
 
     /**
-     * Creates a {@code PriorityQueue} with the specified initial capacity
+     * Creates a {@code PriorityQueueJava} with the specified initial capacity
      * that orders its elements according to the specified comparator.
      *
      * @param initialCapacity the initial capacity for this priority queue
      * @throws IllegalArgumentException if {@code initialCapacity} is
      *                                  less than 1
      */
-    public PriorityQueue(int initialCapacity) {
+    public PriorityQueueJava(int initialCapacity) {
         this(initialCapacity, null);
     }
 
     /**
-     * Creates a {@code PriorityQueue} with the specified initial capacity
+     * Creates a {@code PriorityQueueJava} with the specified initial capacity
      * that orders its elements according to the specified comparator.
      *
      * @throws IllegalArgumentException if {@code initialCapacity} is
      *                                  less than 1
      */
-    public PriorityQueue() {
+    public PriorityQueueJava() {
         this(32);
     }
 
     /**
-     * Creates a {@code PriorityQueue} with the specified initial capacity
+     * Creates a {@code PriorityQueueJava} with the specified initial capacity
      * that orders its elements according to the specified comparator.
      *
      * @throws IllegalArgumentException if {@code initialCapacity} is
      *                                  less than 1
      */
-    public PriorityQueue(E e, Comparator<? super E> comparator) {
+    public PriorityQueueJava(E e, Comparator<? super E> comparator) {
         this(initialize(e, 32), comparator, 1);
     }
 
     /**
-     * Creates a {@code PriorityQueue} with the specified initial capacity
+     * Creates a {@code PriorityQueueJava} with the specified initial capacity
      * that orders its elements according to the specified comparator.
      *
      * @throws IllegalArgumentException if {@code initialCapacity} is
      *                                  less than 1
      */
-    public PriorityQueue(E e) {
+    public PriorityQueueJava(Comparator<? super E> comparator) {
+        this(0, comparator);
+    }
+
+    /**
+     * Creates a {@code PriorityQueueJava} with the specified initial capacity
+     * that orders its elements according to the specified comparator.
+     *
+     * @throws IllegalArgumentException if {@code initialCapacity} is
+     *                                  less than 1
+     */
+    public PriorityQueueJava(E e) {
         this(e, null);
     }
 
-    private PriorityQueue(PriorityQueue<E> other) {
+    private PriorityQueueJava(PriorityQueueJava<E> other) {
         this(other.heap, other.comparator, other.size);
     }
 
     public static class DeleteResult<E> {
-        public DeleteResult(PriorityQueue<E> pq, E value) {
+        public DeleteResult(PriorityQueueJava<E> pq, E value) {
             this.pq = pq;
             this.value = value;
         }
 
-        public PriorityQueue<E> getPq() {
+        public PriorityQueueJava<E> getPq() {
             return pq;
         }
 
@@ -377,7 +392,7 @@ public class PriorityQueue<E> extends AbstractQueue<E>
             return value;
         }
 
-        private final PriorityQueue<E> pq;
+        private final PriorityQueueJava<E> pq;
         private final E value;
     }
 
@@ -413,7 +428,7 @@ public class PriorityQueue<E> extends AbstractQueue<E>
     transient int modCount = 0; // non-private to simplify nested class access
 
     private static <E> Object[] initialize(E e, int initialCapacity) {
-        if (initialCapacity < 1) throw new IllegalArgumentException("PriorityQueue capacity must be at least 1");
+        if (initialCapacity < 1) throw new IllegalArgumentException("PriorityQueueJava capacity must be at least 1");
         Object[] objects = new Object[initialCapacity];
         objects[0] = e;
         return objects;
@@ -432,7 +447,7 @@ public class PriorityQueue<E> extends AbstractQueue<E>
      *
      * @param minCapacity the desired minimum capacity
      */
-    private PriorityQueue<E> grow(int minCapacity) {
+    private PriorityQueueJava<E> grow(int minCapacity) {
         int oldCapacity = heap.length;
         // Double size if small; else grow by 50%
         int newCapacity = oldCapacity + ((oldCapacity < 64) ?
@@ -441,7 +456,7 @@ public class PriorityQueue<E> extends AbstractQueue<E>
         // overflow-conscious code
         if (newCapacity - MAX_ARRAY_SIZE > 0)
             newCapacity = hugeCapacity(minCapacity);
-        return new PriorityQueue<>(Arrays.copyOf(heap, newCapacity), comparator, size);
+        return new PriorityQueueJava<>(Arrays.copyOf(heap, newCapacity), comparator, size);
     }
 
     private static int hugeCapacity(int minCapacity) {
@@ -460,6 +475,7 @@ public class PriorityQueue<E> extends AbstractQueue<E>
             this.heap[0] = e;
         else
             siftUp(i, e);
+        checkNoNulls(heap, size);
     }
 
     private int indexOf(Object o) {
@@ -471,73 +487,30 @@ public class PriorityQueue<E> extends AbstractQueue<E>
         return -1;
     }
 
-    private static final class Itr<X> implements Iterator<X> {
-        public Itr(PriorityQueue<X> pq) {
-            this.pq = pq;
-        }
-
-        private final PriorityQueue<X> pq;
-
-        /**
-         * Index (into queue array) of element to be returned by
-         * subsequent call to next.
-         */
-        private final int cursor = 0;
-
-        /**
-         * Index of element returned by most recent call to next,
-         * unless that element came from the forgetMeNot list.
-         * Set to -1 if element is deleted by a call to remove.
-         */
-
-        /**
-         * A queue of elements that were moved from the unvisited portion of
-         * the heap into the visited portion as a result of "unlucky" element
-         * removals during the iteration.  (Unlucky element removals are those
-         * that require a siftup instead of a siftdown.)  We must visit all of
-         * the elements in this list to complete the iteration.  We do this
-         * after we've completed the "normal" iteration.
-         * <p>
-         * We expect that most iterations, even those involving removals,
-         * will not need to store elements in this field.
-         */
-
-        /**
-         * Element returned by the most recent call to next iff that
-         * element was drawn from the forgetMeNot list.
-         */
-
-        /**
-         * The modCount value that the iterator believes that the backing
-         * Queue should have.  If this expectation is violated, the iterator
-         * has detected concurrent modification.
-         */
-        public boolean hasNext() {
-            return cursor < pq.size;
-        }
-
-        public X next() {
-            if (cursor < pq.size)
-                return pq.doDel();
-            throw new NoSuchElementException();
-        }
-
-        public void remove() {
-            throw new UnsupportedOperationException("remove");
-        }
-    }
-
     @SuppressWarnings("unchecked")
     private E doDel() {
-        int s = --size;
         modCount++;
         E result = (E) heap[0];
-        if (s > 0) {
-            E x = (E) heap[s];
-            heap[s] = null;
+        E x = (E) heap[size - 1];
+        if (x == null)
+            throw new RuntimeException("logic error");
+        heap[--size] = null;
+        if (size > 0)
             siftDown(0, x);
-        }
+        checkNoNulls(heap, size);
         return result;
+    }
+
+    private static Object[] checkNoNulls(final Object[] heap, final int size) {
+        for (int i = 0; i < size; i++)
+            if (heap[i] == null)
+                throw new RuntimeException("Heap has null at index " + i);
+        if (heap.length == size)
+            return heap;
+        if (heap.length > size && heap[size] == null)
+            return heap;
+        else
+            throw new RuntimeException("Heap has not-null at index " + size);
     }
 
     /**
@@ -638,12 +611,37 @@ public class PriorityQueue<E> extends AbstractQueue<E>
         heap[k] = x;
     }
 
+    private static final class PriorityQueueIterator<X> implements Iterator<X> {
+        public PriorityQueueIterator(PriorityQueueJava<X> pq) {
+            this.pq = pq;
+        }
+
+        private final PriorityQueueJava<X> pq;
+
+        private final int cursor = 0;
+
+
+        public boolean hasNext() {
+            return cursor < pq.size;
+        }
+
+        public X next() {
+            if (cursor < pq.size)
+                return pq.doDel();
+            throw new NoSuchElementException();
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException("remove");
+        }
+    }
+
     static final class PriorityQueueSpliterator<E> implements Spliterator<E> {
         /*
          * This is very similar to ArrayList Spliterator, except for
          * extra null checks.
          */
-        private final PriorityQueue<E> pq;
+        private final PriorityQueueJava<E> pq;
         private int index;            // current index, modified on advance/split
         private int fence;            // -1 until first use
         private int expectedModCount; // initialized when fence set
@@ -651,7 +649,7 @@ public class PriorityQueue<E> extends AbstractQueue<E>
         /**
          * Creates new spliterator covering the given range
          */
-        PriorityQueueSpliterator(PriorityQueue<E> pq, int origin, int fence,
+        PriorityQueueSpliterator(PriorityQueueJava<E> pq, int origin, int fence,
                                  int expectedModCount) {
             this.pq = pq;
             this.index = origin;
@@ -668,17 +666,17 @@ public class PriorityQueue<E> extends AbstractQueue<E>
             return hi;
         }
 
-        public PriorityQueue.PriorityQueueSpliterator<E> trySplit() {
+        public PriorityQueueJava.PriorityQueueSpliterator<E> trySplit() {
             int hi = getFence(), lo = index, mid = (lo + hi) >>> 1;
             return (lo >= mid) ? null :
-                    new PriorityQueue.PriorityQueueSpliterator<>(pq, lo, index = mid,
+                    new PriorityQueueJava.PriorityQueueSpliterator<>(pq, lo, index = mid,
                             expectedModCount);
         }
 
         @SuppressWarnings("unchecked")
         public void forEachRemaining(Consumer<? super E> action) {
             int i, hi, mc; // hoist accesses and checks from loop
-            PriorityQueue<E> q;
+            PriorityQueueJava<E> q;
             Object[] a;
             if (action == null)
                 throw new NullPointerException();

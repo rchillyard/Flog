@@ -94,25 +94,57 @@ abstract class ExpandingNode[T: Expandable : GoalDriven : Ordering : Loggable : 
       None
     }
     else te.result(t, _so, moves) match {
-      case Left(b) =>
-        Some(solve(b)) // XXX terminating condition found--mark and return this.
-      case Right(Nil) =>
-        None // XXX situation with no descendants: return None.
-      case Right(ts) =>
-        // XXX normal situation with (possibly empty) descendants?
-        // XXX Recursively expand them, ensuring that the elements are unique.
-        import com.phasmidsoftware.util.SmartValueOps._
-        val verifiedStates = ts.invariant(z => z.distinct.size == z.size)
-        Some(expandSuccessors(verifiedStates, moves - 1, _so))
+        case Left(b) =>
+            Some(solve(b)) // XXX terminating condition found--mark and return this.
+        case Right(Nil) =>
+            None // XXX situation with no descendants: return None.
+        case Right(ts) =>
+            // XXX normal situation with (possibly empty) descendants?
+            // XXX Recursively expand them, ensuring that the elements are unique.
+            import com.phasmidsoftware.util.SmartValueOps._
+            val verifiedStates = ts.invariant(z => z.distinct.size == z.size)
+            Some(expandSuccessors(verifiedStates, moves - 1, _so))
     }
   }
 
-  /**
-   * Method to replace node x with node y in this sub-tree.
-   * Additionally, if y is decided, then we mark the result as decided.
-   *
-   * @param x the node to be replaced.
-   * @param y the node with which to replace the given node.
+    /**
+     * Method to expand a branch of a tree, by taking this ExpandingNode and (potentially) adding child nodes which are themselves recursively expanded.
+     * The algorithm operates in a depth-first-search manner.
+     *
+     * @param _so   the (optional) currently satisfied goal.
+     * @param moves the number of possible moves remaining.
+     * @return an Option of ExpandingNode[T]:
+     *         None => we have run out of moves
+     *         Some(n) => n is either this but marked as solved; or this with expanded children added.
+     */
+    def bfsWithExpand(_so: Option[T], moves: Int): Option[ExpandingNode[T]] = {
+        val te = implicitly[Expandable[T]]
+        if (moves < 0)
+            None
+        else if (te.runaway(t)) {
+            Console.println(s"expand: runaway condition detected for $t")
+            None
+        }
+        else te.result(t, _so, moves) match {
+            case Left(b) =>
+                Some(solve(b)) // XXX terminating condition found--mark and return this.
+            case Right(Nil) =>
+                None // XXX situation with no descendants: return None.
+            case Right(ts) =>
+                // XXX normal situation with (possibly empty) descendants?
+                // XXX expand them, ensuring that the elements are unique.
+                import com.phasmidsoftware.util.SmartValueOps._
+                val verifiedStates: List[T] = ts.invariant(z => z.distinct.size == z.size)
+                Some(expandSuccessors(verifiedStates, moves - 1, _so))
+        }
+    }
+
+    /**
+     * Method to replace node x with node y in this sub-tree.
+     * Additionally, if y is decided, then we mark the result as decided.
+     *
+     * @param x the node to be replaced.
+     * @param y the node with which to replace the given node.
    * @return a copy of this Node, but with x replaced by y.
    */
   override def replace(x: Node[T], y: Node[T]): ExpandingNode[T] = y match {

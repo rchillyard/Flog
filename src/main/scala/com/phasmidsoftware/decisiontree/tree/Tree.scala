@@ -76,6 +76,12 @@ case class Tree[T](key: T, children: Seq[Node[T]] = Nil) extends Node[T]
 
 object Tree {
 
+  def bfsOrdered[T: Ordering](node: Node[T], p: T => Boolean = always): Iterable[T] = {
+    val to = implicitly[Ordering[T]]
+    implicit val tno: Ordering[Node[T]] = (x: Node[T], y: Node[T]) => to.compare(x.key, y.key)
+    for (tn <- bfsPriorityQueue(p, node).iterator.to(Iterable)) yield tn.key
+  }
+
   /**
    * Implicit class for performing DFS traverses:
    * preOrder, inOrder, and postOrder.
@@ -162,8 +168,9 @@ object Tree {
 
   private def bfsQueue[T](p: T => Boolean, n: Node[T]): Queue[T] = bfs(Queue.empty[T], p)(Queue(n))(new QueueVisitor[T] {})
 
-  private def bfsPriorityQueue[T: Ordering](p: T => Boolean, n: Node[T])(implicit tno: Ordering[Node[T]]): PriorityQueue[Node[T]] = {
-    bfsPQ(new PriorityQueue[Node[T]](), p)(new PriorityQueue(n))
+  private def bfsPriorityQueue[T: Ordering](p: T => Boolean, n: Node[T]): PriorityQueue[Node[T]] = {
+    implicit val y: Ordering[Node[T]] = (x: Node[T], y: Node[T]) => implicitly[Ordering[T]].compare(x.key, y.key)
+    bfsPQ(PriorityQueue[Node[T]], p)(PriorityQueue(n))
   }
 
   @tailrec
@@ -178,16 +185,13 @@ object Tree {
 
   @tailrec
   private final def bfsPQ[T, V](visitor: V, p: T => Boolean)(queue: PriorityQueue[Node[T]])(implicit tVv: Visitor[Node[T], V]): V =
-    delOption(queue) match {
+    queue.delOption match {
       case None => visitor
       case Some((q, tn)) =>
         if (tn.filter(p))
           bfsPQ(tVv.visit(visitor, tn), p)(tn.children.foldLeft(q)(_.insert(_)))
         else bfsPQ(visitor, p)(q)
     }
-
-  private def delOption[X](pq: PriorityQueue[X]): Option[(PriorityQueue[X], X)] =
-    for (v <- Option(pq.del().getValue)) yield (pq.del().getPq, v)
 
   private val always: Any => Boolean = _ => true
 }
