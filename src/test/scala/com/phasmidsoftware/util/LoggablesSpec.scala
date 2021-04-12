@@ -4,11 +4,11 @@
 
 package com.phasmidsoftware.util
 
-import org.scalatest.{flatspec, matchers}
+import org.scalatest.flatspec
+import org.scalatest.matchers.should
 
 //noinspection ScalaStyle
-class LoggablesSpec extends flatspec.AnyFlatSpec with matchers.should.Matchers
-        with Loggables {
+class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Loggables {
 
   behavior of "Loggables"
 
@@ -24,7 +24,7 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with matchers.should.Matchers
 
   it should "sequenceLoggable" in {
     val target = listLoggable[Int]
-    target.toLog(List(42, 99, 101)) shouldBe "[42, ... (1), ... 101]"
+    target.toLog(List(42, 99, 101)) shouldBe "[42, ... (1 elements), ... 101]"
   }
 
   it should "valueToLog" in {

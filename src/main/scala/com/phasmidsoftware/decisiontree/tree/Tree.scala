@@ -5,6 +5,8 @@ import com.phasmidsoftware.decisiontree.tree.Visitor.QueueVisitor
 import com.phasmidsoftware.util.PriorityQueue
 import scala.annotation.tailrec
 import scala.collection.immutable.Queue
+import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 trait Monadic[T] {
   def map[U](f: T => U): Monadic[U]
@@ -23,7 +25,7 @@ trait Node[T] extends Monadic[T] {
   /**
    * The children of this Node.
    */
-  val children: Seq[Node[T]]
+  def children: Seq[Node[T]]
 
   /**
    * A method to filter this Node, based on its key.
@@ -41,7 +43,14 @@ trait Node[T] extends Monadic[T] {
    */
   def map[U](f: T => U): Node[U] = new TreeOps(this).doMap(f)
 
-//  override def flatMap[U](f: T => Monadic[U]): Node[U] = new TreeOps(this).doFlatMap(f)
+  /**
+   * Method to compare Nodes, given evidence of Ordering[T]
+   *
+   * @param other    the Node to be compared with.
+   * @param ordering (implicit) the Ordering[T].
+   * @return an Int.
+   */
+  def compare(other: Node[T])(implicit ordering: Ordering[T]): Int = ordering.compare(this.key, other.key)
 }
 
 object Node {
@@ -53,7 +62,7 @@ object Node {
    * @tparam T the key type of the nodes.
    * @return a Tree[T].
    */
-  def apply[T](t: T, tns: Seq[Node[T]]): Node[T] = Tree(t, tns)
+  def apply[T](t: T, tns: Seq[Node[T]]): Node[T] = new Tree(t, tns)
 
   /**
    * Factory method to create a leaf node.
@@ -68,14 +77,50 @@ object Node {
 /**
  * Case class to define a Tree[T] which extends Node[T].
  *
- * @param key      the key value of the node.
- * @param children the children of the node.
+ * @param t      the key value of the node.
+ * @param nodes the children of the node.
  * @tparam T the underlying type of the key.
  */
-case class Tree[T](key: T, children: Seq[Node[T]] = Nil) extends Node[T]
+class Tree[T](t: T, nodes: Seq[Node[T]] = Nil) extends Node[T] {
+  /**
+   * The key of this Node.
+   */
+  override val key: T = t
+
+  /**
+   * The children of this Node.
+   */
+  override def children: Seq[Node[T]] = nodes
+
+  private def canEqual(other: Any): Boolean = other.isInstanceOf[Tree[T]]
+
+  override def equals(other: Any): Boolean = other match {
+    case that: Tree[T] =>
+      (that canEqual this) &&
+        key == that.key &&
+        children == that.children
+    case _ => false
+  }
+
+  override def hashCode(): Int = {
+    val state = Seq(key)
+    state.map(_.hashCode()).foldLeft(key.hashCode())((a, b) => 31 * a + b)
+  }
+}
 
 object Tree {
 
+  def apply[T](t: T, nodes: Seq[Node[T]] = Nil): Tree[T] = new Tree(t, nodes)
+
+  /**
+   * Perform a breadth-first search on a Tree[T] with the predicate p.
+   * The order in which children are placed on the queue is smallest-first, according to the ordering of T provided.
+   *
+   * @param node the node at which to start (i.e. the root of the Tree).
+   * @param p a predicate which filters the nodes which we examine (defaults to all).
+   * @tparam T the underlying type of the Tree.
+   * @return a list of Ts in ascending order.
+   */
   def bfsOrdered[T: Ordering](node: Node[T], p: T => Boolean = always): Iterable[T] = {
     val to = implicitly[Ordering[T]]
     implicit val tno: Ordering[Node[T]] = (x: Node[T], y: Node[T]) => to.compare(x.key, y.key)
@@ -126,8 +171,46 @@ object Tree {
      */
     def bfs(p: T => Boolean = always): Iterable[T] = bfsQueue(p, node)
 
+    @tailrec
+    private def followBack(result: List[T], work: List[(T, T)]): List[T] = work match {
+      case Nil => result
+      case (_, _) :: Nil => result
+      case (_, y) :: (a, b) :: tail if y == a => followBack(result :+ y, (a, b) :: tail)
+      case (x, y) :: (_, _) :: tail => followBack(result, (x, y) :: tail)
+    }
+
+    /**
+     * Method to get the first node which satisfies the given predicate.
+     * As in normal BFS, the children of a node are placed into a queue.
+     * In this case, the queue is a priority queue, such that the first element to be taken from the queue
+     * is the one that is the "largest" according to ordering.
+     *
+     * TODO arrange to return a Seq[T] which has the entire path from root up through the successful state.
+     *
+     * @param ordering (implicit) an Ordering[T].
+     * @param goal     (implicit) an instance of Goal[T] to determine when and how to stop searching.
+     * @return Option[T]. If Some(t) then t is the first t-value to have satisfied the predicate p; if None, then no node satisfied p.
+     */
+    def targetedBFS()(implicit ordering: Ordering[T], goal: Goal[T]): Seq[T] = {
+      val list: ListBuffer[(T, T)] = ListBuffer[(T, T)]()
+      implicit val visitor: MutatingVisitor[(T, T), ListBuffer[(T, T)]] = MutatingVisitor.prependingListVisitor[(T, T)]
+      val to = bfsPriorityQueue(list, node)
+      (to match {
+        case Some(t) => followBack(List(t), list.to(List))
+        case None => Nil
+      }).reverse
+    }
+
+
+    /**
+     * Map this Tree[T] to the equivalent Tree[U] by transforming the key of each element with the function f.
+     *
+     * @param f a function which takes a T and returns an U.
+     * @tparam U the underlying type of the resulting Tree.
+     * @return a Tree[U].
+     */
     def doMap[U](f: T => U): Tree[U] = {
-      def inner( tn: Node[T]): Tree[U] = Tree(f(tn.key), tn.children.map(inner))
+      def inner(tn: Node[T]): Tree[U] = new Tree(f(tn.key), tn.children.map(inner))
 
       inner(node)
     }
@@ -168,6 +251,28 @@ object Tree {
 
   private def bfsQueue[T](p: T => Boolean, n: Node[T]): Queue[T] = bfs(Queue.empty[T], p)(Queue(n))(new QueueVisitor[T] {})
 
+  private final def bfsPriorityQueue[T: Ordering : Goal, V](visitor: V, n: Node[T])(implicit goal: Goal[T], tVv: MutatingVisitor[(T, T), V]): Option[T] = {
+    implicit val ordering: Ordering[Node[T]] = (x: Node[T], y: Node[T]) => x.compare(y)
+    val pq = mutable.PriorityQueue[Node[T]](n)
+    val f = Goal.nodeFunction(goal)
+    // NOTE: we are using a var here and an iteration rather than using recursion.
+    // CONSIDER using recursion
+    var result: Option[T] = None
+    while (pq.nonEmpty && result.isEmpty) {
+      val tn = pq.dequeue()
+      f(tn) match {
+        case None =>
+          val children: Seq[Node[T]] = tn.children
+          pq.enqueue(children: _*)
+          children.foreach(z => tVv.visit(visitor, z.key -> tn.key))
+        case Some(true) =>
+          result = Some(tn.key)
+        case Some(false) =>
+      }
+    }
+    result
+  }
+
   private def bfsPriorityQueue[T: Ordering](p: T => Boolean, n: Node[T]): PriorityQueue[Node[T]] = {
     implicit val y: Ordering[Node[T]] = (x: Node[T], y: Node[T]) => implicitly[Ordering[T]].compare(x.key, y.key)
     bfsPQ(PriorityQueue[Node[T]], p)(PriorityQueue(n))
@@ -194,4 +299,57 @@ object Tree {
     }
 
   private val always: Any => Boolean = _ => true
+}
+
+/**
+ * Trait to define a Goal.
+ * Extenders of this trait must define a function of type T => Option[Boolean].
+ * If the result is None, that is neutral, suggesting to keep seeking the goal.
+ * If the result is Some(b) then we should stop looking, and take b to signify
+ * whether the goal has been reached or can never be reached.
+ *
+ * @tparam T the underlying type for this goal.
+ */
+trait Goal[T] extends (T => Option[Boolean])
+
+object Goal {
+  /**
+   * Yields a Goal such that goal proving true yields Some(true), else
+   * if reject proves true results in Some(false), otherwise None.
+   *
+   * @param goal   the success function.
+   * @param reject the rejection function.
+   * @tparam T the underlying type to be tested.
+   * @return Option[Boolean]
+   */
+  def goal[T](goal: T => Boolean, reject: T => Boolean): Goal[T] = (t: T) => if (goal(t)) Some(true) else if (reject(t)) Some(false) else None
+
+  /**
+   * Yields a Goal such that goal proving true yields Some(true), otherwise None.
+   *
+   * @param g the success function.
+   * @tparam T the underlying type to be tested.
+   * @return Option[Boolean]
+   */
+  def goal[T](g: T => Boolean): Goal[T] = goal(g, _ => false)
+
+  /**
+   * Method to yield a Goal of NOde[T] from a Goal[T]
+   *
+   * @param goal a Goal[T].
+   * @tparam T the key type.
+   * @return a Goal of Node[T]
+   */
+  def nodeFunction[T](goal: Goal[T]): Goal[Node[T]] = lift[T, Node[T]](goal)(tn => tn.key)
+
+  /**
+   * Method to yield a Goal[U] from a Goal[T] and a lens function.
+   *
+   * @param goal a Goal[T].
+   * @param lens a lens function to extract a T from a U.
+   * @tparam T the underlying type of Goal.
+   * @tparam U the underlying type of the result.
+   * @return a Goal[U]
+   */
+  def lift[T, U](goal: Goal[T])(lens: U => T): Goal[U] = u => goal(lens(u))
 }

@@ -7,7 +7,10 @@ package com.phasmidsoftware.util
 import java.io.Writer
 import org.scalatest.{flatspec, matchers}
 
-class OutputSpec extends flatspec.AnyFlatSpec with matchers.should.Matchers {
+import org.scalatest.flatspec
+import org.scalatest.matchers.should
+
+class OutputSpec extends flatspec.AnyFlatSpec with should.Matchers {
 
   behavior of "trait Output"
 

@@ -4,17 +4,9 @@
 
 package com.phasmidsoftware.decisiontree
 
-import org.scalatest.{BeforeAndAfterEach, FlatSpec}
+import org.scalatest.{BeforeAndAfterEach, flatspec}
 
-class ExpandableSpec extends FlatSpec with BeforeAndAfterEach {
-
-  override def beforeEach() {
-
-  }
-
-  override def afterEach() {
-
-  }
+private class ExpandableSpec extends flatspec.AnyFlatSpec with BeforeAndAfterEach {
 
   behavior of "ExpandableSpec"
 

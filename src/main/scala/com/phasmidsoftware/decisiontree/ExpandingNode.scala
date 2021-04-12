@@ -4,6 +4,7 @@
 
 package com.phasmidsoftware.decisiontree
 
+import com.phasmidsoftware.decisiontree.tree.Goal
 import com.phasmidsoftware.util.{Loggable, Loggables, Show}
 import org.slf4j.{Logger, LoggerFactory}
 
@@ -359,5 +360,13 @@ trait GoalDriven[T] {
     case Some(s) => !goalConditional(t, s)
     case None => false
   })
-}
 
+  /**
+   * Interpret this GoalDriven object as a Goal.
+   * NOTE: we ignore the impossible conditions for now.
+   *
+   * @return a Goal[T]
+   */
+  def goal: Goal[T] = Goal.goal(t => goalAchieved(t))
+
+}

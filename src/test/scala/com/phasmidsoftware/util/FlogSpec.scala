@@ -4,10 +4,15 @@
 
 package com.phasmidsoftware.util
 
+import org.scalatest.matchers.should
+import org.scalatest.{BeforeAndAfterEach, flatspec}
 import org.scalatest.{BeforeAndAfterEach, flatspec, matchers}
 import scala.language.implicitConversions
 
-class FlogSpec extends flatspec.AnyFlatSpec with matchers.should.Matchers with BeforeAndAfterEach {
+import scala.language.implicitConversions
+
+class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndAfterEach {
+
 
   var evaluated = false
 
@@ -20,7 +25,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with matchers.should.Matchers with B
     evaluated = false
   }
 
-  override def afterEach() {
+  override def afterEach(): Unit = {
     Flog.enabled = true // we need to put the (singleton) value of enabled back the way it was.
     evaluated = false
   }

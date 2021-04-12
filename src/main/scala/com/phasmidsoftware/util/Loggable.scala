@@ -76,6 +76,11 @@ object Loggable {
     def toLog(t: BigDecimal): String = t.toString
   }
 
+  /**
+   * CONSIDER replacing this with a reference to on of the Loggables instead.
+   *
+   * @tparam X the underlying type of the Iterable to be logged.
+   */
   trait LoggableIterable[X] extends Loggable[Iterable[X]] {
     def toLog(t: Iterable[X]): String = t.toString()
   }
@@ -87,5 +92,4 @@ object Loggable {
   }
 
   implicit object LoggableUnit extends LoggableUnit
-
 }

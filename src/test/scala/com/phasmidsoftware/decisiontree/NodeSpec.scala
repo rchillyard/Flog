@@ -5,10 +5,11 @@
 package com.phasmidsoftware.decisiontree
 
 import com.phasmidsoftware.util.{MockWriter, Output}
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec
+import org.scalatest.matchers.should
 
 //noinspection ScalaStyle
-class NodeSpec extends FlatSpec with Matchers {
+class NodeSpec extends flatspec.AnyFlatSpec with should.Matchers {
 
   behavior of "Node"
 
