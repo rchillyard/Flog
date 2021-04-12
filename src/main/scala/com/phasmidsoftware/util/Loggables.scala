@@ -204,7 +204,6 @@ object Reflection {
    */
   def extractFieldNames(classTag: ClassTag[_], method: String): Array[String] = {
     import java.lang.reflect.Modifier
-
     import scala.util.control.NonFatal
 
     val clazz = classTag.runtimeClass
@@ -224,7 +223,7 @@ object Reflection {
       fields.map(f => f.getName)
     } catch {
       case NonFatal(ex) => throw new RuntimeException("Cannot automatically determine case class field names and order " +
-        s"for '${clazz.getName}', please provide an explicit list of fields in the second parameter of method $method", ex)
+              s"for '${clazz.getName}', please provide an explicit list of fields in the second parameter of method $method", ex)
     }
   }
 

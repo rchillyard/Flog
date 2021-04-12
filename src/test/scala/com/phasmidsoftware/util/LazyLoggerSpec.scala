@@ -5,27 +5,27 @@ import org.scalatest.{BeforeAndAfterEach, flatspec}
 
 
 class LazyLoggerSpec extends flatspec.AnyFlatSpec
-		with should.Matchers
-		with BeforeAndAfterEach {
+        with should.Matchers
+        with BeforeAndAfterEach {
 
-	override def beforeEach(): Unit = {
-	}
+  override def beforeEach(): Unit = {
+  }
 
-	override def afterEach(): Unit = {
-	}
+  override def afterEach(): Unit = {
+  }
 
-	behavior of "LazyLoggerSpec"
+  behavior of "LazyLoggerSpec"
 
-	it should "lazyTrace" in {
+  it should "lazyTrace" in {
 
-	}
+  }
 
-	it should "lazyInfo" in {
+  it should "lazyInfo" in {
 
-	}
+  }
 
-	it should "lazyDebug" in {
+  it should "lazyDebug" in {
 
-	}
+  }
 
 }

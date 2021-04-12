@@ -5,7 +5,6 @@
 package com.phasmidsoftware.util
 
 import org.slf4j.Logger
-
 import scala.util.control.NonFatal
 
 /**

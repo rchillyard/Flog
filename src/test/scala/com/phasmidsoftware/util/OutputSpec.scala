@@ -5,8 +5,6 @@
 package com.phasmidsoftware.util
 
 import java.io.Writer
-import org.scalatest.{flatspec, matchers}
-
 import org.scalatest.flatspec
 import org.scalatest.matchers.should
 

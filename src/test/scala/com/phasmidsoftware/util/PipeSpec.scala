@@ -5,8 +5,6 @@
 package com.phasmidsoftware.util
 
 import java.io.OutputStream
-import org.scalatest.{BeforeAndAfterEach, flatspec, matchers}
-
 import org.scalatest.matchers.should
 import org.scalatest.{BeforeAndAfterEach, flatspec}
 
