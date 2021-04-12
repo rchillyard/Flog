@@ -1,8 +1,8 @@
 organization := "com.phasmidsoftware"
 
-name := "DecisionTree"
+name := "util"
 
-version := "1.0.3-SNAPSHOT"
+version := "1.0.1"
 
 scalaVersion := "2.13.3"
 
