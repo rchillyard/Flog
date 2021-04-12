@@ -103,11 +103,15 @@ object Flog {
   /**
    * The master switch.
    * Logging only occurs if this variable is true.
+   *
+   * NOTE: this does need to be a var.
    */
   var enabled = true
 
   /**
    * The default logging function which logs to the debug method of the logger for the Flogger class.
+   *
+   * NOTE: this does need to be a var.
    */
   implicit var loggingFunction: LogFunction = getLogger[Flogger]
 
