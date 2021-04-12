@@ -15,7 +15,5 @@ trait LazyLogger[L <: Logger] {
 }
 
 object LazyLogger {
-
   implicit object LazyLoggerSlf4j extends LazyLogger[Logger]
-
 }

@@ -145,5 +145,4 @@ object SmartValueOps {
   private val brackets: String = "{}"
 }
 
-
 case class SmartValueOpsException(msg: String) extends Exception(s"SmartValueOps exception: $msg")

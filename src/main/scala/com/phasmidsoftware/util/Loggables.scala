@@ -226,5 +226,4 @@ object Reflection {
               s"for '${clazz.getName}', please provide an explicit list of fields in the second parameter of method $method", ex)
     }
   }
-
 }

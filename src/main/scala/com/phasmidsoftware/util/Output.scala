@@ -497,4 +497,3 @@ trait Outputable[X] {
    */
   def output(output: Output, outputs: Seq[Outputable[X]]): Output = output ++ (outputs map (_.output(Output.empty)))
 }
-
