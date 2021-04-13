@@ -1,6 +1,6 @@
 organization := "com.phasmidsoftware"
 
-name := "util"
+name := "flog"
 
 version := "1.0.1"
 
