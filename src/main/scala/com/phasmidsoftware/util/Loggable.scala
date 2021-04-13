@@ -77,12 +77,10 @@ object Loggable {
   }
 
   /**
-   * CONSIDER replacing this with a reference to on of the Loggables instead.
-   *
-   * @tparam X the underlying type of the Iterable to be logged.
+   * @tparam T the underlying type of the Iterable to be logged.
    */
-  trait LoggableIterable[X] extends Loggable[Iterable[X]] {
-    def toLog(t: Iterable[X]): String = t.toString()
+  trait LoggableIterable[T] extends Loggable[Iterable[T]] {
+    def toLog(t: Iterable[T]): String = t.mkString
   }
 
   implicit object LoggableIterableAny extends LoggableIterable[Any]

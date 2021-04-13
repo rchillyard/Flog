@@ -65,8 +65,9 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
    */
   it should "$bang$bang 4" in {
     import Flog._
-    getString !! 1
+    val x = getString !! 1
     evaluated shouldBe true
+    x shouldBe 1
   }
 
   /**

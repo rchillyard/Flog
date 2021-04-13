@@ -61,4 +61,10 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
     val target = toLog4(Foursy, Seq("x", "y", "z", "q"))
     target.toLog(Foursy(42, y = true, 3.1415927, "x")) shouldBe "Foursy(x:42,y:true,z:3.1415927,q:x)"
   }
+
+  it should "toLog5" in {
+    case class Fivesy(x: Int, y: Boolean, z: Double, q: String, r: BigInt)
+    val loggable: Loggable[Fivesy] = toLog5(Fivesy)
+    loggable.toLog(Fivesy(42, y = true, 3.1415927, "x", BigInt(99))) shouldBe "Fivesy(x:42,y:true,z:3.1415927,q:x,r:99)"
+  }
 }

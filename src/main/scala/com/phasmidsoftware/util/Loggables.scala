@@ -4,6 +4,7 @@
 
 package com.phasmidsoftware.util
 
+import scala.collection.SeqMap
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
 
@@ -108,13 +109,15 @@ trait Loggables {
       case Nil => Reflection.extractFieldNames(implicitly[ClassTag[T]], "toLog1")
       case ps => ps.toArray
     }
-    t.productPrefix + mapLoggable[String, String]("()").toLog(Map(p0 -> valueToLog[P0, T](t, 0)
+    t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(p0 -> valueToLog[P0, T](t, 0)
     )
     )
   }
 
   /**
    * Method to return a Loggable[T] where T is a 2-ary Product and which is based on a function to convert a (P1,P2) into a T.
+   *
+   * NOTE: please see project TableParser for ideas on how to define toLogN+1 in terms of toLogN.
    *
    * @param construct a function (P1,P2) => T, usually the apply method of a case class.
    *                  The sole purpose of this function is for type inference--it is never actually invoked.
@@ -129,7 +132,7 @@ trait Loggables {
       case Nil => Reflection.extractFieldNames(implicitly[ClassTag[T]], "toLog2")
       case ps => ps.toArray
     }
-    t.productPrefix + mapLoggable[String, String]("()").toLog(Map(
+    t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(
       p0 -> valueToLog[P0, T](t, 0),
       p1 -> valueToLog[P1, T](t, 1)
     )
@@ -154,7 +157,7 @@ trait Loggables {
       case Nil => Reflection.extractFieldNames(implicitly[ClassTag[T]], "toLog3")
       case ps => ps.toArray
     }
-    t.productPrefix + mapLoggable[String, String]("()").toLog(Map(
+    t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(
       p0 -> valueToLog[P0, T](t, 0),
       p1 -> valueToLog[P1, T](t, 1),
       p2 -> valueToLog[P2, T](t, 2)
@@ -181,11 +184,42 @@ trait Loggables {
       case Nil => Reflection.extractFieldNames(implicitly[ClassTag[T]], "toLog4")
       case ps => ps.toArray
     }
-    t.productPrefix + mapLoggable[String, String]("()").toLog(Map(
+    t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(
       p0 -> valueToLog[P0, T](t, 0),
       p1 -> valueToLog[P1, T](t, 1),
       p2 -> valueToLog[P2, T](t, 2),
       p3 -> valueToLog[P3, T](t, 3)
+    )
+    )
+  }
+
+  /**
+   * Method to return a Loggable[T] where T is a 5-ary Product and which is based on a function to
+   * convert a (P0,P1,P2,P3,P4) into a T.
+   *
+   * @param construct a function (P0,P1,P2,P3,P4) => T, usually the apply method of a case class.
+   *                  The sole purpose of this function is for type inference--it is never actually invoked.
+   * @param fields    an explicit list of 4 field names.
+   * @tparam P0 the type of the first field of the Product type T.
+   * @tparam P1 the type of the second field of the Product type T.
+   * @tparam P2 the type of the third field of the Product type T.
+   * @tparam P3 the type of the fourth field of the Product type T.
+   * @tparam P4 the type of the fifth field of the Product type T.
+   * @tparam T  the underlying type of the first parameter of the input to the render method.
+   * @return a Loggable[T].
+   */
+  def toLog5[P0: Loggable, P1: Loggable, P2: Loggable, P3: Loggable, P4: Loggable, T <: Product : ClassTag]
+  (construct: (P0, P1, P2, P3, P4) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
+    val Array(p0, p1, p2, p3, p4) = fields match {
+      case Nil => Reflection.extractFieldNames(implicitly[ClassTag[T]], "toLog5")
+      case ps => ps.toArray
+    }
+    t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(
+      p0 -> valueToLog[P0, T](t, 0),
+      p1 -> valueToLog[P1, T](t, 1),
+      p2 -> valueToLog[P2, T](t, 2),
+      p3 -> valueToLog[P3, T](t, 3),
+      p4 -> valueToLog[P4, T](t, 4)
     )
     )
   }
