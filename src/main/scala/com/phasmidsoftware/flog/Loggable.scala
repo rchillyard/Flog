@@ -2,7 +2,7 @@
  * Copyright (c) 2019. Phasmid Software
  */
 
-package com.phasmidsoftware.util
+package com.phasmidsoftware.flog
 
 /**
  * A type class to enable objects to be rendered laconically as Strings for the purpose of logging.

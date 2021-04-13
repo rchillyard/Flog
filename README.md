@@ -1,14 +1,21 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2d89f95b27b246e3bd1c3c116ff24004)](https://www.codacy.com/app/scalaprof/Util?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rchillyard/Util&amp;utm_campaign=Badge_Grade)
 [![CircleCI](https://circleci.com/gh/rchillyard/Util.svg?style=svg)](https://circleci.com/gh/rchillyard/Util)
 
-# Util Introduction
-This is a set of utilities such as functional logging.
-You can copy the jar files, etc. from the releases directory.
+# Flog
+This is a set of utilities for functional logging.
+You can copy the jar files, etc. from the _releases_ directory.
 
-## Flog
-This project contains various utilities.
-Perhaps the most useful is the functional logger: _Flog_.
-Please see _FlogSpec_ for ideas on how to use it.
+## Introduction and Usage
+_Flog_ is a functional logger:
+That's to say that _Flog_ is expression-oriented rather than statement-oriented.
+
+In a statment oriented language such as Java, it is reasonably convenient to add an extra logging line to a method or
+block.
+But when writing functional prgrams, it's very inconvenient to be forced to break up the flow and perhaps declare
+a value, then log the value, then continue to use the value.
+Therefore, in this functional logger, we write loggable expressions which yield a value and, as a side effect--
+which the rest of the program doesn't "see"--we do the logging.
+
 The basic idea is this:
 
     import Flog._
@@ -20,8 +27,13 @@ logging.
 The space separating _msg_ from "!!" is optional and leaving it out may make it easier to eliminate logging which
 was added temporarily.
 
-For the logging mechanism to work, there must be (implicit) evidence of _Loggable[X]_ available.
-The following standard Loggables are provided:
+In addition to the !! method,
+there is also !| for logging of _Iterables_ or for a generic type that
+isn't necessarily _Loggable_.
+There's also a |! method which ignores the message String and does no logging at all.
+
+For the !! logging mechanism to work, there must be (implicit) evidence of _Loggable[X]_ available.
+The following standard _Loggables_ are provided:
 
     implicit object LoggableBoolean extends Loggable[Boolean]
     implicit object LoggableByte extends Loggable[Byte]
@@ -45,6 +57,13 @@ The following are supported where, in each case, the parametric type T expects i
     Either[L, R] (where each of L and R are Loggable
     Try[T]
     and _Product_ type up to _Product5_ (case classes and tuples) where each member type is _Loggable_.
+
+Finally, there are two **var** fields of _Flog_ which can be set to change
+the logging behavior:
+* enabled: if false, then all logging is suspended;
+* loggingFunction: may be set to change the default logging behavior.
+
+Please see _FlogSpec_ for more ideas on how to use it.
 
 ### Variations
 It is possible to change the default logger function by making an implicit value of _LogFunction_ available

@@ -2,7 +2,7 @@
  * Copyright (c) 2019. Phasmid Software
  */
 
-package com.phasmidsoftware.util
+package com.phasmidsoftware.flog
 
 import org.slf4j.Logger
 

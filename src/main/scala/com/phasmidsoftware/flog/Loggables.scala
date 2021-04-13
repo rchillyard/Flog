@@ -2,7 +2,7 @@
  * Copyright (c) 2019. Phasmid Software
  */
 
-package com.phasmidsoftware.util
+package com.phasmidsoftware.flog
 
 import scala.collection.SeqMap
 import scala.reflect.ClassTag
