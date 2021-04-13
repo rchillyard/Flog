@@ -54,8 +54,9 @@ The following are supported where, in each case, the parametric type T expects i
     Vector[T]
     Map[K, T]
     Option[T]
-    Either[L, R] (where each of L and R are Loggable
     Try[T]
+    Future[T] (this produces two log messages: on initiation and completion)
+    Either[L, R] (where each of L and R are Loggable)
     and _Product_ type up to _Product5_ (case classes and tuples) where each member type is _Loggable_.
 
 Finally, there are two **var** fields of _Flog_ which can be set to change
@@ -63,7 +64,7 @@ the logging behavior:
 * enabled: if false, then all logging is suspended;
 * loggingFunction: may be set to change the default logging behavior.
 
-Please see _FlogSpec_ for more ideas on how to use it.
+Please see _FlogSpec_ for more definition on how to use it.
 
 ### Variations
 It is possible to change the default logger function by making an implicit value of _LogFunction_ available
@@ -79,4 +80,7 @@ For the default logging function, we include the following dependencies:
 If you choose to use a different logger function, you may need to change these dependencies.
 
 # Version
+1.0.2 Added support for Future, cleaned up non-Flog modules, changed
+artifact name to "flog."
+
 1.0.1 This project was cloned from DecisionTree.

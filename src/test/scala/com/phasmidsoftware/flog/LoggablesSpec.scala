@@ -40,7 +40,8 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
     val target = futureLoggable[Int]
     import scala.concurrent.ExecutionContext.Implicits.global
     target.toLog(Future {
-      Thread.sleep(1000); "1".toInt
+      Thread.sleep(1000)
+      "1".toInt
     }) shouldBe "Future: promise created... "
   }
 
