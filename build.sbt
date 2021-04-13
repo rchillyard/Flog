@@ -18,7 +18,5 @@ resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releas
 libraryDependencies ++= Seq(
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
   "org.scalatest" %% "scalatest" % scalaTestVersion % "test",
-  "ch.qos.logback" % "logback-classic" % logBackVersion
-//  "org.slf4j" % "slf4j-api" % "1.7.5" % "test",
-//  "org.slf4j" % "slf4j-simple" % "1.7.5" % "test"
+  "ch.qos.logback" % "logback-classic" % logBackVersion % "runtime"
 )
