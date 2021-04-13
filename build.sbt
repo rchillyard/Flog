@@ -9,13 +9,16 @@ scalaVersion := "2.13.5"
 scalacOptions += "-deprecation"
 
 val scalaTestVersion = "3.1.1"
+val logBackVersion = "1.2.3"
+
+scalacOptions in (Compile,doc) ++= Seq("-groups", "-implicits", "-deprecation")
 
 resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
 
 libraryDependencies ++= Seq(
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
   "org.scalatest" %% "scalatest" % scalaTestVersion % "test",
-  "ch.qos.logback" % "logback-classic" % "1.2.3" % "runtime"
+  "ch.qos.logback" % "logback-classic" % logBackVersion
+//  "org.slf4j" % "slf4j-api" % "1.7.5" % "test",
+//  "org.slf4j" % "slf4j-simple" % "1.7.5" % "test"
 )
-libraryDependencies ++= Seq("org.slf4j" % "slf4j-api" % "1.7.5" % "test",
-  "org.slf4j" % "slf4j-simple" % "1.7.5" % "test")
