@@ -5,8 +5,8 @@ import org.scalatest.{BeforeAndAfterEach, flatspec}
 
 
 class LazyLoggerSpec extends flatspec.AnyFlatSpec
-        with should.Matchers
-        with BeforeAndAfterEach {
+    with should.Matchers
+    with BeforeAndAfterEach {
 
   override def beforeEach(): Unit = {
   }

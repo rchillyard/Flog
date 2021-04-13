@@ -5,6 +5,7 @@
 package com.phasmidsoftware.flog
 
 import org.slf4j.LoggerFactory
+
 import scala.reflect.ClassTag
 
 /**

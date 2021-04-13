@@ -34,23 +34,23 @@ case class MockLogger(name: String, level: String = "DEBUG", sb: StringBuilder =
 
   def warn(msg: String, t: Throwable) = doLog(msg, t)
 
-  def debug(format: String, arg: scala.Any) = doLogX
+  def debug(format: String, arg: scala.Any) = doLogX()
 
-  def debug(format: String, arg1: scala.Any, arg2: scala.Any) = doLogX
+  def debug(format: String, arg1: scala.Any, arg2: scala.Any) = doLogX()
 
-  def debug(format: String, arguments: AnyRef*) = doLogX
+  def debug(format: String, arguments: AnyRef*) = doLogX()
 
-  def debug(msg: String, t: Throwable) = doLogX
+  def debug(msg: String, t: Throwable) = doLogX()
 
-  def debug(marker: Marker, msg: String) = doLogX
+  def debug(marker: Marker, msg: String) = doLogX()
 
-  def debug(marker: Marker, format: String, arg: scala.Any) = doLogX
+  def debug(marker: Marker, format: String, arg: scala.Any) = doLogX()
 
-  def debug(marker: Marker, format: String, arg1: scala.Any, arg2: scala.Any) = doLogX
+  def debug(marker: Marker, format: String, arg1: scala.Any, arg2: scala.Any) = doLogX()
 
-  def debug(marker: Marker, format: String, arguments: AnyRef*) = doLogX
+  def debug(marker: Marker, format: String, arguments: AnyRef*) = doLogX()
 
-  def debug(marker: Marker, msg: String, t: Throwable) = doLogX
+  def debug(marker: Marker, msg: String, t: Throwable) = doLogX()
 
   def isWarnEnabled = level == "WARN" || isInfoEnabled
 
@@ -58,59 +58,59 @@ case class MockLogger(name: String, level: String = "DEBUG", sb: StringBuilder =
 
   def error(msg: String) = doLog(msg)
 
-  def error(format: String, arg: scala.Any) = doLogX
+  def error(format: String, arg: scala.Any) = doLogX()
 
-  def error(format: String, arg1: scala.Any, arg2: scala.Any) = doLogX
+  def error(format: String, arg1: scala.Any, arg2: scala.Any) = doLogX()
 
-  def error(format: String, arguments: AnyRef*) = doLogX
+  def error(format: String, arguments: AnyRef*) = doLogX()
 
-  def error(msg: String, t: Throwable) = doLogX
+  def error(msg: String, t: Throwable) = doLogX()
 
-  def error(marker: Marker, msg: String) = doLogX
+  def error(marker: Marker, msg: String) = doLogX()
 
-  def error(marker: Marker, format: String, arg: scala.Any) = doLogX
+  def error(marker: Marker, format: String, arg: scala.Any) = doLogX()
 
-  def error(marker: Marker, format: String, arg1: scala.Any, arg2: scala.Any) = doLogX
+  def error(marker: Marker, format: String, arg1: scala.Any, arg2: scala.Any) = doLogX()
 
-  def error(marker: Marker, format: String, arguments: AnyRef*) = doLogX
+  def error(marker: Marker, format: String, arguments: AnyRef*) = doLogX()
 
-  def error(marker: Marker, msg: String, t: Throwable) = doLogX
+  def error(marker: Marker, msg: String, t: Throwable) = doLogX()
 
-  def warn(format: String, arg: scala.Any) = doLogX
+  def warn(format: String, arg: scala.Any) = doLogX()
 
-  def warn(format: String, arguments: AnyRef*) = doLogX
+  def warn(format: String, arguments: AnyRef*) = doLogX()
 
-  def warn(format: String, arg1: scala.Any, arg2: scala.Any) = doLogX
+  def warn(format: String, arg1: scala.Any, arg2: scala.Any) = doLogX()
 
-  def warn(marker: Marker, msg: String) = doLogX
+  def warn(marker: Marker, msg: String) = doLogX()
 
-  def warn(marker: Marker, format: String, arg: scala.Any) = doLogX
+  def warn(marker: Marker, format: String, arg: scala.Any) = doLogX()
 
-  def warn(marker: Marker, format: String, arg1: scala.Any, arg2: scala.Any) = doLogX
+  def warn(marker: Marker, format: String, arg1: scala.Any, arg2: scala.Any) = doLogX()
 
-  def warn(marker: Marker, format: String, arguments: AnyRef*) = doLogX
+  def warn(marker: Marker, format: String, arguments: AnyRef*) = doLogX()
 
-  def warn(marker: Marker, msg: String, t: Throwable) = doLogX
+  def warn(marker: Marker, msg: String, t: Throwable) = doLogX()
 
   def trace(msg: String) = doLog(msg)
 
-  def trace(format: String, arg: scala.Any) = doLogX
+  def trace(format: String, arg: scala.Any) = doLogX()
 
-  def trace(format: String, arg1: scala.Any, arg2: scala.Any) = doLogX
+  def trace(format: String, arg1: scala.Any, arg2: scala.Any) = doLogX()
 
-  def trace(format: String, arguments: AnyRef*) = doLogX
+  def trace(format: String, arguments: AnyRef*) = doLogX()
 
-  def trace(msg: String, t: Throwable) = doLogX
+  def trace(msg: String, t: Throwable) = doLogX()
 
-  def trace(marker: Marker, msg: String) = doLogX
+  def trace(marker: Marker, msg: String) = doLogX()
 
-  def trace(marker: Marker, format: String, arg: scala.Any) = doLogX
+  def trace(marker: Marker, format: String, arg: scala.Any) = doLogX()
 
-  def trace(marker: Marker, format: String, arg1: scala.Any, arg2: scala.Any) = doLogX
+  def trace(marker: Marker, format: String, arg1: scala.Any, arg2: scala.Any) = doLogX()
 
-  def trace(marker: Marker, format: String, argArray: AnyRef*) = doLogX
+  def trace(marker: Marker, format: String, argArray: AnyRef*) = doLogX()
 
-  def trace(marker: Marker, msg: String, t: Throwable) = doLogX
+  def trace(marker: Marker, msg: String, t: Throwable) = doLogX()
 
   def isInfoEnabled = level == "INFO" || isDebugEnabled
 
@@ -128,23 +128,23 @@ case class MockLogger(name: String, level: String = "DEBUG", sb: StringBuilder =
 
   def isDebugEnabled(marker: Marker) = false
 
-  def info(format: String, arg: scala.Any) = doLogX
+  def info(format: String, arg: scala.Any) = doLogX()
 
-  def info(format: String, arg1: scala.Any, arg2: scala.Any) = doLogX
+  def info(format: String, arg1: scala.Any, arg2: scala.Any) = doLogX()
 
-  def info(format: String, arguments: AnyRef*) = doLogX
+  def info(format: String, arguments: AnyRef*) = doLogX()
 
-  def info(msg: String, t: Throwable) = doLogX
+  def info(msg: String, t: Throwable) = doLogX()
 
-  def info(marker: Marker, msg: String) = doLogX
+  def info(marker: Marker, msg: String) = doLogX()
 
-  def info(marker: Marker, format: String, arg: scala.Any) = doLogX
+  def info(marker: Marker, format: String, arg: scala.Any) = doLogX()
 
-  def info(marker: Marker, format: String, arg1: scala.Any, arg2: scala.Any) = doLogX
+  def info(marker: Marker, format: String, arg1: scala.Any, arg2: scala.Any) = doLogX()
 
-  def info(marker: Marker, format: String, arguments: AnyRef*) = doLogX
+  def info(marker: Marker, format: String, arguments: AnyRef*) = doLogX()
 
-  def info(marker: Marker, msg: String, t: Throwable) = doLogX
+  def info(marker: Marker, msg: String, t: Throwable) = doLogX()
 
   private def doLog(msg: String, e: Throwable = null) = {
     sb.append(s"$name: $level: $msg")
@@ -152,5 +152,5 @@ case class MockLogger(name: String, level: String = "DEBUG", sb: StringBuilder =
     sb.append("\n")
   }
 
-  private def doLogX: Unit = {}
+  private def doLogX(): Unit = {}
 }

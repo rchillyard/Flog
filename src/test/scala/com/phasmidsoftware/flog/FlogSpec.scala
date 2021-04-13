@@ -6,6 +6,7 @@ package com.phasmidsoftware.flog
 
 import org.scalatest.matchers.should
 import org.scalatest.{BeforeAndAfterEach, flatspec}
+
 import scala.language.implicitConversions
 
 class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndAfterEach {
