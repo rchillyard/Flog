@@ -4,7 +4,10 @@
 
 package com.phasmidsoftware.flog
 
+import com.phasmidsoftware.flog.Flog.Flogger
+
 import scala.collection.SeqMap
+import scala.concurrent.Future
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
 
@@ -15,10 +18,10 @@ import scala.util.{Failure, Success, Try}
 trait Loggables {
 
   /**
-   * Method to return a Loggable[ Seq[T] ].
+   * Method to return a Loggable[ List[T] ].
    *
    * @tparam T the underlying type of the first parameter of the input to the render method.
-   * @return a Loggable[ Seq[T] ]
+   * @return a Loggable[ List[T] ]
    */
   def listLoggable[T: Loggable]: Loggable[List[T]] = (ts: List[T]) => {
     val tl = implicitly[Loggable[T]]
@@ -44,6 +47,8 @@ trait Loggables {
 
   /**
    * Method to return a Loggable[ Map[K, T] ].
+   *
+   * NOTE: unless the Map (passed as the bound variable) is a SeqMap, the order of the key-value pairs is undefined.
    *
    * @tparam K the type of the keys.
    * @tparam T the underlying type of the values.
@@ -73,7 +78,7 @@ trait Loggables {
    * @return a Loggable[ Either[T,U] ].
    */
   def eitherLoggable[T: Loggable, U: Loggable]: Loggable[Either[T, U]] = {
-    case Left(_t: T@unchecked) => s"Left(${implicitly[Loggable[T]].toLog(_t)})"
+    case Left(t: T@unchecked) => s"Left(${implicitly[Loggable[T]].toLog(t)})"
     case Right(u: Vector[T]@unchecked) => val lv = new Loggables {}.vectorLoggable[T]; s"Right(${lv.toLog(u)})"
     case Right(u: U@unchecked) => s"Right(${implicitly[Loggable[U]].toLog(u)})"
     case x => s"<problem with logging Either: $x"
@@ -83,11 +88,24 @@ trait Loggables {
    * Method to return a Loggable[ Try[T] ].
    *
    * @tparam T the underlying type of the first parameter of the input to the render method.
-   * @return a Loggable[ Option[T] ].
+   * @return a Loggable[ Try[T] ].
    */
   def tryLoggable[T: Loggable]: Loggable[Try[T]] = {
-    case Success(_t) => s"Success(${implicitly[Loggable[T]].toLog(_t)})"
+    case Success(t) => s"Success(${implicitly[Loggable[T]].toLog(t)})"
     case Failure(x) => s"Failure(${x.getLocalizedMessage})"
+  }
+
+  /**
+   * Method to return a Loggable[ Future[T] ].
+   *
+   * @tparam T the underlying type of the first parameter of the input to the render method.
+   * @return a Loggable[ Future[T] ].
+   */
+  def futureLoggable[T: Loggable](implicit logFunc: LogFunction): Loggable[Future[T]] = (tf: Future[T]) => {
+    implicit val tl: Loggable[Try[T]] = tryLoggable
+    import scala.concurrent.ExecutionContext.Implicits.global
+    tf.onComplete(ty => "Future completed" !! ty)
+    "Future: promise created... "
   }
 
   /**

@@ -60,7 +60,7 @@ object Flog {
      * @tparam X the type of x, which must provide evidence of being Loggable.
      * @return the value of x.
      */
-    def !![X: Loggable](x: => X): X = Flog.logLoggable(logFunc, message)(x)
+    def !![X: Loggable](x: => X): X = logLoggable(logFunc, message)(x)
 
     /**
      * Method to generate a log entry.
@@ -76,7 +76,7 @@ object Flog {
     def !|[X: Loggable](xs: => Iterable[X]): Iterable[X] = {
       // CONSIDER using Loggables....
       implicit object loggableIterableX extends Loggable.LoggableIterable[X]
-      Flog.logLoggable(logFunc, message)(xs)
+      logLoggable(logFunc, message)(xs)
       xs
     }
 
@@ -89,7 +89,7 @@ object Flog {
      * @tparam X the type of x.
      * @return the value of x.
      */
-    def !|[X](x: => X): X = Flog.logX(logFunc, message)(x)
+    def !|[X](x: => X): X = logX(logFunc, message)(x)
 
     /**
      * Method to simply return the value of x without any logging.

@@ -4,12 +4,14 @@
 
 package com.phasmidsoftware.flog
 
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should
 import org.scalatest.{BeforeAndAfterEach, flatspec}
 
+import scala.concurrent.Future
 import scala.language.implicitConversions
 
-class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndAfterEach {
+class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndAfterEach with ScalaFutures {
 
 
   var evaluated = false
@@ -87,6 +89,25 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     getString |! 1
     evaluated shouldBe false
     sb.toString shouldBe ""
+  }
+
+  it should "$bang$bang 6" in {
+    val sb = new StringBuilder
+
+    implicit val logFunc: LogFunction = LogFunction(sb.append)
+    import scala.concurrent.ExecutionContext.Implicits.global
+    implicit val z: Loggable[Future[Int]] = new Loggables {}.futureLoggable[Int]
+    import Flog._
+    val eventualInt = Flogger(getString)(logFunc) !! Future[Int] {
+      Thread.sleep(100)
+      "1".toInt
+    }
+    whenReady(eventualInt) {
+      result =>
+        result shouldBe 1
+        // NOTE sb should not be empty but it might be if you run this unit test on its own.
+        sb.toString() shouldBe "log: Hello: Future: promise created... log: Future completed: Success(1)"
+    }
   }
 
 }

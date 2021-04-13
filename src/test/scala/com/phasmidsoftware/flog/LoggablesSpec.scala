@@ -7,6 +7,9 @@ package com.phasmidsoftware.flog
 import org.scalatest.flatspec
 import org.scalatest.matchers.should
 
+import scala.concurrent.Future
+import scala.util.Try
+
 //noinspection ScalaStyle
 class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Loggables {
 
@@ -22,9 +25,23 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
     target.toLog(Map("x" -> 1, "y" -> 2)) shouldBe "{x:1,y:2}"
   }
 
-  it should "sequenceLoggable" in {
+  it should "listLoggable" in {
     val target = listLoggable[Int]
     target.toLog(List(42, 99, 101)) shouldBe "[42, ... (1 elements), ... 101]"
+  }
+
+  it should "tryLoggable" in {
+    val target = tryLoggable[Int]
+    target.toLog(Try("1".toInt)) shouldBe "Success(1)"
+  }
+
+  it should "futureLoggable" in {
+    import Flog._
+    val target = futureLoggable[Int]
+    import scala.concurrent.ExecutionContext.Implicits.global
+    target.toLog(Future {
+      Thread.sleep(1000); "1".toInt
+    }) shouldBe "Future: promise created... "
   }
 
   it should "valueToLog" in {
