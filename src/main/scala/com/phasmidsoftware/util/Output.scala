@@ -281,6 +281,7 @@ sealed abstract class BufferedCharSequenceOutput[A <: Appendable with AutoClosea
   def persist(x: CharSequence): Unit = if (isBacked) appendable.append(x)
   else throw OutputException(s"Cannot persist to unbacked Output")
 
+  // NOTE: this is a var.
   var flushed = false
 
   def isFlushed: Boolean = flushed

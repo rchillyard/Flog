@@ -122,6 +122,8 @@ object SmartValueOps {
 
   /**
    * This is the boolean which controls whether invariant testing is enabled.
+   *
+   * NOTE: this is a var.
    */
   private var isEnabledInvariants: Boolean = true
 
@@ -136,6 +138,8 @@ object SmartValueOps {
 
   /**
    * This is the boolean which controls whether invariant testing is enabled.
+   *
+   * NOTE: this is a var.
    */
   private var isEnabledConsole: Boolean = true
 
