@@ -37,12 +37,14 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
 
   it should "futureLoggable" in {
     import Flog._
-    val target = futureLoggable[Int]
+
     import scala.concurrent.ExecutionContext.Implicits.global
-    target.toLog(Future {
-      Thread.sleep(1000)
-      "1".toInt
-    }) shouldBe "Future: promise created... "
+    val target = futureLoggable[Int]
+    // NOTE that this future task takes no time at all and, in any case,
+    // we do not wait for the Future to complete.
+    // See FlogSpec for a slightly more realistic example.
+    val str = target.toLog(Future("1".toInt))
+    str.replaceAll("""\(\S+\)""", "") shouldBe "Future: promise  created... "
   }
 
   it should "valueToLog" in {

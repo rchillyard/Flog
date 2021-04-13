@@ -13,7 +13,6 @@ import scala.language.implicitConversions
 
 class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndAfterEach with ScalaFutures {
 
-
   var evaluated = false
 
   def getString: String = {
@@ -99,14 +98,15 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     implicit val z: Loggable[Future[Int]] = new Loggables {}.futureLoggable[Int]
     import Flog._
     val eventualInt = Flogger(getString)(logFunc) !! Future[Int] {
-      Thread.sleep(100)
+      Thread.sleep(50)
       "1".toInt
     }
     whenReady(eventualInt) {
       result =>
         result shouldBe 1
         // NOTE sb should not be empty but it might be if you run this unit test on its own.
-        sb.toString() shouldBe "log: Hello: Future: promise created... log: Future completed: Success(1)"
+        val str = sb.toString().replaceAll("""\(\S+\)""", "")
+        str shouldBe "log: Hello: Future: promise  created... log: Future completed : Success"
     }
   }
 

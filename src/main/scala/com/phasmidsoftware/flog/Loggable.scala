@@ -90,5 +90,4 @@ object Loggable {
   }
 
   implicit object LoggableUnit extends LoggableUnit
-
 }

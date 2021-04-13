@@ -7,7 +7,7 @@ package com.phasmidsoftware.flog
 import com.phasmidsoftware.flog.Flog.Flogger
 
 import scala.collection.SeqMap
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
 
@@ -101,11 +101,11 @@ trait Loggables {
    * @tparam T the underlying type of the first parameter of the input to the render method.
    * @return a Loggable[ Future[T] ].
    */
-  def futureLoggable[T: Loggable](implicit logFunc: LogFunction): Loggable[Future[T]] = (tf: Future[T]) => {
+  def futureLoggable[T: Loggable](implicit logFunc: LogFunction, ec: ExecutionContext): Loggable[Future[T]] = (tf: Future[T]) => {
+    val uuid = java.util.UUID.randomUUID
     implicit val tl: Loggable[Try[T]] = tryLoggable
-    import scala.concurrent.ExecutionContext.Implicits.global
-    tf.onComplete(ty => "Future completed" !! ty)
-    "Future: promise created... "
+    tf.onComplete(ty => s"Future completed ($uuid)" !! ty)
+    s"Future: promise ($uuid) created... "
   }
 
   /**

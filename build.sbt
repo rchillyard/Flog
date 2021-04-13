@@ -17,3 +17,5 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % scalaTestVersion % "test",
   "ch.qos.logback" % "logback-classic" % "1.2.3" % "runtime"
 )
+libraryDependencies ++= Seq("org.slf4j" % "slf4j-api" % "1.7.5" % "test",
+  "org.slf4j" % "slf4j-simple" % "1.7.5" % "test")
