@@ -3,6 +3,7 @@
 import com.phasmidsoftware.flog.Flog._
 import com.phasmidsoftware.flog.{Loggable, Loggables}
 import scala.concurrent.Future
+import scala.util.Try
 
 // The following should yield the value: "World"
 // while creating something like the following log entry:
@@ -21,11 +22,18 @@ implicit val listLoggable: Loggable[List[Int]] = new Loggables {}.listLoggable[I
 implicit val optionLoggable: Loggable[Option[Int]] = new Loggables {}.optionLoggable[Int]
 "test Option" !! Option(42)
 
+// The following should yield the value: Success(42)
+// while creating something like the following log entry:
+// <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - log: test Try: Success(42)
+implicit val tryLoggable: Loggable[Try[Int]] = new Loggables {}.tryLoggable[Int]
+"test Try" !! Try(42)
+
 // The following should yield the value: Complex(1.0,0.0)
 // while creating something like the following log entry:
 // <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - log: test complex: Complex(real:1.0,imag:0.0)
 case class Complex(real: Double, imag: Double)
-implicit val complexLoggable: Loggable[Complex] = new Loggables {}.toLog2(Complex)
+
+implicit val complexLoggable: Loggable[Complex] = new Loggables {}.loggable2(Complex)
 "test Complex" !! Complex(1, 0)
 
 // The following should yield the value: Future(Success("hello"))

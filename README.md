@@ -9,9 +9,9 @@ You can copy the jar files, etc. from the _releases_ directory.
 _Flog_ is a functional logger:
 That's to say that _Flog_ is expression-oriented rather than statement-oriented.
 
-In a statment oriented language such as Java, it is reasonably convenient to add an extra logging line to a method or
+In a statement-oriented language such as Java, it is reasonably convenient to add an extra logging line to a method or
 block.
-But when writing functional prgrams, it's very inconvenient to be forced to break up the flow and perhaps declare
+But when writing functional programs, it's very inconvenient to be forced to break up the flow and perhaps declare
 a value, then log the value, then continue to use the value.
 Therefore, in this functional logger, we write loggable expressions which yield a value and, as a side effect--
 which the rest of the program doesn't "see"--we do the logging.
@@ -48,7 +48,7 @@ The following standard _Loggables_ are provided:
     implicit object LoggableUnit extends Loggable[Unit]
 
 Additionally, there is support, in _Loggables_, for containers to be logged.
-The following are supported where, in each case, the parametric type T expects implicit evidence of type _Loggable[T]_:
+The following are supported where, in each case, the parametric type _T_ expects implicit evidence of type _Loggable[T]_:
 
     List[T]
     Vector[T]
