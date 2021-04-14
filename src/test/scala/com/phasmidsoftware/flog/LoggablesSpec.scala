@@ -45,10 +45,11 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
     str.replaceAll("""\(\S+\)""", "") shouldBe "Future: promise  created... "
   }
 
-  it should "valueToLog" in {
-    valueToLog[Int, (Int, Int)]((42, 99), 0) shouldBe "42"
-    valueToLog[Int, (Int, Int)]((42, 99), 1) shouldBe "99"
-  }
+  // TODO invoke these via PrivateMethodTester...
+//  it should "valueToLog" in {
+//    valueToLog[Int, (Int, Int)]((42, 99), 0) shouldBe "42"
+//    valueToLog[Int, (Int, Int)]((42, 99), 1) shouldBe "99"
+//  }
 
   it should "loggable1" in {
     case class Onesy(x: Int)
@@ -88,8 +89,15 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
 
   it should "loggable6" in {
     case class Sixy(a: Option[Int], x: Int, y: Boolean, z: Double, q: String, r: BigInt)
-    implicit val z: Loggable[Option[Int]] = optionLoggable[Int]
     val loggable: Loggable[Sixy] = loggable6(Sixy)
     loggable.toLog(Sixy(Some(1), 42, y = true, 3.1415927, "x", BigInt(99))) shouldBe "Sixy(a:Some(1),x:42,y:true,z:3.1415927,q:x,r:99)"
+  }
+
+  it should "loggable7" in {
+    case class Complicated(a: Option[Int], b: Option[Double], x: Int, y: Boolean, z: Double, q: String, r: BigInt)
+    // NOTE: we must explicitly include an implicit Loggable[Option[Double]] because that particular value is not imported from Loggable._
+    implicit val z: Loggable[Option[Double]] = optionLoggable[Double]
+    val loggable: Loggable[Complicated] = loggable7(Complicated)
+    loggable.toLog(Complicated(Some(1), Some(Math.PI), 42, y = true, 3.1415927, "x", BigInt(99))) shouldBe "Complicated(a:Some(1),b:Some(3.141592653589793),x:42,y:true,z:3.1415927,q:x,r:99)"
   }
 }
