@@ -22,17 +22,18 @@ import scala.util.Try
 // You don't need to include an implicit Loggable[Option[Int]] because there is one imported from Loggable._
 "test Option" !! Option(42)
 
-// The following should yield the value: List(1, 2, 3)
+// The following should yield the value: List(1, 2, 3, 4)
 // while creating something like the following log entry:
-// <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - log: test Iterable: [1, ... (1 elements), ... 3]
-// NOTE: any Iterable should match the !| method.
-// If you want to use only the !! method, then you will need to do something like the block of code following, with
-// the explicit implicit val.
+// <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - log: test Iterable: [1, 2, ... (1 elements), ... 4]
 "test Iterable" !! Seq(1, 2, 3, 4)
 
-// The following should yield the value: Seq(1, 2, 3)
+// You can log any iterable provided that there is an implicit logger for the underlying type.
+"test Iterable of String" !! Seq("1", "2", "3", "4")
+
+// The following should yield the value: Seq(1, 2, 3, 4)
 // while creating something like the following log entry:
 // <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - log: test Seq: [1, ... (1 elements), ... 3]
+// This is essentially an alternative to using the Iterable logger (above).
 implicit val seqLoggable: Loggable[Seq[Int]] = new Loggables {}.seqLoggable[Int]
 "test Seq" !! Seq(1, 2, 3, 4)
 
@@ -59,6 +60,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 implicit val futureLoggable: Loggable[Future[String]] = new Loggables {}.futureLoggable[String]
 "test Future" !! Future("hello")
+
+Thread.sleep(500)
+"finished"
 
 // The following does not compile because we don't currently declare
 // an implicit value of Loggable[LocalDateTime].
