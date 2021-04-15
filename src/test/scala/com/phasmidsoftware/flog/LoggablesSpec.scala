@@ -6,6 +6,8 @@ package com.phasmidsoftware.flog
 
 import org.scalatest.flatspec
 import org.scalatest.matchers.should
+
+import java.util.NoSuchElementException
 import scala.concurrent.Future
 import scala.util.Try
 
@@ -17,6 +19,7 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
   it should "optionLoggable" in {
     val target = optionLoggable[Int]
     target.toLog(Some(42)) shouldBe "Some(42)"
+    target.toLog(None) shouldBe "None"
   }
 
   it should "mapLoggable" in {
@@ -42,10 +45,20 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
   it should "tryLoggable" in {
     val target = tryLoggable[Int]
     target.toLog(Try("1".toInt)) shouldBe "Success(1)"
+    target.toLog(Try(throw new NoSuchElementException("bad"))) shouldBe "Failure(bad)"
+  }
+
+  it should "eitherLoggable" in {
+    val x: Either[Int, Double] = Right(Math.PI)
+    val y: Either[Int, Double] = Left(1)
+    val target = eitherLoggable[Int, Double]
+    target.toLog(x) shouldBe "Right(3.141592653589793)"
+    target.toLog(y) shouldBe "Left(1)"
   }
 
   it should "futureLoggable" in {
     import Flog._
+
     import scala.concurrent.ExecutionContext.Implicits.global
     val target = futureLoggable[Int]
     // NOTE that this future task takes no time at all and, in any case,
