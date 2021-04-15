@@ -7,7 +7,6 @@ package com.phasmidsoftware.flog
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should
 import org.scalatest.{BeforeAndAfterEach, flatspec}
-
 import scala.concurrent.Future
 import scala.language.implicitConversions
 
@@ -31,14 +30,25 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   behavior of "Flog"
 
-  it should "$bang$bang 1" in {
+  it should "$bang$bang 0" in {
     val sb = new StringBuilder
 
     import Flog._
     implicit val logFunc: LogFunction = LogFunction(sb.append)
     Flogger(getString)(logFunc) !! 1
-    if (!evaluated) println("evaluated should be true but it will be if you run this unit test on its own")
+    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
     if (sb.toString != "log: Hello: 1") println("sb should not be empty but it will be if you run this unit test on its own")
+  }
+
+  it should "$bang$bang 1" in {
+    val sb = new StringBuilder
+
+    import Flog._
+    implicit val logFunc: LogFunction = LogFunction(sb.append)
+    Flogger(getString)(logFunc) !! Seq(1, 2, 3)
+    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+    if (sb.toString != "log: Hello: 1") println("sb should not be empty but it will be if you run this unit test on its own")
+    sb.toString shouldBe "log: Hello: [1, 2, 3]"
   }
 
   it should "$bang$bang 2" in {
@@ -82,7 +92,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     evaluated shouldBe true
   }
 
-  it should "$bar$bang" in {
+  it should "$bar$bang1" in {
     val sb = new StringBuilder
     import Flog._
     getString |! 1
@@ -109,6 +119,15 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
         str shouldBe "log: Hello: Future: promise  created... log: Future completed : Success"
     }
   }
+
+
+  it should "$bang$bar1" in {
+    val sb = new StringBuilder
+    import Flog._
+    "Hello" !| List(1, 2, 3, 4)
+    sb.toString shouldBe ""
+  }
+
 
 }
 

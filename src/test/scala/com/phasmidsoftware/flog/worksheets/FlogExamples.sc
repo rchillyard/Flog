@@ -9,6 +9,11 @@ import scala.util.Try
 // The following should yield the value: "World"
 // while creating something like the following log entry:
 // <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - log: Hello: World
+"Hello World" !! ()
+
+// The following should yield the value: "World"
+// while creating something like the following log entry:
+// <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - log: Hello: World
 "Hello" !! "World"
 
 // The following should yield the value: Some(42)
@@ -19,9 +24,17 @@ import scala.util.Try
 
 // The following should yield the value: List(1, 2, 3)
 // while creating something like the following log entry:
-// <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - log: test List: [1, ... (1 elements), ... 3]
-implicit val listLoggable: Loggable[List[Int]] = new Loggables {}.listLoggable[Int]
-"test List" !! List(1, 2, 3)
+// <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - log: test Iterable: [1, ... (1 elements), ... 3]
+// NOTE: any Iterable should match the !| method.
+// If you want to use only the !! method, then you will need to do something like the block of code following, with
+// the explicit implicit val.
+"test Iterable" !! Seq(1, 2, 3, 4)
+
+// The following should yield the value: Seq(1, 2, 3)
+// while creating something like the following log entry:
+// <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - log: test Seq: [1, ... (1 elements), ... 3]
+implicit val seqLoggable: Loggable[Seq[Int]] = new Loggables {}.seqLoggable[Int]
+"test Seq" !! Seq(1, 2, 3, 4)
 
 // The following should yield the value: Success(42)
 // while creating something like the following log entry:

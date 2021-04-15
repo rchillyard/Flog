@@ -94,14 +94,4 @@ object Loggable {
     implicit object LoggableOptionInt extends LoggableOption[Int]
 
     implicit object LoggableOptionString extends LoggableOption[String]
-
-    /**
-     * @tparam T the underlying type of the Iterable to be logged.
-     */
-    trait LoggableIterable[T] extends Loggable[Iterable[T]] {
-        def toLog(t: Iterable[T]): String = t.mkString
-    }
-
-    implicit object LoggableIterableAny extends LoggableIterable[Any]
-
 }
