@@ -28,9 +28,10 @@ The space separating _msg_ from "!!" is optional and leaving it out may make it 
 was added temporarily.
 
 In addition to the !! method,
-there is also !| for logging of _Iterables_ or for a generic type that
+there is also !| for logging a generic type that
 isn't necessarily _Loggable_.
 There's also a |! method which ignores the message String and does no logging at all.
+This is useful if you want to temporarily suspend a particular logging construct without removing the instrumentation.
 
 For the !! logging mechanism to work, there must be (implicit) evidence of _Loggable[X]_ available.
 The following standard _Loggables_ are provided:
@@ -44,12 +45,12 @@ The following standard _Loggables_ are provided:
     implicit object LoggableString extends Loggable[String]
     implicit object LoggableDouble extends Loggable[Double]
     implicit object LoggableBigDecimal extends Loggable[BigDecimal]
-    implicit object LoggableIterableAny extends LoggableIterable[Any]
     implicit object LoggableUnit extends Loggable[Unit]
 
 Additionally, there is support, in _Loggables_, for containers to be logged.
 The following are supported where, in each case, the parametric type _T_ expects implicit evidence of type _Loggable[T]_:
 
+    Seq[T]
     List[T]
     Vector[T]
     Map[K, T]
@@ -57,29 +58,35 @@ The following are supported where, in each case, the parametric type _T_ expects
     Try[T]
     Future[T] (this produces two log messages: on initiation and completion)
     Either[L, R] (where each of L and R are Loggable)
-    and _Product_ type up to _Product5_ (case classes and tuples) where each member type is _Loggable_.
+    and _Product_ type up to _Product7_ (case classes and tuples) where each member type is _Loggable_.
 
 Finally, there are two **var** fields of _Flog_ which can be set to change
 the logging behavior:
 * enabled: if false, then all logging is suspended;
 * loggingFunction: may be set to change the default logging behavior.
 
-Please see _FlogSpec_ for more definition on how to use it.
+Please see worksheets/FlogExamples.sc for examples of usage.
+Additionally, see any of the spec files, especially_FlogSpec_ for more definition on how to use the package.
 
 ### Variations
 It is possible to change the default logger function by making an implicit value of _LogFunction_ available
 prior to the import of _Flog.__
 The default logger function uses _org.slf4j.LoggerFactory.getLogger_ to provide a logger.
+Note that if you do define your own logger, you will need to follow the examples in _FlogSpec_ to see how
+the syntax of !! constructs should change.
 
 ## Dependencies
 For the default logging function, we include the following dependencies:
 
     "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
+    "org.slf4j" % "slf4j-api" % "1.7.30",
     "ch.qos.logback" % "logback-classic" % "1.2.3" % "runtime"
 
 If you choose to use a different logger function, you may need to change these dependencies.
 
 # Version
+1.0.3 General improvements: more consistent functionality, issues with underlying logger hopefully resolved.
+
 1.0.2 Added support for Future, cleaned up non-Flog modules, changed
 artifact name to "flog."
 
