@@ -4,7 +4,6 @@
 
 package com.phasmidsoftware.flog
 
-import com.phasmidsoftware.flog.Flog.Flogger
 import com.phasmidsoftware.flog.Loggables.fieldNames
 import scala.collection.SeqMap
 import scala.concurrent.{ExecutionContext, Future}
@@ -119,7 +118,7 @@ trait Loggables {
   def futureLoggable[T: Loggable](implicit logFunc: LogFunction, ec: ExecutionContext): Loggable[Future[T]] = (tf: Future[T]) => {
     val uuid = java.util.UUID.randomUUID
     implicit val tl: Loggable[Try[T]] = tryLoggable
-    tf.onComplete(ty => s"Future completed ($uuid)" !! ty)
+    tf.onComplete(ty => logFunc(s"Future completed ($uuid): ${tl.toLog(ty)}"))
     s"Future: promise ($uuid) created... "
   }
 

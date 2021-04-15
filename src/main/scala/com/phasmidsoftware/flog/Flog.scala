@@ -4,6 +4,7 @@
 
 package com.phasmidsoftware.flog
 
+import com.phasmidsoftware.flog.Flog.enabled
 import org.slf4j.LoggerFactory
 import scala.reflect.ClassTag
 
@@ -37,6 +38,58 @@ import scala.reflect.ClassTag
  * <dt>(3)</dt> <dd>remove the !! expressions.</dd>
  */
 object Flog {
+
+  /**
+   * Method to generate a log message based on x, pass it to the logFunc, and return the x value.
+   * The value of x will be rendered as a String but invoking toLog on the implicit value of Loggable[X].
+   *
+   * @param logFunc the logging function.
+   * @param prefix  the message prefix.
+   * @param x       the value to be logged and returned.
+   * @tparam X the underlying type of x, which is required to provide evidence of Loggable[X].
+   * @return the value of x.
+   */
+  def logLoggable[X: Loggable](logFunc: LogFunction, prefix: =>String)(x: => X): X = flog.logLoggable(logFunc, prefix)(x)
+
+  val flog: Flog = Flog()
+
+  /**
+   * The master switch.
+   * Logging only occurs if this variable is true.
+   *
+   * NOTE: this does need to be a var.
+   */
+  var enabled: Boolean = flog.enabled
+
+  /**
+   * The default logging function which logs to the debug method of the logger for the Flogger class.
+   *
+   * NOTE: this does need to be a var.
+   */
+//  implicit var loggingFunction: LogFunction = getLogger[Flogger]
+
+  val loggingFunction: LogFunction = flog.loggingFunction
+
+  def getLogger[T: ClassTag]: LogFunction = LogFunction(LoggerFactory.getLogger(implicitly[ClassTag[T]].runtimeClass).debug)
+
+//  /**
+//   * Method to generate a log message based on x, pass it to the logFunc, and return the x value.
+//   * The value of x will be rendered as a String but invoking toLog on the implicit value of Loggable[X].
+//   *
+//   * @param logFunc the logging function.
+//   * @param prefix  the message prefix.
+//   * @param x       the value to be logged and returned.
+//   * @tparam X the underlying type of x, which is required to provide evidence of Loggable[X].
+//   * @return the value of x.
+//   */
+//  def logLoggable[X: Loggable](logFunc: LogFunction, prefix: => String)(x: => X): X = {
+//    lazy val xx: X = x
+//    if (enabled) logFunc(s"log: $prefix: ${implicitly[Loggable[X]].toLog(xx)}")
+//    xx
+//  }
+}
+
+case class Flog(enabled: Boolean = true, loggingFunction: LogFunction = LogFunction(LoggerFactory.getLogger(implicitly[ClassTag[Flog]].runtimeClass).debug)) {
 
   /**
    * Implicit class to implement functional logging.
@@ -97,22 +150,9 @@ object Flog {
     def |![X](x: => X): X = x
   }
 
-  /**
-   * The master switch.
-   * Logging only occurs if this variable is true.
-   *
-   * NOTE: this does need to be a var.
-   */
-  var enabled = true
-
-  /**
-   * The default logging function which logs to the debug method of the logger for the Flogger class.
-   *
-   * NOTE: this does need to be a var.
-   */
-  implicit var loggingFunction: LogFunction = getLogger[Flogger]
-
-  def getLogger[T: ClassTag]: LogFunction = LogFunction(LoggerFactory.getLogger(implicitly[ClassTag[T]].runtimeClass).debug)
+  implicit class FloggerX(message: => String) {
+    def &&(s: String): String = message + s
+  }
 
   /**
    * Method to generate a log message based on x, pass it to the logFunc, and return the x value.
@@ -130,6 +170,7 @@ object Flog {
     xx
   }
 
+
   /**
    * Method to generate a log message, pass it to the logFunc, and return the x value.
    * The difference between this method and the logLoggable method is that the value of x will be rendered as a String,
@@ -146,6 +187,7 @@ object Flog {
     if (enabled) logFunc(s"log: $prefix: $xx")
     xx
   }
+
 }
 
 case class LogFunction(f: String => Any) {
