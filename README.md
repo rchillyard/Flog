@@ -15,6 +15,8 @@ But when writing functional programs, it's very inconvenient to be forced to bre
 a value, then log the value, then continue to use the value.
 Therefore, in this functional logger, we write loggable expressions which yield a value and, as a side effect--
 which the rest of the program doesn't "see"--we do the logging.
+At present, this mechanism is not truly referentially transparent.
+In the future, we may provide an actor mechanism to allow for pure functional logging which is RT.
 
 The basic idea is this:
 
@@ -85,6 +87,8 @@ For the default logging function, we include the following dependencies:
 If you choose to use a different logger function, you may need to change these dependencies.
 
 # Version
+1.0.4 Provides a more functional way of specifying enabled or logger
+
 1.0.3 General improvements: more consistent functionality, issues with underlying logger hopefully resolved.
 
 1.0.2 Added support for Future, cleaned up non-Flog modules, changed
