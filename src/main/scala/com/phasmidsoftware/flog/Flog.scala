@@ -5,7 +5,7 @@
 package com.phasmidsoftware.flog
 
 import com.phasmidsoftware.flog.Flog.defaultLogFunction
-import org.slf4j.LoggerFactory
+import org.slf4j.{Logger, LoggerFactory}
 import scala.reflect.ClassTag
 
 /**
@@ -50,8 +50,6 @@ case class Flog(loggingFunction: LogFunction) {
      *
      * If you are using the default logging function (Flog.loggingFunction), then you can instantiate and utilize
      * a new instance of Flogger simply by applying the "!!" operator to a String.
-     * However, if you are using a locally defined value of the logging function, you will have to instantiate a Flogger
-     * explicitly (see FlogSpec for examples).
      *
      * @param message the message itself which will be evaluated only if enabled is actually turned on.
    */
@@ -166,7 +164,6 @@ case class Flog(loggingFunction: LogFunction) {
      * We make this available for any Loggers (such as futureLogger) which might require a LogFunction.
      */
     implicit object LogFunction$ extends LogFunction(loggingFunction.f, true)
-
 }
 
 /**
@@ -186,7 +183,7 @@ object Flog {
      * @tparam T the class with which the logging messages should be associated.
      * @return a LogFunction.
      */
-    def defaultLogFunction[T: ClassTag]: LogFunction = LogFunction(LoggerFactory.getLogger(implicitly[ClassTag[T]].runtimeClass).debug)
+    def defaultLogFunction[T: ClassTag]: LogFunction = LogFunction(getDefaultLogger.debug)
 
     /**
      * Method which, as a side-effect, invokes function f on the given value of x.
@@ -203,6 +200,14 @@ object Flog {
         f(xx)
         xx
     }
+
+    /**
+     * Get the default logger from LoggerFactory that is associated with the given class.
+     *
+     * @tparam T the class to be associated with logging.
+     * @return a Logger.
+     */
+    private def getDefaultLogger[T](implicit classTag: ClassTag[T]): Logger = LoggerFactory.getLogger(classTag.runtimeClass)
 }
 
 /**

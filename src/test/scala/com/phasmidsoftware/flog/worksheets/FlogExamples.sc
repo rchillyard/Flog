@@ -57,7 +57,7 @@ implicit val complexLoggable: Loggable[Complex] = new Loggables {}.loggable2(Com
 
 // The following should yield the value: Future(Success("hello"))
 // while creating something like the following TWO log entries:
-// Note: they might come out in the wrong order.
+// Note: they might come out in the wrong order (or the completed might be missing entirely).
 // <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - Flog: test Future: Future: promise (0008b203-cfa7-4233-9fd1-84b43069fa8d) created...
 // <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - Future completed (0008b203-cfa7-4233-9fd1-84b43069fa8d): Success(hello)
 implicit val futureLoggable: Loggable[Future[String]] = new Loggables {}.futureLoggable[String]
