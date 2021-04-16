@@ -1,10 +1,15 @@
 // Flog examples
 
-import com.phasmidsoftware.flog.Flog._
 import com.phasmidsoftware.flog.Loggable._
-import com.phasmidsoftware.flog.{Loggable, Loggables}
+import com.phasmidsoftware.flog.{Flog, Loggable, Loggables}
+
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Try
+
+val flog: Flog = Flog()
+
+import flog._
 
 // The following should yield the value: "World"
 // while creating something like the following log entry:
@@ -53,11 +58,9 @@ implicit val complexLoggable: Loggable[Complex] = new Loggables {}.loggable2(Com
 
 // The following should yield the value: Future(Success("hello"))
 // while creating something like the following TWO log entries:
+// Note: they might come out in the wrong order.
 // <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - log: test Future: Future: promise (0008b203-cfa7-4233-9fd1-84b43069fa8d) created...
-// <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - log: Future completed (0008b203-cfa7-4233-9fd1-84b43069fa8d): Success(hello)
-
-import scala.concurrent.ExecutionContext.Implicits.global
-
+// <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - Future completed (0008b203-cfa7-4233-9fd1-84b43069fa8d): Success(hello)
 implicit val futureLoggable: Loggable[Future[String]] = new Loggables {}.futureLoggable[String]
 "test Future" !! Future("hello")
 

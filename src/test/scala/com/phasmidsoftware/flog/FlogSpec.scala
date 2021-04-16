@@ -4,10 +4,11 @@
 
 package com.phasmidsoftware.flog
 
-import java.time.LocalDateTime
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should
 import org.scalatest.{BeforeAndAfterEach, flatspec}
+
+import java.time.LocalDateTime
 import scala.concurrent.Future
 import scala.language.implicitConversions
 
@@ -52,11 +53,11 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   it should "$bang$bang 2" in {
     val sb = new StringBuilder
 
-    implicit val logFunc: LogFunction = LogFunction(_ => ())
-    val flog = Flog(enabled = true, LogFunction(sb.append))
+//    implicit val logFunc: LogFunction = LogFunction(_ => ())
+val flog = Flog(enabled = true, LogFunction(_ => ()))
     import flog._
 
-    Flogger(getString)(logFunc) !! 1
+    getString !! 1
     evaluated shouldBe true
     sb.toString shouldBe ""
   }

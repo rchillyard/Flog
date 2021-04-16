@@ -5,6 +5,7 @@
 package com.phasmidsoftware.flog
 
 import org.slf4j.LoggerFactory
+
 import scala.reflect.ClassTag
 
 case class Flog(enabled: Boolean, loggingFunction: LogFunction) {
@@ -18,9 +19,8 @@ case class Flog(enabled: Boolean, loggingFunction: LogFunction) {
    * explicitly (see FlogSpec for examples).
    *
    * @param message the message itself which will be evaluated only if enabled is actually turned on.
-   * @param logFunc the logging function to be used for this log message (defaults to Flog.loggingFunction).
    */
-  implicit class Flogger(message: => String)(implicit logFunc: LogFunction = loggingFunction) {
+  implicit class Flogger(message: => String) {
     /**
      * Method to generate a log entry for a (Loggable) value of X.
      * Logging is performed as a side effect.
@@ -30,7 +30,7 @@ case class Flog(enabled: Boolean, loggingFunction: LogFunction) {
      * @tparam X the type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def !![X: Loggable](x: => X): X = logLoggable(logFunc, message)(x)
+    def !![X: Loggable](x: => X): X = logLoggable(loggingFunction, message)(x)
 
     /**
      * Method to generate a log entry for an Iterable of a (Loggable) X.
@@ -43,7 +43,7 @@ case class Flog(enabled: Boolean, loggingFunction: LogFunction) {
      */
     def !![X: Loggable](x: => Iterable[X]): Iterable[X] = {
       val z: String = new Loggables {}.seqLoggable[String].toLog((x map (implicitly[Loggable[X]].toLog(_))).toSeq)
-      logLoggable(logFunc, message)(z)
+      logLoggable(loggingFunction, message)(z)
       x
     }
 
@@ -57,8 +57,8 @@ case class Flog(enabled: Boolean, loggingFunction: LogFunction) {
      * @return the value of x.
      */
     def !![X: Loggable](x: => Option[X]): Option[X] = {
-      val z: String = new Loggables {}.optionLoggable[String].toLog((x map (implicitly[Loggable[X]].toLog(_))))
-      logLoggable(logFunc, message)(z)
+      val z: String = new Loggables {}.optionLoggable[String].toLog(x map (implicitly[Loggable[X]].toLog(_)))
+      logLoggable(loggingFunction, message)(z)
       x
     }
 
@@ -71,7 +71,7 @@ case class Flog(enabled: Boolean, loggingFunction: LogFunction) {
      * @tparam X the type of x.
      * @return the value of x.
      */
-    def !|[X](x: => X): X = logX(logFunc, message)(x)
+    def !|[X](x: => X): X = logX(loggingFunction, message)(x)
 
     /**
      * Method to simply return the value of x without any logging.
@@ -115,6 +115,12 @@ case class Flog(enabled: Boolean, loggingFunction: LogFunction) {
     if (enabled) logFunc(s"log: $prefix: $xx")
     xx
   }
+
+  case class Helper()(implicit val logFunc: LogFunction = loggingFunction) extends Loggables
+
+  implicit val logFunc: LogFunction = loggingFunction
+
+  def loggables: Helper = Helper()
 }
 
 /**
