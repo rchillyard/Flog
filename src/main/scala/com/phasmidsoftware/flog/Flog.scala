@@ -43,6 +43,7 @@ import scala.reflect.ClassTag
  * @param loggingFunction the LogFunction which is to be used by this Flog.
  */
 case class Flog(loggingFunction: LogFunction) {
+    import Flog._
 
     /**
      * Implicit class to implement functional logging.
@@ -51,67 +52,61 @@ case class Flog(loggingFunction: LogFunction) {
      * a new instance of Flogger simply by applying the "!!" operator to a String.
      *
      * @param message the message itself which will be evaluated only if enabled is actually turned on.
-   */
-  implicit class Flogger(message: => String) {
-    /**
-     * Method to generate a log entry for a (Loggable) value of X.
-     * Logging is performed as a side effect.
-     * Rendering of the x value is via the toLog method of the implicit Loggable[X].
-     *
-     * @param x the value to be logged.
-     * @tparam X the type of x, which must provide implicit evidence of being Loggable.
-     * @return the value of x.
      */
-    def !![X: Loggable](x: => X): X = logLoggable(message)(x)
+    implicit class Flogger(message: => String) {
+        /**
+         * Method to generate a log entry for a (Loggable) value of X.
+         * Logging is performed as a side effect.
+         * Rendering of the x value is via the toLog method of the implicit Loggable[X].
+         *
+         * @param x the value to be logged.
+         * @tparam X the type of x, which must provide implicit evidence of being Loggable.
+         * @return the value of x.
+         */
+        def !![X: Loggable](x: => X): X = logLoggable(message)(x)
 
-    /**
-     * Method to generate a log entry for an Iterable of a (Loggable) X.
-     * Logging is performed as a side effect.
-     * Rendering of the x value is via the toLog method of the implicit Loggable[X].
-     *
-     * @param x the Iterable value to be logged.
-     * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
-     * @return the value of x.
-     */
-    def !![X: Loggable](x: => Iterable[X]): Iterable[X] = {
-      logLoggable(message)(new Loggables {}.seqLoggable[String].toLog((x map (implicitly[Loggable[X]].toLog(_))).toSeq))
-      x
+        /**
+         * Method to generate a log entry for an Iterable of a (Loggable) X.
+         * Logging is performed as a side effect.
+         * Rendering of the x value is via the toLog method of the implicit Loggable[X].
+         *
+         * @param x the Iterable value to be logged.
+         * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
+         * @return the value of x.
+         */
+        def !![X: Loggable](x: => Iterable[X]): Iterable[X] = tee[Iterable[X]](y => logLoggable(message)(new Loggables {}.seqLoggable[String].toLog((y map (implicitly[Loggable[X]].toLog(_))).toSeq)))(x)
+
+        /**
+         * Method to generate a log entry for an Option of a (Loggable) X.
+         * Logging is performed as a side effect.
+         * Rendering of the x value is via the toLog method of the implicit Loggable[X].
+         *
+         * @param x the optional value to be logged.
+         * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
+         * @return the value of x.
+         */
+        def !![X: Loggable](x: => Option[X]): Option[X] = tee[Option[X]](y => logLoggable(message)(new Loggables {}.optionLoggable[String].toLog(y map (implicitly[Loggable[X]].toLog(_)))))(x)
+
+        /**
+         * Method to generate a log entry for a type which is not itself Loggable.
+         * Logging is performed as a side effect.
+         * Rendering of the x value is via the toString method.
+         *
+         * @param x the value to be logged.
+         * @tparam X the type of x.
+         * @return the value of x.
+         */
+        def !|[X](x: => X): X = logX(message)(x)
+
+        /**
+         * Method to simply return the value of x without any logging.
+         *
+         * @param x the value.
+         * @tparam X the type of x.
+         * @return the value of x.
+         */
+        def |![X](x: => X): X = x
     }
-
-    /**
-     * Method to generate a log entry for an Option of a (Loggable) X.
-     * Logging is performed as a side effect.
-     * Rendering of the x value is via the toLog method of the implicit Loggable[X].
-     *
-     * @param x the optional value to be logged.
-     * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
-     * @return the value of x.
-     */
-    def !![X: Loggable](x: => Option[X]): Option[X] = {
-        logLoggable(message)(new Loggables {}.optionLoggable[String].toLog(x map (implicitly[Loggable[X]].toLog(_))))
-      x
-    }
-
-    /**
-     * Method to generate a log entry for a type which is not itself Loggable.
-     * Logging is performed as a side effect.
-     * Rendering of the x value is via the toString method.
-     *
-     * @param x the value to be logged.
-     * @tparam X the type of x.
-     * @return the value of x.
-     */
-    def !|[X](x: => X): X = logX(message)(x)
-
-    /**
-     * Method to simply return the value of x without any logging.
-     *
-     * @param x the value.
-     * @tparam X the type of x.
-     * @return the value of x.
-     */
-    def |![X](x: => X): X = x
-  }
 
     /**
      * Use this method to create a new Flog based on the given logging function.
@@ -137,7 +132,7 @@ case class Flog(loggingFunction: LogFunction) {
      * @tparam X the underlying type of x, which is required to provide evidence of Loggable[X].
      * @return the value of x.
      */
-    def logLoggable[X: Loggable](prefix: => String)(x: => X): X = Flog.tee[X](y => loggingFunction(s"Flog: $prefix: ${implicitly[Loggable[X]].toLog(y)}"))(x)
+    def logLoggable[X: Loggable](prefix: => String)(x: => X): X = tee[X](y => loggingFunction(s"Flog: $prefix: ${implicitly[Loggable[X]].toLog(y)}"))(x)
 
     /**
      * Method to generate a log message, pass it to the logFunc, and return the x value.
@@ -149,7 +144,7 @@ case class Flog(loggingFunction: LogFunction) {
      * @tparam X the underlying type of x.
      * @return the value of x.
      */
-    def logX[X](prefix: => String)(x: => X): X = Flog.tee[X](y => loggingFunction(s"Flog: $prefix: $y"))(x)
+    def logX[X](prefix: => String)(x: => X): X = tee[X](y => loggingFunction(s"Flog: $prefix: $y"))(x)
 
     /**
      * We make this available for any Loggers (such as futureLogger) which might require a LogFunction.

@@ -2,11 +2,11 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.phasmidsoftware</groupId>
-    <artifactId>util_2.13</artifactId>
+    <artifactId>flog_2.13</artifactId>
     <packaging>jar</packaging>
-    <description>util</description>
-    <version>1.0.1</version>
-    <name>util</name>
+    <description>flog</description>
+    <version>1.0.4</version>
+    <name>flog</name>
     <organization>
         <name>com.phasmidsoftware</name>
     </organization>
@@ -17,9 +17,9 @@
             <version>2.13.5</version>
         </dependency>
         <dependency>
-            <groupId>com.typesafe.scala-logging</groupId>
-            <artifactId>scala-logging_2.13</artifactId>
-            <version>3.9.2</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
@@ -31,7 +31,7 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
-            <scope>runtime</scope>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <repositories>
