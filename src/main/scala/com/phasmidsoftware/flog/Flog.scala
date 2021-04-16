@@ -4,92 +4,10 @@
 
 package com.phasmidsoftware.flog
 
-import com.phasmidsoftware.flog.Flog.enabled
 import org.slf4j.LoggerFactory
 import scala.reflect.ClassTag
 
-/**
- * Simple functional logging utility.
- *
- * Here are the steps you need to follow to enable logging:
- *
- * <ol>
- * <li>In your code, somewhere in scope (using "implicits" scope rules), import Flog._</li>
- * <li>Create a String which will form the log message, follow it with "!!" and follow that with the expression you want to log.</li>
- * <li>Most of the time, this is all you need to do.</li>
- * <li>If you wish to override the logging function, then declare something like the following:
- * <code>implicit def logFunc(w: String): LogFunction = LogFunction(p-r-i-n-t-l-n)</code> (take out the dashes, obviously).
- * In this case, you will need to explicitly construct an instance of Flogger from your message string, such as:
- * <code>Flogger(getString)(logFunc)</code>
- * Follow this with !! and the expression, as usual.
- * </li>
- * <li>If you wish to override the default LogFunction, for example to log according to a particular class,
- * then you can also set it (it is declared as a var):
- * <code>Flog.loggingFunction = Flog.getLogger[FlogSpec]</code>
- * </li>
- * </ol>
- * <p/>
- * <p>
- * There are several ways to turn logging off (temporarily or permanently) once you've added the log expressions:
- * <dl>
- * <dt>(1A)</dt> <dd>replace the !! method with the |! method for each expression you wish to silence;</dd>
- * <dt>(1B)</dt> <dd>define an implicit LogFunction which does nothing (but this will involve explicitly constructing a Flogger, as described above);</dd>
- * <dt>(2)</dt> <dd>set Flog.enabled = false in your code (silences all logging everywhere);</dd>
- * <dt>(3)</dt> <dd>remove the !! expressions.</dd>
- */
-object Flog {
-
-  /**
-   * Method to generate a log message based on x, pass it to the logFunc, and return the x value.
-   * The value of x will be rendered as a String but invoking toLog on the implicit value of Loggable[X].
-   *
-   * @param logFunc the logging function.
-   * @param prefix  the message prefix.
-   * @param x       the value to be logged and returned.
-   * @tparam X the underlying type of x, which is required to provide evidence of Loggable[X].
-   * @return the value of x.
-   */
-  def logLoggable[X: Loggable](logFunc: LogFunction, prefix: =>String)(x: => X): X = flog.logLoggable(logFunc, prefix)(x)
-
-  val flog: Flog = Flog()
-
-  /**
-   * The master switch.
-   * Logging only occurs if this variable is true.
-   *
-   * NOTE: this does need to be a var.
-   */
-  var enabled: Boolean = flog.enabled
-
-  /**
-   * The default logging function which logs to the debug method of the logger for the Flogger class.
-   *
-   * NOTE: this does need to be a var.
-   */
-//  implicit var loggingFunction: LogFunction = getLogger[Flogger]
-
-  val loggingFunction: LogFunction = flog.loggingFunction
-
-  def getLogger[T: ClassTag]: LogFunction = LogFunction(LoggerFactory.getLogger(implicitly[ClassTag[T]].runtimeClass).debug)
-
-//  /**
-//   * Method to generate a log message based on x, pass it to the logFunc, and return the x value.
-//   * The value of x will be rendered as a String but invoking toLog on the implicit value of Loggable[X].
-//   *
-//   * @param logFunc the logging function.
-//   * @param prefix  the message prefix.
-//   * @param x       the value to be logged and returned.
-//   * @tparam X the underlying type of x, which is required to provide evidence of Loggable[X].
-//   * @return the value of x.
-//   */
-//  def logLoggable[X: Loggable](logFunc: LogFunction, prefix: => String)(x: => X): X = {
-//    lazy val xx: X = x
-//    if (enabled) logFunc(s"log: $prefix: ${implicitly[Loggable[X]].toLog(xx)}")
-//    xx
-//  }
-}
-
-case class Flog(enabled: Boolean = true, loggingFunction: LogFunction = LogFunction(LoggerFactory.getLogger(implicitly[ClassTag[Flog]].runtimeClass).debug)) {
+case class Flog(enabled: Boolean, loggingFunction: LogFunction) {
 
   /**
    * Implicit class to implement functional logging.
@@ -102,7 +20,7 @@ case class Flog(enabled: Boolean = true, loggingFunction: LogFunction = LogFunct
    * @param message the message itself which will be evaluated only if enabled is actually turned on.
    * @param logFunc the logging function to be used for this log message (defaults to Flog.loggingFunction).
    */
-  implicit class Flogger(message: => String)(implicit logFunc: LogFunction = Flog.loggingFunction) {
+  implicit class Flogger(message: => String)(implicit logFunc: LogFunction = loggingFunction) {
     /**
      * Method to generate a log entry for a (Loggable) value of X.
      * Logging is performed as a side effect.
@@ -150,10 +68,6 @@ case class Flog(enabled: Boolean = true, loggingFunction: LogFunction = LogFunct
     def |![X](x: => X): X = x
   }
 
-  implicit class FloggerX(message: => String) {
-    def &&(s: String): String = message + s
-  }
-
   /**
    * Method to generate a log message based on x, pass it to the logFunc, and return the x value.
    * The value of x will be rendered as a String but invoking toLog on the implicit value of Loggable[X].
@@ -169,7 +83,6 @@ case class Flog(enabled: Boolean = true, loggingFunction: LogFunction = LogFunct
     if (enabled) logFunc(s"log: $prefix: ${implicitly[Loggable[X]].toLog(xx)}")
     xx
   }
-
 
   /**
    * Method to generate a log message, pass it to the logFunc, and return the x value.
@@ -187,7 +100,45 @@ case class Flog(enabled: Boolean = true, loggingFunction: LogFunction = LogFunct
     if (enabled) logFunc(s"log: $prefix: $xx")
     xx
   }
+}
 
+/**
+ * Simple functional logging utility.
+ *
+ * Here are the steps you need to follow to enable logging:
+ *
+ * <ol>
+ * <li>In your code, somewhere in scope (using "implicits" scope rules), import Flog._</li>
+ * <li>Create a String which will form the log message, follow it with "!!" and follow that with the expression you want to log.</li>
+ * <li>Most of the time, this is all you need to do.</li>
+ * <li>If you wish to override the logging function, then declare something like the following:
+ * <code>implicit def logFunc(w: String): LogFunction = LogFunction(p-r-i-n-t-l-n)</code> (take out the dashes, obviously).
+ * In this case, you will need to explicitly construct an instance of Flogger from your message string, such as:
+ * <code>Flogger(getString)(logFunc)</code>
+ * Follow this with !! and the expression, as usual.
+ * </li>
+ * <li>If you wish to override the default LogFunction, for example to log according to a particular class,
+ * then you can also set it (it is declared as a var):
+ * <code>Flog.loggingFunction = Flog.getLogger[FlogSpec]</code>
+ * </li>
+ * </ol>
+ * <p/>
+ * <p>
+ * There are several ways to turn logging off (temporarily or permanently) once you've added the log expressions:
+ * <dl>
+ * <dt>(1A)</dt> <dd>replace the !! method with the |! method for each expression you wish to silence;</dd>
+ * <dt>(1B)</dt> <dd>define an implicit LogFunction which does nothing (but this will involve explicitly constructing a Flogger, as described above);</dd>
+ * <dt>(2)</dt> <dd>set Flog.enabled = false in your code (silences all logging everywhere);</dd>
+ * <dt>(3)</dt> <dd>remove the !! expressions.</dd>
+ */
+object Flog {
+  def apply(enabled: Boolean): Flog = Flog(enabled, defaultLogFunction[Flog])
+
+  def apply(loggingFunction: LogFunction): Flog = Flog(enabled = true, loggingFunction)
+
+  def apply(): Flog = Flog(true)
+
+  def defaultLogFunction[T: ClassTag]: LogFunction = LogFunction(LoggerFactory.getLogger(implicitly[ClassTag[T]].runtimeClass).debug)
 }
 
 case class LogFunction(f: String => Any) {

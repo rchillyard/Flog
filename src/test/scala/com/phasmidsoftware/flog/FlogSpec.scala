@@ -4,10 +4,10 @@
 
 package com.phasmidsoftware.flog
 
+import java.time.LocalDateTime
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should
 import org.scalatest.{BeforeAndAfterEach, flatspec}
-
 import scala.concurrent.Future
 import scala.language.implicitConversions
 
@@ -25,7 +25,6 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   }
 
   override def afterEach(): Unit = {
-    Flog.enabled = true // we need to put the (singleton) value of enabled back the way it was.
     evaluated = false
   }
 
@@ -33,24 +32,18 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   it should "$bang$bang 0" in {
     val sb = new StringBuilder
-
-    import Flog._
-    implicit val logFunc: LogFunction = LogFunction(sb.append)
     val flog = Flog(enabled = true, LogFunction(sb.append))
     import flog._
-    Flogger(getString)(logFunc) !! 1
+    getString !! 1
     if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
     if (sb.toString != "log: Hello: 1") println("sb should not be empty but it will be if you run this unit test on its own")
   }
 
   it should "$bang$bang 1" in {
     val sb = new StringBuilder
-
-    import Flog._
-    implicit val logFunc: LogFunction = LogFunction(sb.append)
     val flog = Flog(enabled = true, LogFunction(sb.append))
     import flog._
-    Flogger(getString)(logFunc) !! Seq(1, 2, 3)
+    getString !! Seq(1, 2, 3)
     if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
     if (sb.toString != "log: Hello: 1") println("sb should not be empty but it will be if you run this unit test on its own")
     sb.toString shouldBe "log: Hello: [1, 2, 3]"
@@ -73,8 +66,6 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
     val flog = Flog(enabled = false)
     import flog._
-    val z = "Hello" && "World"
-    z shouldBe "HelloWorld"
     getString !! 1
     evaluated shouldBe false
     sb.toString shouldBe ""
@@ -95,31 +86,23 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
    * In this test, we should see logging output according to the an explicit value of Flog.loggingFunction
    */
   it should "$bang$bang 5" in {
-    val flog = Flog(enabled = true, Flog.getLogger[FlogSpec])
+    val flog = Flog(enabled = true, Flog.defaultLogFunction[FlogSpec])
     import flog._
     val x = getString !! 1
     evaluated shouldBe true
     x shouldBe 1
   }
 
-  it should "$bar$bang1" in {
-    val sb = new StringBuilder
-    val flog = Flog(enabled = true, LogFunction(sb.append))
-    import flog._
-    getString |! 1
-    evaluated shouldBe false
-    sb.toString shouldBe ""
-  }
-
   it should "$bang$bang 6" in {
-    val sb = new StringBuilder
+    val sb: StringBuilder = new StringBuilder()
 
-    implicit val logFunc: LogFunction = LogFunction(sb.append)
-    import scala.concurrent.ExecutionContext.Implicits.global
-    implicit val z: Loggable[Future[Int]] = new Loggables {}.futureLoggable[Int]
     val flog = Flog(enabled = true, LogFunction(sb.append))
+
+    import scala.concurrent.ExecutionContext.Implicits.global
+    implicit val logFunc: LogFunction = flog.loggingFunction
+    implicit val z: Loggable[Future[Int]] = new Loggables {}.futureLoggable[Int]
     import flog._
-    val eventualInt = Flogger(getString)(logFunc) !! Future[Int] {
+    val eventualInt = getString !! Future[Int] {
       Thread.sleep(100)
       "1".toInt
     }
@@ -133,14 +116,32 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     }
   }
 
-  it should "$bang$bar1" in {
-    val sb = new StringBuilder
+  it should "$bar$bang1" in {
+    val sb = new StringBuilder()
+
     val flog = Flog(enabled = true, LogFunction(sb.append))
     import flog._
-    "Hello" !| List(1, 2, 3, 4)
+    getString |! 1
+    evaluated shouldBe false
     sb.toString shouldBe ""
   }
 
+  it should "$bar$bang2" in {
+    val sb = new StringBuilder
+    val flog = Flog(enabled = true, LogFunction(sb.append))
+    import flog._
+    "Hello" |! List(1, 2, 3, 4)
+    sb.toString shouldBe ""
+  }
+
+  it should "$bang$bar1" in {
+    val sb = new StringBuilder
+    val flog = Flog(LogFunction(sb.append))
+    import flog._
+    val now = LocalDateTime.now
+    "Hello" !| now
+    sb.toString shouldBe s"log: Hello: $now"
+  }
 
 }
 
