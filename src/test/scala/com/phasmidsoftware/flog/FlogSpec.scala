@@ -62,8 +62,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   it should "$bang$bang 3" in {
     val sb = new StringBuilder
-
-      val flog = Flog().disabled
+    val flog = Flog().disabled
     import flog._
     getString !! 1
     evaluated shouldBe false
@@ -95,9 +94,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   it should "$bang$bang 6" in {
     val sb: StringBuilder = new StringBuilder()
-
     val flog = Flog(LogFunction(sb.append))
-
     import scala.concurrent.ExecutionContext.Implicits.global
     implicit val logFunc: LogFunction = flog.loggingFunction
     implicit val z: Loggable[Future[Int]] = new Loggables {}.futureLoggable[Int]
@@ -118,7 +115,14 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   it should "$bang$bang 7" in {
     // NOTE: check the log files to see if Flog was the class of record.
-    val flog = Flog().forClass[Flog]
+    val flog = Flog.forClass[Flog]
+    import flog._
+    getString !! Seq(1, 1, 2, 3, 5, 8)
+  }
+
+  it should "$bang$bang 8" in {
+    // NOTE: check the log files to see if FlogSpec was the class of record.
+    val flog = Flog.forClass(classOf[FlogSpec])
     import flog._
     getString !! Seq(1, 1, 2, 3, 5, 8)
   }

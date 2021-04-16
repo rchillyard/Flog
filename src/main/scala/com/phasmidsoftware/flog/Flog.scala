@@ -4,7 +4,6 @@
 
 package com.phasmidsoftware.flog
 
-import com.phasmidsoftware.flog.Flog.defaultLogFunction
 import org.slf4j.{Logger, LoggerFactory}
 import scala.reflect.ClassTag
 
@@ -115,14 +114,6 @@ case class Flog(loggingFunction: LogFunction) {
   }
 
     /**
-     * Use this method to create a new Flog based on this but with the default logging function based on class T.
-     *
-     * @tparam T the class for which you want to log.
-     * @return a new instance of Flog.
-     */
-    def forClass[T: ClassTag]: Flog = Flog(defaultLogFunction)
-
-    /**
      * Use this method to create a new Flog based on the given logging function.
      *
      * @param logFunc an instance of LogFunction.
@@ -178,6 +169,22 @@ object Flog {
     def apply(): Flog = Flog(defaultLogFunction[Flog])
 
     /**
+     * Use this method to create an instance of Flog with the default logging function based on class T.
+     *
+     * @tparam T the class for which you want to log.
+     * @return a new instance of Flog.
+     */
+    def forClass[T: ClassTag]: Flog = Flog(defaultLogFunction[T])
+
+    /**
+     * Use this method to create an instance of Flog with the default logging function based on clazz.
+     *
+     * @param clazz the class for which you want to log.
+     * @return a new instance of Flog.
+     */
+    def forClass(clazz: Class[_]): Flog = Flog(LogFunction(getDefaultLogger(clazz).debug))
+
+    /**
      * Method to yield a default logging function (uses LoggerFactory.getLogger) for the class T.
      *
      * @tparam T the class with which the logging messages should be associated.
@@ -208,6 +215,14 @@ object Flog {
      * @return a Logger.
      */
     private def getDefaultLogger[T](implicit classTag: ClassTag[T]): Logger = LoggerFactory.getLogger(classTag.runtimeClass)
+
+    /**
+     * Get the default logger from LoggerFactory that is associated with the given clazz.
+     *
+     * @param clazz the class to be associated with logging.
+     * @return a Logger.
+     */
+    private def getDefaultLogger(clazz: Class[_]): Logger = LoggerFactory.getLogger(clazz)
 }
 
 /**

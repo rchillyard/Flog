@@ -82,17 +82,24 @@ It is possible to change the behavior of the Flog instance by invoking one of th
 
 The default logger function uses _org.slf4j.LoggerFactory.getLogger_ to provide a logger.
 
+You can create a _Flog_ instance based on logging for a particular class by starting with (where _MyClass_ is the class):
+
+    val flog = Flog.forClass[MyClass]
+
+or
+
+    val flog = Flog.forClass(classOf[MyClass])
+
 ## Dependencies
 For the default logging function, we include the following dependencies:
 
-    "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
     "org.slf4j" % "slf4j-api" % "1.7.30",
     "ch.qos.logback" % "logback-classic" % "1.2.3" % "runtime"
 
 If you choose to use a different logger function, you may need to change these dependencies.
 
 # Version
-1.0.4 Provides a more functional way of specifying enabled or logger
+1.0.4 Provides a more functional way of setting an explicit logger or disabling logging.
 
 1.0.3 General improvements: more consistent functionality, issues with underlying logger hopefully resolved.
 
