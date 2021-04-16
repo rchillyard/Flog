@@ -62,6 +62,7 @@ The following are supported where, in each case, the parametric type _T_ expects
     Either[L, R] (where each of L and R are Loggable)
     and _Product_ type up to _Product7_ (case classes and tuples) where each member type is _Loggable_.
 
+The easiest way of 
 Finally, there are two **var** fields of _Flog_ which can be set to change
 the logging behavior:
 * enabled: if false, then all logging is suspended;

@@ -56,22 +56,37 @@ object Flog {
      * Rendering of the x value is via the toLog method of the implicit Loggable[X].
      *
      * @param x the value to be logged.
-     * @tparam X the type of x, which must provide evidence of being Loggable.
+     * @tparam X the type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
     def !![X: Loggable](x: => X): X = logLoggable(logFunc, message)(x)
 
     /**
-     * Method to generate a log entry for a (Loggable) X.
+     * Method to generate a log entry for an Iterable of a (Loggable) X.
      * Logging is performed as a side effect.
      * Rendering of the x value is via the toLog method of the implicit Loggable[X].
      *
-     * @param x the value to be logged.
-     * @tparam X the type of x, which must provide evidence of being Loggable.
+     * @param x the Iterable value to be logged.
+     * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
     def !![X: Loggable](x: => Iterable[X]): Iterable[X] = {
       val z: String = new Loggables {}.seqLoggable[String].toLog((x map (implicitly[Loggable[X]].toLog(_))).toSeq)
+      logLoggable(logFunc, message)(z)
+      x
+    }
+
+    /**
+     * Method to generate a log entry for an Option of a (Loggable) X.
+     * Logging is performed as a side effect.
+     * Rendering of the x value is via the toLog method of the implicit Loggable[X].
+     *
+     * @param x the optional value to be logged.
+     * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
+     * @return the value of x.
+     */
+    def !![X: Loggable](x: => Option[X]): Option[X] = {
+      val z: String = new Loggables {}.optionLoggable[String].toLog((x map (implicitly[Loggable[X]].toLog(_))))
       logLoggable(logFunc, message)(z)
       x
     }
