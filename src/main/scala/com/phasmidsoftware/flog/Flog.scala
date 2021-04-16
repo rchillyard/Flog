@@ -77,8 +77,7 @@ case class Flog(loggingFunction: LogFunction) {
      * @return the value of x.
      */
     def !![X: Loggable](x: => Iterable[X]): Iterable[X] = {
-      val z: String = new Loggables {}.seqLoggable[String].toLog((x map (implicitly[Loggable[X]].toLog(_))).toSeq)
-      logLoggable(message)(z)
+      logLoggable(message)(new Loggables {}.seqLoggable[String].toLog((x map (implicitly[Loggable[X]].toLog(_))).toSeq))
       x
     }
 
@@ -92,8 +91,7 @@ case class Flog(loggingFunction: LogFunction) {
      * @return the value of x.
      */
     def !![X: Loggable](x: => Option[X]): Option[X] = {
-      val z: String = new Loggables {}.optionLoggable[String].toLog(x map (implicitly[Loggable[X]].toLog(_)))
-      logLoggable(message)(z)
+        logLoggable(message)(new Loggables {}.optionLoggable[String].toLog(x map (implicitly[Loggable[X]].toLog(_))))
       x
     }
 
@@ -141,36 +139,28 @@ case class Flog(loggingFunction: LogFunction) {
      */
     def disabled: Flog = withLogFunction(loggingFunction.disable)
 
-  /**
-   * Method to generate a log message based on x, pass it to the logFunc, and return the x value.
-   * The value of x will be rendered as a String but invoking toLog on the implicit value of Loggable[X].
-   *
-   * @param prefix the message prefix.
-   * @param x      the value to be logged and returned.
-   * @tparam X the underlying type of x, which is required to provide evidence of Loggable[X].
-   * @return the value of x.
-   */
-  def logLoggable[X: Loggable](prefix: => String)(x: => X): X = {
-    lazy val xx: X = x
-      loggingFunction(s"Flog: $prefix: ${implicitly[Loggable[X]].toLog(xx)}")
-    xx
-  }
+    /**
+     * Method to generate a log message based on x, pass it to the logFunc, and return the x value.
+     * The value of x will be rendered as a String but invoking toLog on the implicit value of Loggable[X].
+     *
+     * @param prefix the message prefix.
+     * @param x      the value to be logged and returned.
+     * @tparam X the underlying type of x, which is required to provide evidence of Loggable[X].
+     * @return the value of x.
+     */
+    def logLoggable[X: Loggable](prefix: => String)(x: => X): X = Flog.tee[X](y => loggingFunction(s"Flog: $prefix: ${implicitly[Loggable[X]].toLog(y)}"))(x)
 
-  /**
-   * Method to generate a log message, pass it to the logFunc, and return the x value.
-   * The difference between this method and the logLoggable method is that the value of x will be rendered as a String,
-   * simply by invoking toString.
-   *
-   * @param prefix the message prefix.
-   * @param x      the value to be logged and returned.
-   * @tparam X the underlying type of x.
-   * @return the value of x.
-   */
-  def logX[X](prefix: => String)(x: => X): X = {
-      lazy val xx: X = x
-      loggingFunction(s"Flog: $prefix: $xx")
-      xx
-  }
+    /**
+     * Method to generate a log message, pass it to the logFunc, and return the x value.
+     * The difference between this method and the logLoggable method is that the value of x will be rendered as a String,
+     * simply by invoking toString.
+     *
+     * @param prefix the message prefix.
+     * @param x      the value to be logged and returned.
+     * @tparam X the underlying type of x.
+     * @return the value of x.
+     */
+    def logX[X](prefix: => String)(x: => X): X = Flog.tee[X](y => loggingFunction(s"Flog: $prefix: $y"))(x)
 
     /**
      * We make this available for any Loggers (such as futureLogger) which might require a LogFunction.
@@ -190,13 +180,29 @@ object Flog {
      */
     def apply(): Flog = Flog(defaultLogFunction[Flog])
 
-  /**
-   * Method to yield a default logging function (uses LoggerFactory.getLogger) for the class T.
-   *
-   * @tparam T the class with which the logging messages should be associated.
-   * @return a LogFunction.
-   */
-  def defaultLogFunction[T: ClassTag]: LogFunction = LogFunction(LoggerFactory.getLogger(implicitly[ClassTag[T]].runtimeClass).debug)
+    /**
+     * Method to yield a default logging function (uses LoggerFactory.getLogger) for the class T.
+     *
+     * @tparam T the class with which the logging messages should be associated.
+     * @return a LogFunction.
+     */
+    def defaultLogFunction[T: ClassTag]: LogFunction = LogFunction(LoggerFactory.getLogger(implicitly[ClassTag[T]].runtimeClass).debug)
+
+    /**
+     * Method which, as a side-effect, invokes function f on the given value of x.
+     * Then returns the value of x.
+     * CONSIDER making this less complex!
+     *
+     * @param f the function to invoke on x.
+     * @param x the value of x.
+     * @tparam X the type of x (and the result).
+     * @return x
+     */
+    def tee[X](f: X => Unit)(x: => X): X = {
+        lazy val xx: X = x
+        f(xx)
+        xx
+    }
 }
 
 /**
