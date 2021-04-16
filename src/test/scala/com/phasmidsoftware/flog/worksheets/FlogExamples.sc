@@ -14,7 +14,7 @@ import scala.util.Try
 // The following should yield the value: "World"
 // while creating something like the following log entry:
 // <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - log: Hello: World
-"Hello" !! "World"
+val x = "Hello" !! "World"
 
 // The following should yield the value: Some(42)
 // while creating something like the following log entry:

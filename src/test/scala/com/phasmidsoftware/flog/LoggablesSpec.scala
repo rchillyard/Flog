@@ -57,9 +57,9 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
   }
 
   it should "futureLoggable" in {
-    import Flog._
-
+    val flog = Flog()
     import scala.concurrent.ExecutionContext.Implicits.global
+    implicit val logFunction: LogFunction = flog.loggingFunction
     val target = futureLoggable[Int]
     // NOTE that this future task takes no time at all and, in any case,
     // we do not wait for the Future to complete.
