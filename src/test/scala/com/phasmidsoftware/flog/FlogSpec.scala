@@ -32,7 +32,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   it should "$bang$bang 0" in {
     val sb = new StringBuilder
-    val flog = Flog(enabled = true, LogFunction(sb.append))
+    val flog = Flog(LogFunction(sb.append))
     import flog._
     getString !! 1
     if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
@@ -40,20 +40,19 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   }
 
   it should "$bang$bang 1" in {
-      val sb = new StringBuilder
-      val flog = Flog(enabled = true, LogFunction(sb.append))
-      import flog._
-      getString !! Seq(1, 2, 3)
-      if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
-      if (sb.toString != "Flog: Hello: 1") println("sb should not be empty but it will be if you run this unit test on its own")
-      sb.toString shouldBe "Flog: Hello: [1, 2, 3]"
+    val sb = new StringBuilder
+    val flog = Flog(LogFunction(sb.append))
+    import flog._
+    getString !! Seq(1, 2, 3)
+    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+    if (sb.toString != "Flog: Hello: 1") println("sb should not be empty but it will be if you run this unit test on its own")
+    sb.toString shouldBe "Flog: Hello: [1, 2, 3]"
   }
 
   it should "$bang$bang 2" in {
     val sb = new StringBuilder
 
-//    implicit val logFunc: LogFunction = LogFunction(_ => ())
-val flog = Flog(enabled = true, LogFunction(_ => ()))
+    val flog = Flog(LogFunction(_ => ()))
     import flog._
 
     getString !! 1
@@ -86,17 +85,18 @@ val flog = Flog(enabled = true, LogFunction(_ => ()))
    * In this test, we should see logging output according to the an explicit value of Flog.loggingFunction
    */
   it should "$bang$bang 5" in {
-    val flog = Flog(enabled = true, Flog.defaultLogFunction[FlogSpec])
+    // NOTE: check the log files to see if FlogSpec was the class of record.
+    val flog = Flog(Flog.defaultLogFunction[FlogSpec])
     import flog._
-    val x = getString !! 1
+    val x = getString !! 99
     evaluated shouldBe true
-    x shouldBe 1
+    x shouldBe 99
   }
 
   it should "$bang$bang 6" in {
     val sb: StringBuilder = new StringBuilder()
 
-    val flog = Flog(enabled = true, LogFunction(sb.append))
+    val flog = Flog(LogFunction(sb.append))
 
     import scala.concurrent.ExecutionContext.Implicits.global
     implicit val logFunc: LogFunction = flog.loggingFunction
@@ -112,14 +112,21 @@ val flog = Flog(enabled = true, LogFunction(_ => ()))
         // NOTE sb should not be empty but it might be if you run this unit test on its own.
         val str = sb.toString().replaceAll("""\(\S+\)""", "")
         // NOTE occasionally, the completed message will precede the created message.
-          str shouldBe "Flog: Hello: Future: promise  created... Future completed : Success"
+        str shouldBe "Flog: Hello: Future: promise  created... Future completed : Success"
     }
+  }
+
+  it should "$bang$bang 7" in {
+    // NOTE: check the log files to see if Flog was the class of record.
+    val flog = Flog().forClass[Flog]
+    import flog._
+    getString !! Seq(1, 1, 2, 3, 5, 8)
   }
 
   it should "$bar$bang1" in {
     val sb = new StringBuilder()
 
-    val flog = Flog(enabled = true, LogFunction(sb.append))
+    val flog = Flog(LogFunction(sb.append))
     import flog._
     getString |! 1
     evaluated shouldBe false
@@ -128,7 +135,7 @@ val flog = Flog(enabled = true, LogFunction(_ => ()))
 
   it should "$bar$bang2" in {
     val sb = new StringBuilder
-    val flog = Flog(enabled = true, LogFunction(sb.append))
+    val flog = Flog(LogFunction(sb.append))
     import flog._
     "Hello" |! List(1, 2, 3, 4)
     sb.toString shouldBe ""

@@ -79,7 +79,6 @@ It is possible to change the behavior of the Flog instance by invoking one of th
     def disabled: Flog
     def forClass[T: ClassTag]: Flog
     def withLogFunction(logFunc: LogFunction): Flog
-    def withEnabled(enabled: Boolean): Flog
 
 The default logger function uses _org.slf4j.LoggerFactory.getLogger_ to provide a logger.
 

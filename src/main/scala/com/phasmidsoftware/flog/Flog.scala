@@ -16,7 +16,6 @@ import scala.reflect.ClassTag
  * <ol>
  * <li>Instantiate an instance of Flog, specifying the two parameter values:
  * <dl>
- * <dt>enabled</dt><dd>normally true but if you want to temporarily turn off all logging, set it to false;</dd>
  * <dt>loggingFunction</dt><dd>by default, this will be a function which uses the debug method of a logger based on ;</dd>
  * </dl>
  * Assuming that you named the variable "flog", then "import flog._"</li>
@@ -40,18 +39,21 @@ import scala.reflect.ClassTag
  * <dt>(1A)</dt> <dd>replace the !! method with the |! method for each expression you wish to silence;</dd>
  * <dt>(2)</dt> <dd>use a disabled Flog with flog.disabled (silences all flogging everywhere);</dd>
  * <dt>(3)</dt> <dd>remove the !! expressions.</dd>
+ * </dl>
+ *
+ * @param loggingFunction the LogFunction which is to be used by this Flog.
  */
-case class Flog(enabled: Boolean, loggingFunction: LogFunction) {
+case class Flog(loggingFunction: LogFunction) {
 
-  /**
-   * Implicit class to implement functional logging.
-   *
-   * If you are using the default logging function (Flog.loggingFunction), then you can instantiate and utilize
-   * a new instance of Flogger simply by applying the "!!" operator to a String.
-   * However, if you are using a locally defined value of the logging function, you will have to instantiate a Flogger
-   * explicitly (see FlogSpec for examples).
-   *
-   * @param message the message itself which will be evaluated only if enabled is actually turned on.
+    /**
+     * Implicit class to implement functional logging.
+     *
+     * If you are using the default logging function (Flog.loggingFunction), then you can instantiate and utilize
+     * a new instance of Flogger simply by applying the "!!" operator to a String.
+     * However, if you are using a locally defined value of the logging function, you will have to instantiate a Flogger
+     * explicitly (see FlogSpec for examples).
+     *
+     * @param message the message itself which will be evaluated only if enabled is actually turned on.
    */
   implicit class Flogger(message: => String) {
     /**
@@ -116,36 +118,28 @@ case class Flog(enabled: Boolean, loggingFunction: LogFunction) {
     def |![X](x: => X): X = x
   }
 
-  /**
-   * Use this method to create a new Flog based on this but with the default logging function based on class T.
-   *
-   * @tparam T the class for which you want to log.
-   * @return a new instance of Flog.
-   */
-  def forClass[T: ClassTag]: Flog = Flog(enabled, defaultLogFunction)
+    /**
+     * Use this method to create a new Flog based on this but with the default logging function based on class T.
+     *
+     * @tparam T the class for which you want to log.
+     * @return a new instance of Flog.
+     */
+    def forClass[T: ClassTag]: Flog = Flog(defaultLogFunction)
 
-  /**
-   * Use this method to create a new Flog based on the given logging function.
-   *
-   * @param logFunc an instance of LogFunction.
-   * @return a new instance of Flog.
-   */
-  def withLogFunction(logFunc: LogFunction): Flog = Flog(enabled, logFunc)
+    /**
+     * Use this method to create a new Flog based on the given logging function.
+     *
+     * @param logFunc an instance of LogFunction.
+     * @return a new instance of Flog.
+     */
+    def withLogFunction(logFunc: LogFunction): Flog = Flog(logFunc)
 
-  /**
-   * Use this method to create a new Flog with the given value of enabled.
-   *
-   * @param enabled true if we want the result to be enabled for logging.
-   * @return a new instance of Flog.
-   */
-  def withEnabled(enabled: Boolean): Flog = Flog(enabled, loggingFunction)
-
-  /**
-   * Use this method to create a new Flog with logging disabled.
-   *
-   * @return a new instance of Flog.
-   */
-  def disabled: Flog = withEnabled(false)
+    /**
+     * Use this method to create a new Flog with logging disabled.
+     *
+     * @return a new instance of Flog.
+     */
+    def disabled: Flog = withLogFunction(loggingFunction.disable)
 
   /**
    * Method to generate a log message based on x, pass it to the logFunc, and return the x value.
@@ -158,7 +152,7 @@ case class Flog(enabled: Boolean, loggingFunction: LogFunction) {
    */
   def logLoggable[X: Loggable](prefix: => String)(x: => X): X = {
     lazy val xx: X = x
-    if (enabled) loggingFunction(s"Flog: $prefix: ${implicitly[Loggable[X]].toLog(xx)}")
+      loggingFunction(s"Flog: $prefix: ${implicitly[Loggable[X]].toLog(xx)}")
     xx
   }
 
@@ -173,28 +167,28 @@ case class Flog(enabled: Boolean, loggingFunction: LogFunction) {
    * @return the value of x.
    */
   def logX[X](prefix: => String)(x: => X): X = {
-    lazy val xx: X = x
-    if (enabled) loggingFunction(s"Flog: $prefix: $xx")
-    xx
+      lazy val xx: X = x
+      loggingFunction(s"Flog: $prefix: $xx")
+      xx
   }
 
-  case class Helper()(implicit val logFunc: LogFunction = loggingFunction) extends Loggables
+    /**
+     * We make this available for any Loggers (such as futureLogger) which might require a LogFunction.
+     */
+    implicit object LogFunction$ extends LogFunction(loggingFunction.f, true)
 
-  implicit val logFunc: LogFunction = loggingFunction
-
-  def loggables: Helper = Helper()
 }
 
 /**
  * Companion object to Flog.
  */
 object Flog {
-  /**
-   * Method to instantiate a normal instance of Flog with logging via the default logging function (based on the class Flog).
-   *
-   * @return an instance of Flog.
-   */
-  def apply(): Flog = Flog(enabled = true, defaultLogFunction[Flog])
+    /**
+     * Method to instantiate a normal instance of Flog with logging via the default logging function (based on the class Flog).
+     *
+     * @return an instance of Flog.
+     */
+    def apply(): Flog = Flog(defaultLogFunction[Flog])
 
   /**
    * Method to yield a default logging function (uses LoggerFactory.getLogger) for the class T.
@@ -203,23 +197,32 @@ object Flog {
    * @return a LogFunction.
    */
   def defaultLogFunction[T: ClassTag]: LogFunction = LogFunction(LoggerFactory.getLogger(implicitly[ClassTag[T]].runtimeClass).debug)
-
-  implicit object FLog$ extends Flog(true, defaultLogFunction[Flog])
-
 }
 
 /**
- * LogFunction which is a function of String => Unit.
+ * LogFunction which is a function of String => Unit (except that the String parameter is defined to be call-by-name).
  * NOTE: the type of f must be (String => Any) because many suitable functions will in fact yield a non-Unit result.
  *
  * @param f a function which takes a String and returns any type.
  *          It is expected that f causes some side-effect such as writing to a log file.
  *          The actual result of invoking f is ignored.
  */
-case class LogFunction(f: String => Any) extends (String => Unit) {
-  def apply(w: String): Unit = f(w)
+case class LogFunction(f: String => Any, enabled: Boolean = true) {
+    /**
+     * Apply method for LogFunction which processes the given string w provided that enabled is true.
+     *
+     * @param w a String to be logged.
+     */
+    def apply(w: => String): Unit = if (enabled) f(w)
+
+    /**
+     * Method to instantiate a new LogFunction with the same value of f, but with enabled set to false.
+     *
+     * @return a LogFunction which does nothing.
+     */
+    def disable: LogFunction = LogFunction(f, enabled = false)
 }
 
 object LogFunction {
-  val noop: LogFunction = LogFunction(_ => ())
+    val noop: LogFunction = LogFunction(_ => ()).disable
 }
