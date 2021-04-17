@@ -31,14 +31,25 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   behavior of "Flog"
 
-  it should "$bang$bang 1" in {
+  it should "$bang$bang 0" in {
     val sb = new StringBuilder
 
     import Flog._
     implicit val logFunc: LogFunction = LogFunction(sb.append)
     Flogger(getString)(logFunc) !! 1
-    if (!evaluated) println("evaluated should be true but it will be if you run this unit test on its own")
+    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
     if (sb.toString != "log: Hello: 1") println("sb should not be empty but it will be if you run this unit test on its own")
+  }
+
+  it should "$bang$bang 1" in {
+    val sb = new StringBuilder
+
+    import Flog._
+    implicit val logFunc: LogFunction = LogFunction(sb.append)
+    Flogger(getString)(logFunc) !! Seq(1, 2, 3)
+    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+    if (sb.toString != "log: Hello: 1") println("sb should not be empty but it will be if you run this unit test on its own")
+    sb.toString shouldBe "log: Hello: [1, 2, 3]"
   }
 
   it should "$bang$bang 2" in {
@@ -82,7 +93,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     evaluated shouldBe true
   }
 
-  it should "$bar$bang" in {
+  it should "$bar$bang1" in {
     val sb = new StringBuilder
     import Flog._
     getString |! 1
@@ -98,7 +109,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     implicit val z: Loggable[Future[Int]] = new Loggables {}.futureLoggable[Int]
     import Flog._
     val eventualInt = Flogger(getString)(logFunc) !! Future[Int] {
-      Thread.sleep(50)
+      Thread.sleep(100)
       "1".toInt
     }
     whenReady(eventualInt) {
@@ -106,9 +117,19 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
         result shouldBe 1
         // NOTE sb should not be empty but it might be if you run this unit test on its own.
         val str = sb.toString().replaceAll("""\(\S+\)""", "")
+        // NOTE occasionally, the completed message will precede the created message.
         str shouldBe "log: Hello: Future: promise  created... log: Future completed : Success"
     }
   }
+
+
+  it should "$bang$bar1" in {
+    val sb = new StringBuilder
+    import Flog._
+    "Hello" !| List(1, 2, 3, 4)
+    sb.toString shouldBe ""
+  }
+
 
 }
 
