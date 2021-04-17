@@ -11,25 +11,33 @@ That's to say that _Flog_ is expression-oriented rather than statement-oriented.
 
 In a statement-oriented language such as Java, it is reasonably convenient to add an extra logging line to a method or
 block.
-But when writing functional programs, it's very inconvenient to be forced to break up the flow and perhaps declare
+However, when writing functional programs, it's very inconvenient to be forced to break up the flow and perhaps declare
 a value, then log the value, then continue to use the value.
 Therefore, in this functional logger, we write loggable expressions which yield a value and, as a side effect--
-which the rest of the program doesn't "see" -- we do the logging.
-At present, this mechanism is not truly referentially transparent.
-In the future, we may provide an actor mechanism to allow for pure functional logging which is RT.
+which the rest of the program doesn't "see" -- we do the logging (footnote 1).
 
-The basic idea is this:
+We define an instance of _Flog_, import its properties, and then use the !! method (actually a method
+on an implicit inner class of _Flog_ called _Floggable_).
+
+The basic usage pattern is thus:
 
     val flog = Flog()
     import flog._
     val x: X = msg !! expr
 
-where _msg_ evaluates to a String and _expr_ evaluates to a value of type _X_ which will be assigned to _x_ while,
-as a side effect, the value of _x_ will be logged.
+where _msg_ evaluates to a String and _expr_ evaluates to a value of type _X_ which will be assigned to _x_ (footnote 2)
+while, as a side effect, the value of _expr_ is logged.
 In other words, if you take away the "msg !!" the program will work exactly the same, but without the side effect of
 logging.
-The space separating _msg_ from "!!" is optional and leaving it out may make it easier to eliminate logging which
-was added temporarily.
+
+Because we want to control the way a log message looks, we define the trait _Loggable[X]_ which is a type constructor.
+In particular, we need reasonably brief but informative strings.
+Specific loggable behaviors are defined, therefore, in implicit objects.
+Those that are provided by _Flog_ are defined in the _Loggable_ companion object (see below).
+For example, when logging an iterable, we show the start and end of the list, and simply count the intervening number.
+A further advantage of this mechanism is that we can define the various methods involving _Loggable_ to be
+call-by-name (i.e. non-strict).
+This avoids constructing the string when logging is turned off.
 
 In addition to the !! method,
 there is also !| for logging a generic type that isn't necessarily _Loggable_.
@@ -37,7 +45,7 @@ In this case, we simply invoke _toString_ on the object to get a rendition for l
 There's also a |! method which ignores the message and does no logging at all.
 This is useful if you want to temporarily suspend a particular logging construct without removing the instrumentation.
 
-In all, the following signatures are defined for !!:
+The following signatures are defined for !!:
 
     def !![X: Loggable](x: => X): X
     def !![X: Loggable](x: => Iterable[X]): Iterable[X]
@@ -75,7 +83,7 @@ Please see worksheets/FlogExamples.sc for examples of usage.
 Additionally, see any of the spec files, especially _FlogSpec_ for more definition on how to use the package.
 
 ### Variations
-It is possible to change the behavior of the Flog instance by invoking one of the methods:
+It is possible to change the behavior of the _Flog_ instance by invoking one of the methods:
 
     def disabled: Flog
     def withLogFunction(logFunc: LogFunction): Flog
@@ -98,6 +106,14 @@ For the default logging function, we include the following dependencies:
 
 If you choose to use a different logger function, you may need to change these dependencies.
 
+## Footnotes
+* (1) At present, this mechanism is not truly referentially transparent.
+  In the future, we may provide an actor mechanism to allow for pure functional logging which is RT.
+* (2) "assigned to x:" I don't mean to suggest assignment in the classic sense any more than I mean that "variables"
+  are mutable.
+  The construct "val x = expr" means that _x_ and (the evaluated) _expr_ mean the same in the remainder
+  of the current scope.
+  
 # Version
 1.0.4 Provides a more functional way of setting an explicit logger or disabling logging.
 
