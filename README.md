@@ -25,7 +25,7 @@ The basic idea is this:
     val x: X = msg !! expr
 
 where _msg_ evaluates to a String and _expr_ evaluates to a value of type _X_ which will be assigned to _x_ while,
-as a side effect, the value of x will be logged.
+as a side effect, the value of _x_ will be logged.
 In other words, if you take away the "msg !!" the program will work exactly the same, but without the side effect of
 logging.
 The space separating _msg_ from "!!" is optional and leaving it out may make it easier to eliminate logging which
@@ -33,7 +33,8 @@ was added temporarily.
 
 In addition to the !! method,
 there is also !| for logging a generic type that isn't necessarily _Loggable_.
-There's also a |! method which ignores the message String and does no logging at all.
+In this case, we simply invoke _toString_ on the object to get a rendition for logging.
+There's also a |! method which ignores the message and does no logging at all.
 This is useful if you want to temporarily suspend a particular logging construct without removing the instrumentation.
 
 In all, the following signatures are defined for !!:
@@ -58,7 +59,7 @@ The following standard _Loggables_ are provided:
 
 Additionally, for those container types which are not explicitly handled by the !! method signatures,
 there is support, in _Loggables_, for various specific types of containers to be logged
-where, in each case, the parametric types _T_, _L_, or _R_ provided implicit evidence of type _Loggable[T]_, etc.:
+where, in each case, the parametric types _T_, _L_, or _R_ provide implicit evidence of type _Loggable[T]_, etc.:
 
     Seq[T]
     List[T]
@@ -66,18 +67,17 @@ where, in each case, the parametric types _T_, _L_, or _R_ provided implicit evi
     Map[K, T]
     Option[T]
     Try[T]
-    Future[T] (this produces two log messages: on initiation and completion)
+    Future[T] (this produces two log messages: on promise and completion)
     Either[L, R] (where each of L and R are Loggable)
     and _Product_ type up to _Product7_ (case classes and tuples) where each member type is _Loggable_.
 
 Please see worksheets/FlogExamples.sc for examples of usage.
-Additionally, see any of the spec files, especially_FlogSpec_ for more definition on how to use the package.
+Additionally, see any of the spec files, especially _FlogSpec_ for more definition on how to use the package.
 
 ### Variations
 It is possible to change the behavior of the Flog instance by invoking one of the methods:
 
     def disabled: Flog
-    def forClass[T: ClassTag]: Flog
     def withLogFunction(logFunc: LogFunction): Flog
 
 The default logger function uses _org.slf4j.LoggerFactory.getLogger_ to provide a logger.

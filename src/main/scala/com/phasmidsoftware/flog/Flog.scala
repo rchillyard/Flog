@@ -5,6 +5,7 @@
 package com.phasmidsoftware.flog
 
 import org.slf4j.{Logger, LoggerFactory}
+
 import scala.reflect.ClassTag
 
 /**
@@ -13,7 +14,8 @@ import scala.reflect.ClassTag
  * Here are the steps you need to follow to enable logging:
  *
  * <ol>
- * <li>Instantiate an instance of Flog, specifying the two parameter values:
+ * <li>Instantiate an new instance of Flog, specifying the parameter value described below--or
+ * simply invoke the apply method: <code>Flog()</code>.
  * <dl>
  * <dt>loggingFunction</dt><dd>by default, this will be a function which uses the debug method of a logger based on ;</dd>
  * </dl>
@@ -27,8 +29,9 @@ import scala.reflect.ClassTag
  * Follow this with !! and the expression, as usual.
  * </li>
  * <li>If you wish to override the default LogFunction, for example to log according to a particular class,
- * there is a method to give you a default log function based on a specific class (MyClass in this example):
- * <code>Flog.forClass(Flog.defaultLogFunction[MyClass])</code>
+ * there are two methods to give you a default log function based on a specific class (MyClass in this example):
+ * <code>Flog.forClass[MyClass]</code> or
+ * <code>Flog.forClass(classOf[MyClass])</code>
  * </li>
  * </ol>
  * <p/>
