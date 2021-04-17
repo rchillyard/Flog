@@ -17,7 +17,7 @@ Therefore, in this functional logger, we write loggable expressions which yield 
 which the rest of the program doesn't "see" -- we do the logging (footnote 1).
 
 We define an instance of _Flog_, import its properties, and then use the !! method (actually a method
-on an implicit inner class of _Flog_ called _Floggable_).
+on an implicit inner class of _Flog_ called _Floggable_ which has a _String_ parameter in its constructor).
 
 The basic usage pattern is thus:
 
@@ -45,11 +45,13 @@ In this case, we simply invoke _toString_ on the object to get a rendition for l
 There's also a |! method which ignores the message and does no logging at all.
 This is useful if you want to temporarily suspend a particular logging construct without removing the instrumentation.
 
-The following signatures are defined for !!:
+The following signatures are defined for _Floggable_ (the implicit class):
 
     def !![X: Loggable](x: => X): X
     def !![X: Loggable](x: => Iterable[X]): Iterable[X]
     def !![X: Loggable](x: => Option[X]): Option[X]
+    def !|[X](x: => X): X // logs using x.toString
+    def |![X](x: => X): X // does no logging
 
 For all these !! logging mechanism to work, there must be (implicit) evidence of _Loggable[X]_ available.
 The following standard _Loggables_ are provided:
