@@ -70,7 +70,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   }
 
   /**
-   * In this test, we should see logging output according to the default value of Flog.loggingFunction
+   * In this test, we should see logging output according to the value of Flog.defaultLogFunction[Flog]
    */
   it should "$bang$bang 4" in {
     val flog = Flog()
@@ -81,7 +81,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   }
 
   /**
-   * In this test, we should see logging output according to the an explicit value of Flog.loggingFunction
+   * In this test, we should see logging output according to the defaultLogFunction based on class FlogSpec.
    */
   it should "$bang$bang 5" in {
     // NOTE: check the log files to see if FlogSpec was the class of record.
@@ -92,6 +92,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     x shouldBe 99
   }
 
+  // NOTE: sometimes this test will fail. Not to worry.
   it should "$bang$bang 6" in {
     val sb: StringBuilder = new StringBuilder()
     val flog = Flog(LogFunction(sb.append))
