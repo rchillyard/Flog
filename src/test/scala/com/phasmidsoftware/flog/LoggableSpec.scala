@@ -21,8 +21,9 @@ class LoggableSpec extends flatspec.AnyFlatSpec with should.Matchers {
 
   it should "work with import" in {
     // NOTE: these calls should write to the log file but there are no tests here.
-    import Flog._
-    import Loggable._
+    val flog = Flog()
+    import flog._
+
     "Hello" !! () // log an instance of Unit
     "Hello" !! 1 // log an Int
     "Hello" !! 1L
