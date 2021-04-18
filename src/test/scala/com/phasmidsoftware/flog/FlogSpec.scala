@@ -4,12 +4,14 @@
 
 package com.phasmidsoftware.flog
 
-import java.time.LocalDateTime
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should
 import org.scalatest.{BeforeAndAfterEach, flatspec}
+
+import java.time.LocalDateTime
 import scala.concurrent.Future
 import scala.language.implicitConversions
+import scala.util.{Failure, Try}
 
 class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndAfterEach with ScalaFutures {
 
@@ -46,7 +48,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     getString !! Seq(1, 2, 3)
     if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
     if (sb.toString != "Flog: Hello: 1") println("sb should not be empty but it will be if you run this unit test on its own")
-    sb.toString shouldBe "Flog: Hello: [1, 2, 3]"
+    sb.toString shouldBe "Flog: Hello: {1, 2, 3}"
   }
 
   it should "$bang$bang 2" in {
@@ -128,6 +130,14 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     getString !! Seq(1, 1, 2, 3, 5, 8)
   }
 
+  ignore should "$bang$bang 9" in {
+    val sb = new StringBuilder
+    val flog = Flog(LogFunction(sb.append))
+    import flog._
+    getString !! LazyList.from(1)
+    if (sb.toString != "log: Hello: 1") println("sb should not be empty but it will be if you run this unit test on its own")
+  }
+
   it should "$bar$bang1" in {
     val sb = new StringBuilder()
 
@@ -147,13 +157,36 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   }
 
   it should "$bang$bar1" in {
-      val sb = new StringBuilder
-      val flog = Flog().withLogFunction(LogFunction(sb.append))
+    val sb = new StringBuilder
+    val flog = Flog().withLogFunction(LogFunction(sb.append))
     import flog._
     val now = LocalDateTime.now
-      "Hello" !| now
-      sb.toString shouldBe s"Flog: Hello: $now"
+    "Hello" !| now
+    sb.toString shouldBe s"Flog: Hello: $now"
   }
+
+  it should "$bang$bang$bang 1/0" in {
+    val flog = Flog()
+    import flog._
+    val result = getString !!! Try(1 / 0)
+    result match {
+      case Failure(LoggedException(e)) =>
+        e.getClass shouldBe classOf[ArithmeticException]
+        e.getLocalizedMessage shouldBe "/ by zero"
+      case _ => fail("logic error")
+    }
+  }
+
+  //  ignore should "map 1" in {
+  //    val sb: StringBuilder = new StringBuilder()
+  //    val flog = Flog(LogFunction(sb.append))
+  //    import flog._
+  //    implicit val x: Loggable[Iterable[Int]] = new Loggables {}.triedIterableLoggable(x => Try(1/x))
+  //    val list: Iterable[Int] = List(-1, 0, 1)
+  //    val result: Iterable[Try[Int]] = getString !!! list
+  //    result.size shouldBe 2
+  //    sb.toString shouldBe "{Success(-1), Success(1)}"
+  //  }
 
 }
 

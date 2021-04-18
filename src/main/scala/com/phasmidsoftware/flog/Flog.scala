@@ -80,7 +80,7 @@ case class Flog(loggingFunction: LogFunction, errorFunction: LogFunction) {
          * @return the value of x.
          */
         def !![X: Loggable](xs: => Iterable[X]): Iterable[X] =
-            tee[Iterable[X]](y => logLoggable(message)(seqLoggable[String].toLog((y map (implicitly[Loggable[X]].toLog(_))).toSeq)))(xs)
+            tee[Iterable[X]](y => logLoggable(message)(iterableLoggable[String].toLog(y map (implicitly[Loggable[X]].toLog(_)))))(xs)
 
         /**
          * Method to generate a log entry for an Option of a (Loggable) X.
@@ -115,8 +115,6 @@ case class Flog(loggingFunction: LogFunction, errorFunction: LogFunction) {
         def |![X](x: => X): X = x
 
         /**
-         * TESTME
-         *
          * Method to log the value xy (a Try[X]) but which logs any failures using the errorFunction rather than
          * the loggerFunction.
          * NOTE that the returned value, if xy is a Failure, is not exactly the same as xy.
@@ -126,26 +124,20 @@ case class Flog(loggingFunction: LogFunction, errorFunction: LogFunction) {
          * @return if xy is successful, then xy, otherwise if Failure(e) then Failure(LoggedException(e)).
          */
         def !!![X: Loggable](xy: Try[X]): Try[X] = xy.transform(Success(_), e => {
-            errorFunction.f(s"$message $e"); Failure(LoggedException(e))
+            errorFunction f s"$message $e"
+            Failure(LoggedException(e))
         })
-
-        /**
-         * TESTME
-         *
-         * Method which maps an Iterable of X with a function to an Iterable of Try[X].
-         * The elements of the result are then logged utilizing the !! method.
-         * NOTE that the returned value will only include the successful elements.
-         *
-         * @param xs an Iterable[X].
-         * @param f  a function X => Try[X].
-         * @tparam X the underlying type of xs.
-         * @return an Iterable of Try[X] such that all the failures have been logged but not included in the result.
-         */
-        def map[X: Loggable](xs: => Iterable[X])(f: X => Try[X]): Iterable[Try[X]] = {
-            implicit val q: Loggable[Try[X]] = tryLoggable
-            val xys: Iterable[Try[X]] = for (x <- xs) yield message !!! f(x)
-            xys filter (_.isSuccess)
-        }
+        //
+        //        /**
+        //         * Method to log the value xy (a Try[X]) but which logs any failures using the errorFunction rather than
+        //         * the loggerFunction.
+        //         * NOTE that the returned value, if xy is a Failure, is not exactly the same as xy.
+        //         *
+        //         * @param xy an instance of Try[X].
+        //         * @tparam X the underlying type of xy.
+        //         * @return if xy is successful, then xy, otherwise if Failure(e) then Failure(LoggedException(e)).
+        //         */
+        //        def !!![X: Loggable](xy: Iterable[Try[X]]): Iterable[Try[X]] = ???
     }
 
     /**

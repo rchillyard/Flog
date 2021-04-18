@@ -27,9 +27,11 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
     target.toLog(Map("x" -> 1, "y" -> 2)) shouldBe "{x:1,y:2}"
   }
 
-  it should "seqLoggable" in {
-    val target = seqLoggable[Int]
-    target.toLog(Seq(42, 99, 101, 357)) shouldBe "[42, 99, ... (1 elements), ... 357]"
+  it should "iterableLoggable0" in {
+    val target = iterableLoggable[Int]
+    target.toLog(Seq(42)) shouldBe "{42}"
+    target.toLog(Seq(42, 99)) shouldBe "{42, 99}"
+    target.toLog(Seq(42, 99, 101)) shouldBe "{42, 99, 101}"
   }
 
   it should "iterableLoggable1" in {
@@ -42,15 +44,15 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
     target.toLog(Seq(42, 99, 101, 357, 911)) shouldBe "{42, 99, 101, ... (1 element), ... 911}"
   }
 
-  it should "listLoggable" in {
-    val target = listLoggable[Int]
-    target.toLog(List(42, 99, 101, 357)) shouldBe "[42, 99, ... (1 elements), ... 357]"
-  }
+  //  it should "listLoggable" in {
+  //    val target = listLoggable[Int]
+  //    target.toLog(List(42, 99, 100, 101, 357)) shouldBe "{42, 99, 100, ... (1 element), ... 357}"
+  //  }
 
-  it should "vectorLoggable" in {
-    val target = vectorLoggable[Int]
-    target.toLog(Vector(42, 99, 101)) shouldBe "[42, 99, 101]"
-  }
+  //  it should "vectorLoggable" in {
+  //    val target = vectorLoggable[Int]
+  //    target.toLog(Vector(42, 99, 101)) shouldBe "{42, 99, 101}"
+  //  }
 
   it should "tryLoggable" in {
     val target = tryLoggable[Int]
