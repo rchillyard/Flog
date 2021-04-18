@@ -5,6 +5,7 @@
 package com.phasmidsoftware.flog
 
 import com.phasmidsoftware.flog.Loggables.fieldNames
+
 import scala.collection.SeqMap
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
@@ -25,6 +26,20 @@ trait Loggables {
   def optionLoggable[T: Loggable]: Loggable[Option[T]] = {
     case Some(t) => s"Some(${implicitly[Loggable[T]].toLog(t)})"
     case _ => "None"
+  }
+
+  def iterableLoggable[T: Loggable]: Loggable[Iterable[T]] = {
+    case Nil => "<empty>"
+    case ll@LazyList(_, _) => //noinspection ScalaDeprecation
+      if (ll.hasDefiniteSize) listLoggable[T].toLog(ll.toList) else "LazyList"
+    case ts =>
+      val tl = implicitly[Loggable[T]]
+      val xs = ts map tl.toLog
+      val init = xs.init
+      val q = init.size
+      val (prefix, z) = if (q > 3) (init take 3, q - 3) else (init, 0)
+      val remainder = if (z > 0) s"... ($z element" + (if (z > 1) "s), ... " else "), ... ") else ""
+      "{" + prefix.mkString("", ", ", ", ") + remainder + xs.last + "}"
   }
 
   /**

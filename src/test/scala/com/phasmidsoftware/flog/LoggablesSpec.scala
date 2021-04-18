@@ -32,6 +32,16 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
     target.toLog(Seq(42, 99, 101, 357)) shouldBe "[42, 99, ... (1 elements), ... 357]"
   }
 
+  it should "iterableLoggable1" in {
+    val target = iterableLoggable[Int]
+    target.toLog(Seq(42, 99, 101, 357)) shouldBe "{42, 99, 101, 357}"
+  }
+
+  it should "iterableLoggable2" in {
+    val target = iterableLoggable[Int]
+    target.toLog(Seq(42, 99, 101, 357, 911)) shouldBe "{42, 99, 101, ... (1 element), ... 911}"
+  }
+
   it should "listLoggable" in {
     val target = listLoggable[Int]
     target.toLog(List(42, 99, 101, 357)) shouldBe "[42, 99, ... (1 elements), ... 357]"

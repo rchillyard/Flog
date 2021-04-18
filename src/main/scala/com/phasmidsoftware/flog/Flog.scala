@@ -7,6 +7,7 @@ package com.phasmidsoftware.flog
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.reflect.ClassTag
+import scala.util.{Failure, Success, Try}
 
 /**
  * Simple functional logging class.
@@ -45,7 +46,8 @@ import scala.reflect.ClassTag
  *
  * @param loggingFunction the LogFunction which is to be used by this Flog.
  */
-case class Flog(loggingFunction: LogFunction) {
+case class Flog(loggingFunction: LogFunction, errorFunction: LogFunction) {
+
     import Flog._
 
     /**
@@ -56,7 +58,7 @@ case class Flog(loggingFunction: LogFunction) {
      *
      * @param message the message itself which will be evaluated only if enabled is actually turned on.
      */
-    implicit class Flogger(message: => String) {
+    implicit class Flogger(message: => String) extends Loggables {
         /**
          * Method to generate a log entry for a (Loggable) value of X.
          * Logging is performed as a side effect.
@@ -73,22 +75,24 @@ case class Flog(loggingFunction: LogFunction) {
          * Logging is performed as a side effect.
          * Rendering of the x value is via the toLog method of the implicit Loggable[X].
          *
-         * @param x the Iterable value to be logged.
+         * @param xs the Iterable value to be logged.
          * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
          * @return the value of x.
          */
-        def !![X: Loggable](x: => Iterable[X]): Iterable[X] = tee[Iterable[X]](y => logLoggable(message)(new Loggables {}.seqLoggable[String].toLog((y map (implicitly[Loggable[X]].toLog(_))).toSeq)))(x)
+        def !![X: Loggable](xs: => Iterable[X]): Iterable[X] =
+            tee[Iterable[X]](y => logLoggable(message)(seqLoggable[String].toLog((y map (implicitly[Loggable[X]].toLog(_))).toSeq)))(xs)
 
         /**
          * Method to generate a log entry for an Option of a (Loggable) X.
          * Logging is performed as a side effect.
          * Rendering of the x value is via the toLog method of the implicit Loggable[X].
          *
-         * @param x the optional value to be logged.
+         * @param xo the optional value to be logged.
          * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
          * @return the value of x.
          */
-        def !![X: Loggable](x: => Option[X]): Option[X] = tee[Option[X]](y => logLoggable(message)(new Loggables {}.optionLoggable[String].toLog(y map (implicitly[Loggable[X]].toLog(_)))))(x)
+        def !![X: Loggable](xo: => Option[X]): Option[X] =
+            tee[Option[X]](y => logLoggable(message)(optionLoggable[String].toLog(y map (implicitly[Loggable[X]].toLog(_)))))(xo)
 
         /**
          * Method to generate a log entry for a type which is not itself Loggable.
@@ -109,6 +113,39 @@ case class Flog(loggingFunction: LogFunction) {
          * @return the value of x.
          */
         def |![X](x: => X): X = x
+
+        /**
+         * TESTME
+         *
+         * Method to log the value xy (a Try[X]) but which logs any failures using the errorFunction rather than
+         * the loggerFunction.
+         * NOTE that the returned value, if xy is a Failure, is not exactly the same as xy.
+         *
+         * @param xy an instance of Try[X].
+         * @tparam X the underlying type of xy.
+         * @return if xy is successful, then xy, otherwise if Failure(e) then Failure(LoggedException(e)).
+         */
+        def !!![X: Loggable](xy: Try[X]): Try[X] = xy.transform(Success(_), e => {
+            errorFunction.f(s"$message $e"); Failure(LoggedException(e))
+        })
+
+        /**
+         * TESTME
+         *
+         * Method which maps an Iterable of X with a function to an Iterable of Try[X].
+         * The elements of the result are then logged utilizing the !! method.
+         * NOTE that the returned value will only include the successful elements.
+         *
+         * @param xs an Iterable[X].
+         * @param f  a function X => Try[X].
+         * @tparam X the underlying type of xs.
+         * @return an Iterable of Try[X] such that all the failures have been logged but not included in the result.
+         */
+        def map[X: Loggable](xs: => Iterable[X])(f: X => Try[X]): Iterable[Try[X]] = {
+            implicit val q: Loggable[Try[X]] = tryLoggable
+            val xys: Iterable[Try[X]] = for (x <- xs) yield message !!! f(x)
+            xys filter (_.isSuccess)
+        }
     }
 
     /**
@@ -117,7 +154,7 @@ case class Flog(loggingFunction: LogFunction) {
      * @param logFunc an instance of LogFunction.
      * @return a new instance of Flog.
      */
-    def withLogFunction(logFunc: LogFunction): Flog = Flog(logFunc)
+    def withLogFunction(logFunc: LogFunction): Flog = Flog(logFunc, errorFunction)
 
     /**
      * Use this method to create a new Flog with logging disabled.
@@ -167,12 +204,20 @@ object Flog {
     def apply(): Flog = Flog(defaultLogFunction[Flog])
 
     /**
+     * Method to instantiate a normal instance of Flog with logging via the given function).
+     *
+     * @param loggerFunction the LogFunction to use for logging.
+     * @return an instance of Flog.
+     */
+    def apply(loggerFunction: LogFunction): Flog = Flog(loggerFunction, defaultErrorFunction[Flog])
+
+    /**
      * Use this method to create an instance of Flog with the default logging function based on class T.
      *
      * @tparam T the class for which you want to log.
      * @return a new instance of Flog.
      */
-    def forClass[T: ClassTag]: Flog = Flog(defaultLogFunction[T])
+    def forClass[T: ClassTag]: Flog = Flog(defaultLogFunction[T], defaultErrorFunction[T])
 
     /**
      * Use this method to create an instance of Flog with the default logging function based on clazz.
@@ -180,7 +225,7 @@ object Flog {
      * @param clazz the class for which you want to log.
      * @return a new instance of Flog.
      */
-    def forClass(clazz: Class[_]): Flog = Flog(LogFunction(getDefaultLogger(clazz).debug))
+    def forClass(clazz: Class[_]): Flog = Flog(LogFunction(getDefaultLogger(clazz).debug), LogFunction(getDefaultLogger(clazz).warn))
 
     /**
      * Method to yield a default logging function (uses LoggerFactory.getLogger) for the class T.
@@ -191,18 +236,32 @@ object Flog {
     def defaultLogFunction[T: ClassTag]: LogFunction = LogFunction(getDefaultLogger.debug)
 
     /**
+     * Method to yield a default error logging function (uses LoggerFactory.getLogger) for the class T.
+     *
+     * @tparam T the class with which the logging messages should be associated.
+     * @return a LogFunction.
+     */
+    def defaultErrorFunction[T: ClassTag]: LogFunction = LogFunction(getDefaultLogger.warn)
+
+    /**
      * Method which, as a side-effect, invokes function f on the given value of x.
      * Then returns the value of x.
-     * CONSIDER making this less complex!
+     * If an exception is thrown evaluating f(xx), it is logged as a warning.
+     * However, it is possible that the exception was thrown evaluating x,
+     * in which case the tee method will throw the same exception.
+     * There is nothing to be done about this, of course, but at least there will be a log entry.
      *
      * @param f the function to invoke on x.
      * @param x the value of x.
      * @tparam X the type of x (and the result).
-     * @return x
+     * @return x.
      */
     def tee[X](f: X => Unit)(x: => X): X = {
         lazy val xx: X = x
-        f(xx)
+        Try(f(xx)) match {
+            case Failure(e) => getDefaultLogger[Flog].warn("Exception thrown in tee function", e)
+            case _ =>
+        }
         xx
     }
 
@@ -250,3 +309,5 @@ case class LogFunction(f: String => Any, enabled: Boolean = true) {
 object LogFunction {
     val noop: LogFunction = LogFunction(_ => ()).disable
 }
+
+case class LoggedException(e: Throwable) extends Exception("The cause of this exception has already been logged", e)

@@ -117,7 +117,8 @@ If you choose to use a different logger function, you may need to change these d
   of the current scope.
   
 # Version
-1.0.4 Provides a more functional way of setting an explicit logger or disabling logging.
+1.0.5 Issue #10: Some changes to implementation of Iterable 
+1.0.4 Issue #7: Provides a more functional way of setting an explicit logger or disabling logging.
 
 1.0.3 General improvements: more consistent functionality, issues with underlying logger hopefully resolved.
 
