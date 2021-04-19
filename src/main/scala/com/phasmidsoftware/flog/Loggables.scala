@@ -6,7 +6,8 @@ package com.phasmidsoftware.flog
 
 import com.phasmidsoftware.flog.Loggables.fieldNames
 
-import scala.collection.SeqMap
+import scala.collection.immutable.LazyList.#::
+import scala.collection.{SeqMap, View}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
@@ -36,8 +37,12 @@ trait Loggables {
    */
   def iterableLoggable[T: Loggable]: Loggable[Iterable[T]] = {
     case Nil => "<empty>"
-    case ll@LazyList(_, _) => //noinspection ScalaDeprecation
-      if (ll.hasDefiniteSize) iterableLoggable[T].toLog(ll.toList) else "LazyList"
+    case LazyList() => "<empty lazy list>"
+    case ll@_ #:: _ =>
+      //noinspection ScalaDeprecation
+      if (ll.hasDefiniteSize) iterableLoggable[T].toLog(ll.toList) else "<LazyList>"
+    case _: View[T] =>
+      "<view>"
     case ts =>
       val tl = implicitly[Loggable[T]]
       val ws = ts map tl.toLog
@@ -47,45 +52,6 @@ trait Loggables {
       val remainder = if (z > 0) s"... ($z element" + (if (z > 1) "s" else "" + "), ... ") else ""
       val prefixString = if (prefix.nonEmpty) prefix.mkString("", ", ", ", ") else ""
       "{" + prefixString + remainder + ws.last + "}"
-  }
-
-  /**
-   * TESTME
-   *
-   * Method which maps an Iterable of X with a function to an Iterable of Try[X].
-   * The elements of the result are then logged utilizing the !! method.
-   * NOTE that the returned value will only include the successful elements.
-   *
-   * @param f a function X => Try[X].
-   * @tparam X the underlying type of xs.
-   * @tparam Y the underlying type of the intermediate type (must be Loggable).
-   * @return an Iterable of Try[X] such that all the failures have been logged but not included in the result.
-   */
-  def triedIterableLoggable[X, Y: Loggable](f: X => Try[Y]): Loggable[Iterable[X]] = (xs: Iterable[X]) => {
-    implicit val q: Loggable[Try[Y]] = tryLoggable
-    val z: Iterable[Try[Y]] = (for (x <- xs) yield f(x)) filter (_.isSuccess)
-    val yys: Loggable[Iterable[Try[Y]]] = iterableLoggable[Try[Y]]
-    yys.toLog(z)
-  }
-
-  /**
-   * Method to return a Loggable[ List[T] ].
-   *
-   * @tparam T the underlying type of the parameter of the input to the toLog method.
-   * @return a Loggable[ List[T] ]
-   */
-  def listLoggable[T: Loggable]: Loggable[List[T]] = {
-    ts => iterableLoggable[T].toLog(ts)
-  }
-
-  /**
-   * Method to return a Loggable[ Vector[T] ].
-   *
-   * @tparam T the underlying type of the parameter of the input to the toLog method.
-   * @return a Loggable[ Vector[T] ]
-   */
-  def vectorLoggable[T: Loggable]: Loggable[Vector[T]] = {
-    case v: Vector[T] => iterableLoggable[T].toLog(v.toList)
   }
 
   /**
@@ -138,6 +104,25 @@ trait Loggables {
     implicit val tl: Loggable[Try[T]] = tryLoggable
     tf.onComplete(ty => logFunc(s"Future completed ($uuid): ${tl.toLog(ty)}"))
     s"Future: promise ($uuid) created... "
+  }
+
+  /**
+   * TESTME
+   *
+   * Method which maps an Iterable of X with a function to an Iterable of Try[X].
+   * The elements of the result are then logged utilizing the !! method.
+   * NOTE that the returned value will only include the successful elements.
+   *
+   * @param f a function X => Try[X].
+   * @tparam X the underlying type of xs.
+   * @tparam Y the underlying type of the intermediate type (must be Loggable).
+   * @return an Iterable of Try[X] such that all the failures have been logged but not included in the result.
+   */
+  def triedIterableLoggable[X, Y: Loggable](f: X => Try[Y]): Loggable[Iterable[X]] = (xs: Iterable[X]) => {
+    implicit val q: Loggable[Try[Y]] = tryLoggable
+    val z: Iterable[Try[Y]] = (for (x <- xs) yield f(x)) filter (_.isSuccess)
+    val yys: Loggable[Iterable[Try[Y]]] = iterableLoggable[Try[Y]]
+    yys.toLog(z)
   }
 
   /**

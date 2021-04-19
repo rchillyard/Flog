@@ -70,19 +70,31 @@ case class Flog(loggingFunction: LogFunction, errorFunction: LogFunction) {
          */
         def !![X: Loggable](x: => X): X = logLoggable(message)(x)
 
-        /**
-         * Method to generate a log entry for an Iterable of a (Loggable) X.
-         * Logging is performed as a side effect.
-         * Rendering of the x value is via the toLog method of the implicit Loggable[X].
-         *
-         * @param xs the Iterable value to be logged.
-         * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
-         * @return the value of x.
-         */
-        def !![X: Loggable](xs: => Iterable[X]): Iterable[X] =
-            tee[Iterable[X]](y => logLoggable(message)(iterableLoggable[String].toLog(y map (implicitly[Loggable[X]].toLog(_)))))(xs)
+      /**
+       * Method to generate a log entry for a Map[K, V].
+       * Logging is performed as a side effect.
+       *
+       * @param kVm the Map to be logged.
+       * @tparam K the type of the map keys, which must provide implicit evidence of being Loggable.
+       * @tparam V the type of the map values, which must provide implicit evidence of being Loggable.
+       * @return the value of x.
+       */
+      def !![K: Loggable, V: Loggable](kVm: => Map[K, V]): Map[K, V] =
+        tee[Map[K, V]](y => logLoggable(message)(iterableLoggable[String].toLog(y.map { case (k, v) => s"${implicitly[Loggable[K]].toLog(k)}->${implicitly[Loggable[V]].toLog(v)}" })))(kVm)
 
-        /**
+      /**
+       * Method to generate a log entry for an Iterable of a (Loggable) X.
+       * Logging is performed as a side effect.
+       * Rendering of the x value is via the toLog method of the implicit Loggable[X].
+       *
+       * @param xs the Iterable value to be logged.
+       * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
+       * @return the value of x.
+       */
+      def !![X: Loggable](xs: => Iterable[X]): Iterable[X] =
+        tee[Iterable[X]](y => logLoggable(message)(iterableLoggable[String].toLog(y map (implicitly[Loggable[X]].toLog(_)))))(xs)
+
+      /**
          * Method to generate a log entry for an Option of a (Loggable) X.
          * Logging is performed as a side effect.
          * Rendering of the x value is via the toLog method of the implicit Loggable[X].

@@ -48,10 +48,24 @@ This is useful if you want to temporarily suspend a particular logging construct
 The following signatures are defined for _Floggable_ (the implicit class):
 
     def !![X: Loggable](x: => X): X
+    def !![K: Loggable, V: Loggable](kVm: => Map[K,V]): Map[K,V]
     def !![X: Loggable](x: => Iterable[X]): Iterable[X]
     def !![X: Loggable](x: => Option[X]): Option[X]
     def !|[X](x: => X): X // logs using x.toString
     def |![X](x: => X): X // does no logging
+    def !!![X: Loggable](xy: Try[X]): Try[X]
+
+The signature which takes an _Iterable[X]_ does require some further discussion.
+If there are sufficient elements, the first three elements and the last element are shown in the log message.
+Only the number of non-logged elements is shown between them.
+This method is also invoked by the !!(Map) method, seeing an _Iterable[(String, String)]_.
+
+In the case of non-strict collections, no unnecessary evaluation is performed.
+Views are left as is and LazyLists are shown as lists only if they have definite size.
+
+The last-named (!!!) method does not return the input exactly as is (as all the other methods do).
+If xy is a Failure(e) then it logs the exception and returns Failure(LoggedException(e)).
+This allows for the code to avoid logging the exception twice.
 
 For all these !! logging mechanism to work, there must be (implicit) evidence of _Loggable[X]_ available.
 The following standard _Loggables_ are provided:
@@ -71,11 +85,9 @@ Additionally, for those container types which are not explicitly handled by the 
 there is support, in _Loggables_, for various specific types of containers to be logged
 where, in each case, the parametric types _T_, _L_, or _R_ provide implicit evidence of type _Loggable[T]_, etc.:
 
-    Seq[T]
-    List[T]
-    Vector[T]
-    Map[K, T]
     Option[T]
+    Iterable[T]
+    Map[K, T]
     Try[T]
     Future[T] (this produces two log messages: on promise and completion)
     Either[L, R] (where each of L and R are Loggable)
@@ -117,7 +129,8 @@ If you choose to use a different logger function, you may need to change these d
   of the current scope.
   
 # Version
-1.0.5 Issue #10: Some changes to implementation of Iterable 
+1.0.5 Issue #10: Some changes to implementation of Iterable, including not evaluating non-strict collections.
+
 1.0.4 Issue #7: Provides a more functional way of setting an explicit logger or disabling logging.
 
 1.0.3 General improvements: more consistent functionality, issues with underlying logger hopefully resolved.
