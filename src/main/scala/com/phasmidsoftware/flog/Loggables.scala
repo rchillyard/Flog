@@ -28,19 +28,25 @@ trait Loggables {
     case _ => "None"
   }
 
+  /**
+   * Method to create a Loggable of an Iterable[T].
+   * The elements of the result are then logged utilizing the !! method.
+   *
+   * @return Loggable[T].
+   */
   def iterableLoggable[T: Loggable]: Loggable[Iterable[T]] = {
     case Nil => "<empty>"
     case ll@LazyList(_, _) => //noinspection ScalaDeprecation
       if (ll.hasDefiniteSize) iterableLoggable[T].toLog(ll.toList) else "LazyList"
     case ts =>
       val tl = implicitly[Loggable[T]]
-      val xs = ts map tl.toLog
-      val init = xs.init
-      val q = init.size
-      val (prefix, z) = if (q > 3) (init take 3, q - 3) else (init, 0)
-      val remainder = if (z > 0) s"... ($z element" + (if (z > 1) "s), ... " else "), ... ") else ""
+      val ws = ts map tl.toLog
+      val init = ws.init
+      val n = init.size
+      val (prefix, z) = if (n > 3) (init take 3, n - 3) else (init, 0)
+      val remainder = if (z > 0) s"... ($z element" + (if (z > 1) "s" else "" + "), ... ") else ""
       val prefixString = if (prefix.nonEmpty) prefix.mkString("", ", ", ", ") else ""
-      "{" + prefixString + remainder + xs.last + "}"
+      "{" + prefixString + remainder + ws.last + "}"
   }
 
   /**
@@ -61,30 +67,6 @@ trait Loggables {
     val yys: Loggable[Iterable[Try[Y]]] = iterableLoggable[Try[Y]]
     yys.toLog(z)
   }
-
-  //
-  //  /**
-  //   * Method to return a Loggable[ Seq[T] ].
-  //   *
-  //   * @tparam T the underlying type of the parameter of the input to the toLog method.
-  //   * @return a Loggable[ List[T] ]
-  //   */
-  //  def seqLoggable[T: Loggable]: Loggable[Seq[T]] = (ts: Seq[T]) => {
-  //    val tl = implicitly[Loggable[T]]
-  //    ts match {
-  //      case Nil => "[]"
-  //      case h :: Nil => s"[${tl.toLog(h)}]"
-  //      case h :: k :: tail =>
-  //        val remainder = tail.size - 1
-  //        val meat = if (remainder > 0) s"... ($remainder elements), ... " else ""
-  //        s"[${tl.toLog(h)}, ${tl.toLog(k)}, $meat${tl.toLog(tail.last)}]"
-  //      case h :: tail =>
-  //        // XXX merge these cases
-  //        val remainder = tail.size - 1
-  //        val meat = if (remainder > 0) s"... ($remainder elements), ... " else ""
-  //        s"[${tl.toLog(h)}, $meat${tl.toLog(tail.last)}]"
-  //    }
-  //  }
 
   /**
    * Method to return a Loggable[ List[T] ].
