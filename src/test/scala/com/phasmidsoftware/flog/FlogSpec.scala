@@ -139,11 +139,32 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     sb.toString shouldBe "Flog: Hello: <LazyList>"
   }
 
-  it should "$bar$bang1" in {
-    val sb = new StringBuilder()
-
+  it should "$bang$bang 10" in {
+    val sb = new StringBuilder
     val flog = Flog(LogFunction(sb.append))
     import flog._
+    getString !! List(1, 2, 3).view.map(_.toString)
+    // NOTE sb should not be empty but it might be if you run this unit test on its own.
+    sb.toString shouldBe "Flog: Hello: <view>"
+  }
+
+  it should "$bang$bang 11" in {
+    val sb: StringBuilder = new StringBuilder
+    val flog = Flog(LogFunction(sb.append))
+    import flog._
+    implicit val z: Loggable[Map[String, String]] = new Loggables {}.mapLoggable[String, String]()
+    getString !! Map("a" -> "alpha", "b" -> "bravo")
+    // NOTE sb should not be empty but it might be if you run this unit test on its own.
+    sb.toString shouldBe "Flog: Hello: {a->alpha, b->bravo}"
+  }
+
+  it should "$bar$bang1" in {
+    val sb: StringBuilder = new StringBuilder()
+
+    val flog = Flog(LogFunction(sb.append))
+
+    import flog._
+
     getString |! 1
     evaluated shouldBe false
     sb.toString shouldBe ""
