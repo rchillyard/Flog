@@ -11,6 +11,7 @@ import org.scalatest.{BeforeAndAfterEach, flatspec}
 import java.time.LocalDateTime
 import scala.concurrent.Future
 import scala.language.implicitConversions
+import scala.util.matching.Regex
 import scala.util.{Failure, Try}
 
 class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndAfterEach with ScalaFutures {
@@ -158,13 +159,26 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     sb.toString shouldBe "Flog: Hello: {a->alpha, b->bravo}"
   }
 
+  it should "$bang$bang 12" in {
+    val sb: StringBuilder = new StringBuilder
+    val flog = Flog(LogFunction(sb.append))
+    import flog._
+    implicit val z: Loggable[LocalDateTime] = new Loggables {}.anyLoggable[LocalDateTime]
+    getString !! Seq(LocalDateTime.now)
+    val dateTimeR: Regex = """Flog: Hello: \{(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{6})}""".r
+    // NOTE sb should not be empty but it might be if you run this unit test on its own.
+
+    sb.toString match {
+      case dateTimeR(_) =>
+      case x => fail(s"incorrect response: $x")
+    }
+  }
+
   it should "$bar$bang1" in {
     val sb: StringBuilder = new StringBuilder()
 
     val flog = Flog(LogFunction(sb.append))
-
     import flog._
-
     getString |! 1
     evaluated shouldBe false
     sb.toString shouldBe ""

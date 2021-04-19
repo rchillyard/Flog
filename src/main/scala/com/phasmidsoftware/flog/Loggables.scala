@@ -5,6 +5,7 @@
 package com.phasmidsoftware.flog
 
 import com.phasmidsoftware.flog.Loggables.fieldNames
+
 import scala.collection.immutable.LazyList.#::
 import scala.collection.{SeqMap, View}
 import scala.concurrent.{ExecutionContext, Future}
@@ -16,6 +17,15 @@ import scala.util.{Failure, Success, Try}
  * containers (Seq and Option), etc..
  */
 trait Loggables {
+
+  /**
+   * Backstop method to yield a String from a T.
+   * NOTE: use this when you need an implicit Loggable to log a container which includes an unsupported type.
+   *
+   * @tparam T the type of t.
+   * @return a Loggable[T] which uses toString.
+   */
+  def anyLoggable[T]: Loggable[T] = (t: T) => t.toString
 
   /**
    * Method to return a Loggable[ Option[T] ].
