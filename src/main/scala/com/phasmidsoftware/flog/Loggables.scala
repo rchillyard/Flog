@@ -5,7 +5,6 @@
 package com.phasmidsoftware.flog
 
 import com.phasmidsoftware.flog.Loggables.fieldNames
-
 import scala.collection.immutable.LazyList.#::
 import scala.collection.{SeqMap, View}
 import scala.concurrent.{ExecutionContext, Future}
@@ -124,6 +123,16 @@ trait Loggables {
     val yys: Loggable[Iterable[Try[Y]]] = iterableLoggable[Try[Y]]
     yys.toLog(z)
   }
+
+  /**
+   * This method creates a Loggable instance which works for a tuple (a K-V pair).
+   * It is an alternative to loggable2 but that method names the members whereas we don't want them named here.
+   *
+   * @tparam K the key type.
+   * @tparam V the value type.
+   * @return a String rendition.
+   */
+  def kVLoggable[K: Loggable, V: Loggable]: Loggable[(K, V)] = (t: (K, V)) => s"${implicitly[Loggable[K]].toLog(t._1)}->${implicitly[Loggable[V]].toLog(t._2)}"
 
   /**
    * Method to return a Loggable[T] where T is a 1-ary Product and which is based on a function to convert a P into a T.

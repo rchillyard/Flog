@@ -5,7 +5,6 @@
 package com.phasmidsoftware.flog
 
 import org.slf4j.{Logger, LoggerFactory}
-
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
 
@@ -79,22 +78,23 @@ case class Flog(loggingFunction: LogFunction, errorFunction: LogFunction) {
        * @tparam V the type of the map values, which must provide implicit evidence of being Loggable.
        * @return the value of x.
        */
-      def !![K: Loggable, V: Loggable](kVm: => Map[K, V]): Map[K, V] =
-        tee[Map[K, V]](y => logLoggable(message)(iterableLoggable[String].toLog(y.map { case (k, v) => s"${implicitly[Loggable[K]].toLog(k)}->${implicitly[Loggable[V]].toLog(v)}" })))(kVm)
+      def !![K: Loggable, V: Loggable](kVm: => Map[K, V]): Map[K, V] = {
+          implicit val g: Loggable[(K, V)] = kVLoggable
+          tee[Map[K, V]](y => logLoggable(message)(toLog(y)))(kVm)
+      }
 
-      /**
-       * Method to generate a log entry for an Iterable of a (Loggable) X.
-       * Logging is performed as a side effect.
-       * Rendering of the x value is via the toLog method of the implicit Loggable[X].
-       *
-       * @param xs the Iterable value to be logged.
-       * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
-       * @return the value of x.
-       */
-      def !![X: Loggable](xs: => Iterable[X]): Iterable[X] =
-        tee[Iterable[X]](y => logLoggable(message)(iterableLoggable[String].toLog(y map (implicitly[Loggable[X]].toLog(_)))))(xs)
+        /**
+         * Method to generate a log entry for an Iterable of a (Loggable) X.
+         * Logging is performed as a side effect.
+         * Rendering of the x value is via the toLog method of the implicit Loggable[X].
+         *
+         * @param xs the Iterable value to be logged.
+         * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
+         * @return the value of x.
+         */
+        def !![X: Loggable](xs: => Iterable[X]): Iterable[X] = tee[Iterable[X]](y => logLoggable(message)(toLog(y)))(xs)
 
-      /**
+        /**
          * Method to generate a log entry for an Option of a (Loggable) X.
          * Logging is performed as a side effect.
          * Rendering of the x value is via the toLog method of the implicit Loggable[X].
@@ -103,8 +103,7 @@ case class Flog(loggingFunction: LogFunction, errorFunction: LogFunction) {
          * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
          * @return the value of x.
          */
-        def !![X: Loggable](xo: => Option[X]): Option[X] =
-            tee[Option[X]](y => logLoggable(message)(optionLoggable[String].toLog(y map (implicitly[Loggable[X]].toLog(_)))))(xo)
+        def !![X: Loggable](xo: => Option[X]): Option[X] = tee[Option[X]](y => logLoggable(message)(toLog(y)))(xo)
 
         /**
          * Method to generate a log entry for a type which is not itself Loggable.
@@ -139,17 +138,12 @@ case class Flog(loggingFunction: LogFunction, errorFunction: LogFunction) {
             errorFunction f s"$message $e"
             Failure(LoggedException(e))
         })
-        //
-        //        /**
-        //         * Method to log the value xy (a Try[X]) but which logs any failures using the errorFunction rather than
-        //         * the loggerFunction.
-        //         * NOTE that the returned value, if xy is a Failure, is not exactly the same as xy.
-        //         *
-        //         * @param xy an instance of Try[X].
-        //         * @tparam X the underlying type of xy.
-        //         * @return if xy is successful, then xy, otherwise if Failure(e) then Failure(LoggedException(e)).
-        //         */
-        //        def !!![X: Loggable](xy: Iterable[Try[X]]): Iterable[Try[X]] = ???
+
+        private def toLog[X: Loggable](y: Option[X]): String = optionLoggable[String].toLog(y map implicitly[Loggable[X]].toLog)
+
+        private def toLog[X: Loggable](y: Iterable[X]): String = iterableLoggable[String].toLog(y map implicitly[Loggable[X]].toLog)
+
+        private def toLog[K, V](y: Map[K, V])(implicit kVl: Loggable[(K, V)]): String = iterableLoggable[String].toLog(y map kVl.toLog)
     }
 
     /**
