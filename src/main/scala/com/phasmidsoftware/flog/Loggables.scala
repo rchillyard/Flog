@@ -7,6 +7,7 @@ package com.phasmidsoftware.flog
 import com.phasmidsoftware.flog.Loggables.fieldNames
 
 import scala.collection.SeqMap
+import scala.collection.immutable.LazyList.#::
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
@@ -30,8 +31,10 @@ trait Loggables {
 
   def iterableLoggable[T: Loggable]: Loggable[Iterable[T]] = {
     case Nil => "<empty>"
-    case ll@LazyList(_, _) => //noinspection ScalaDeprecation
-      if (ll.hasDefiniteSize) iterableLoggable[T].toLog(ll.toList) else "LazyList"
+    case LazyList() => "<empty lazy list>"
+    case ll@_ #:: _ =>
+      //noinspection ScalaDeprecation
+      if (ll.hasDefiniteSize) iterableLoggable[T].toLog(ll.toList) else "<LazyList>"
     case ts =>
       val tl = implicitly[Loggable[T]]
       val xs = ts map tl.toLog

@@ -130,12 +130,13 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     getString !! Seq(1, 1, 2, 3, 5, 8)
   }
 
-  ignore should "$bang$bang 9" in {
+  it should "$bang$bang 9" in {
     val sb = new StringBuilder
     val flog = Flog(LogFunction(sb.append))
     import flog._
     getString !! LazyList.from(1)
-    if (sb.toString != "log: Hello: 1") println("sb should not be empty but it will be if you run this unit test on its own")
+    // NOTE sb should not be empty but it might be if you run this unit test on its own.
+    sb.toString shouldBe "Flog: Hello: <LazyList>"
   }
 
   it should "$bar$bang1" in {
