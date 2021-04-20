@@ -5,6 +5,7 @@
 package com.phasmidsoftware.flog
 
 import org.slf4j.{Logger, LoggerFactory}
+
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
 
@@ -161,28 +162,29 @@ case class Flog(loggingFunction: LogFunction, errorFunction: LogFunction) {
      */
     def disabled: Flog = withLogFunction(loggingFunction.disable)
 
-    /**
-     * Method to generate a log message based on x, pass it to the logFunc, and return the x value.
-     * The value of x will be rendered as a String but invoking toLog on the implicit value of Loggable[X].
-     *
-     * @param prefix the message prefix.
-     * @param x      the value to be logged and returned.
-     * @tparam X the underlying type of x, which is required to provide evidence of Loggable[X].
-     * @return the value of x.
-     */
-    def logLoggable[X: Loggable](prefix: => String)(x: => X): X = tee[X](y => loggingFunction(s"Flog: $prefix: ${implicitly[Loggable[X]].toLog(y)}"))(x)
+  /**
+   * Method to generate a log message based on x, pass it to the logFunc, and return the x value.
+   * The value of x will be rendered as a String but invoking toLog on the implicit value of Loggable[X].
+   *
+   * @param prefix the message prefix.
+   * @param x      the value to be logged and returned.
+   * @tparam X the underlying type of x, which is required to provide evidence of Loggable[X].
+   * @return the value of x.
+   */
+  def logLoggable[X: Loggable](prefix: => String)(x: => X): X =
+    tee[X](y => loggingFunction(s"$prefix: ${implicitly[Loggable[X]].toLog(y)}"))(x)
 
-    /**
-     * Method to generate a log message, pass it to the logFunc, and return the x value.
-     * The difference between this method and the logLoggable method is that the value of x will be rendered as a String,
-     * simply by invoking toString.
-     *
-     * @param prefix the message prefix.
-     * @param x      the value to be logged and returned.
-     * @tparam X the underlying type of x.
-     * @return the value of x.
-     */
-    def logX[X](prefix: => String)(x: => X): X = tee[X](y => loggingFunction(s"Flog: $prefix: $y"))(x)
+  /**
+   * Method to generate a log message, pass it to the logFunc, and return the x value.
+   * The difference between this method and the logLoggable method is that the value of x will be rendered as a String,
+   * simply by invoking toString.
+   *
+   * @param prefix the message prefix.
+   * @param x      the value to be logged and returned.
+   * @tparam X the underlying type of x.
+   * @return the value of x.
+   */
+  def logX[X](prefix: => String)(x: => X): X = tee[X](y => loggingFunction(s"$prefix: $y"))(x)
 
     /**
      * We make this available for any Loggers (such as futureLogger) which might require a LogFunction.
