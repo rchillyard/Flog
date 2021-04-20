@@ -49,7 +49,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     getString !! Seq(1, 2, 3)
     if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
     if (sb.toString.isEmpty) println("sb should not be empty but it will be if you run this unit test on its own")
-    sb.toString shouldBe "Hello: {1, 2, 3}"
+    sb.toString shouldBe "Hello: [1, 2, 3]"
   }
 
   it should "$bang$bang 2" in {
@@ -165,7 +165,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     import flog._
     implicit val z: Loggable[LocalDateTime] = new Loggables {}.anyLoggable[LocalDateTime]
     getString !! Seq(LocalDateTime.now)
-    val dateTimeR: Regex = """Hello: \{(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{6})}""".r
+    val dateTimeR: Regex = """Hello: \[(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3,})]""".r
     // NOTE sb should not be empty but it might be if you run this unit test on its own.
 
     sb.toString match {
@@ -212,17 +212,5 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
       case _ => fail("logic error")
     }
   }
-
-  //  ignore should "map 1" in {
-  //    val sb: StringBuilder = new StringBuilder()
-  //    val flog = Flog(LogFunction(sb.append))
-  //    import flog._
-  //    implicit val x: Loggable[Iterable[Int]] = new Loggables {}.triedIterableLoggable(x => Try(1/x))
-  //    val list: Iterable[Int] = List(-1, 0, 1)
-  //    val result: Iterable[Try[Int]] = getString !!! list
-  //    result.size shouldBe 2
-  //    sb.toString shouldBe "{Success(-1), Success(1)}"
-  //  }
-
 }
 

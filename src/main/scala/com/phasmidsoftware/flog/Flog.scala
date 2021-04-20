@@ -142,9 +142,9 @@ case class Flog(loggingFunction: LogFunction, errorFunction: LogFunction) {
 
         private def toLog[X: Loggable](y: Option[X]): String = optionLoggable[String].toLog(y map implicitly[Loggable[X]].toLog)
 
-        private def toLog[X: Loggable](y: Iterable[X]): String = iterableLoggable[String].toLog(y map implicitly[Loggable[X]].toLog)
+        private def toLog[X: Loggable](y: Iterable[X]): String = iterableLoggable[String]().toLog(y map implicitly[Loggable[X]].toLog)
 
-        private def toLog[K, V](y: Map[K, V])(implicit kVl: Loggable[(K, V)]): String = iterableLoggable[String].toLog(y map kVl.toLog)
+      private def toLog[K, V](y: Map[K, V])(implicit kVl: Loggable[(K, V)]): String = iterableLoggable[String]("{}").toLog(y map kVl.toLog)
     }
 
     /**
