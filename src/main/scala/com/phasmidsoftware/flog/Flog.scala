@@ -18,24 +18,14 @@ import scala.util.{Failure, Success, Try}
  * <li>Instantiate an new instance of Flog, specifying the parameter value described below--or
  * simply invoke the apply method: <code>Flog()</code>.
  * <dl>
- * <dt>loggingFunction</dt><dd>by default, this will be a function which uses the debug method of a logger based on ;</dd>
+ * <dt>loggingFunction</dt><dd>by default, this will be a function which uses the debug method of a logger based on this class;</dd>
+ * <dt>errorFunction</dt><dd>by default, this will be a function which uses the warn method of a logger based on this class;</dd>
  * </dl>
  * Assuming that you named the variable "flog", then "import flog._"</li>
- * <li>Create a String which will form the log message, follow it with "!!" and follow that with the expression you want to log.</li>
- * <li>Most of the time, this is all you need to do.</li>
- * <li>If you wish to override the logging function, then declare something like the following:
- * <code>implicit def logFunc(w: String): LogFunction = LogFunction(p-r-i-n-t-l-n)</code> (take out the dashes, obviously).
- * Create a new Flog instance by using the method withLogFunction(logFunc).
- * Import as before.
- * Follow this with !! and the expression, as usual.
- * </li>
- * <li>If you wish to override the default LogFunction, for example to log according to a particular class,
- * there are two methods to give you a default log function based on a specific class (MyClass in this example):
- * <code>Flog.forClass[MyClass]</code> or
- * <code>Flog.forClass(classOf[MyClass])</code>
- * </li>
+ * <li>Create a String which will form the log message, follow it with "!!" and follow that with the expression you want to log.
+ * The construct in this form (including the message and "!!") will yield the value of the expression.</li>
+ * <li>Most of the time, this is all you need to do (see README.md for much more information on this).</li>
  * </ol>
- * <p/>
  * <p>
  * There are several ways to turn logging off (temporarily or permanently) once you've added the log expressions:
  * <dl>
@@ -43,7 +33,8 @@ import scala.util.{Failure, Success, Try}
  * <dt>(2)</dt> <dd>use a disabled Flog with flog.disabled (silences all flogging everywhere);</dd>
  * <dt>(3)</dt> <dd>remove the !! expressions.</dd>
  * </dl>
- *
+ * </p>
+ * 
  * @param loggingFunction the LogFunction which is to be used by this Flog.
  */
 case class Flog(loggingFunction: LogFunction, errorFunction: LogFunction) {
