@@ -2,6 +2,8 @@
 
 import com.phasmidsoftware.flog.Loggable._
 import com.phasmidsoftware.flog.{Flog, Loggable, Loggables}
+
+import java.time.LocalDateTime
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Try
@@ -26,20 +28,14 @@ val x = "Hello" !! "World"
 // You don't need to include an implicit Loggable[Option[Int]] because there is one imported from Loggable._
 "test Option" !! Option(42)
 
-// The following should yield the value: List(1, 2, 3, 4)
+// The following should yield the value: List(1, 2, 3, 4, 5)
 // while creating something like the following log entry:
-// <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - Flog: test Iterable: [1, 2, ... (1 elements), ... 4]
-"test Iterable" !! Seq(1, 2, 3, 4)
+// <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - Flog: test Iterable: {1, 2, ... (1 element), ... 5}
+"test Iterable" !! Seq(1, 2, 3, 4, 5)
 
-// You can log any iterable provided that there is an implicit logger for the underlying type.
-"test Iterable of String" !! Seq("1", "2", "3", "4")
-
-// The following should yield the value: Seq(1, 2, 3, 4)
-// while creating something like the following log entry:
-// <datetime> DEBUG c.phasmidsoftware.flog.Flog$Flogger  - Flog: test Seq: [1, ... (1 elements), ... 3]
-// This is essentially an alternative to using the Iterable logger (above).
-implicit val seqLoggable: Loggable[Seq[Int]] = new Loggables {}.seqLoggable[Int]
-"test Seq" !! Seq(1, 2, 3, 4)
+// You can log any type if you use the !| method instead of !!
+// But you have no control over the appearance of the object to be logged.
+"test any type" !| LocalDateTime.now
 
 // The following should yield the value: Success(42)
 // while creating something like the following log entry:

@@ -5,7 +5,9 @@
 package com.phasmidsoftware.flog
 
 import com.phasmidsoftware.flog.Loggables.fieldNames
-import scala.collection.SeqMap
+
+import scala.collection.immutable.LazyList.#::
+import scala.collection.{SeqMap, View}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
@@ -15,6 +17,15 @@ import scala.util.{Failure, Success, Try}
  * containers (Seq and Option), etc..
  */
 trait Loggables {
+
+  /**
+   * Backstop method to yield a String from a T.
+   * NOTE: use this when you need an implicit Loggable to log a container which includes an unsupported type.
+   *
+   * @tparam T the type of t.
+   * @return a Loggable[T] which uses toString.
+   */
+  def anyLoggable[T]: Loggable[T] = (t: T) => t.toString
 
   /**
    * Method to return a Loggable[ Option[T] ].
@@ -28,46 +39,32 @@ trait Loggables {
   }
 
   /**
-   * Method to return a Loggable[ Seq[T] ].
+   * Method to create a Loggable of an Iterable[T].
+   * The elements of the result are then logged utilizing the !! method.
    *
-   * @tparam T the underlying type of the parameter of the input to the toLog method.
-   * @return a Loggable[ List[T] ]
+   * @param bookends (optional) an String of length two specifying the first and last characters of
+   *                 the resulting String for a given Iterable. Defaults to "[]".
+   * @tparam T the underlying type of any list to be logged.
+   * @return Loggable[ Iterable[T] ].
    */
-  def seqLoggable[T: Loggable]: Loggable[Seq[T]] = (ts: Seq[T]) => {
-    val tl = implicitly[Loggable[T]]
-    ts match {
-      case Nil => "[]"
-      case h :: Nil => s"[${tl.toLog(h)}]"
-      case h :: k :: tail =>
-        val remainder = tail.size - 1
-        val meat = if (remainder > 0) s"... ($remainder elements), ... " else ""
-        s"[${tl.toLog(h)}, ${tl.toLog(k)}, $meat${tl.toLog(tail.last)}]"
-      case h :: tail =>
-        // XXX merge these cases
-        val remainder = tail.size - 1
-        val meat = if (remainder > 0) s"... ($remainder elements), ... " else ""
-        s"[${tl.toLog(h)}, $meat${tl.toLog(tail.last)}]"
-    }
-  }
-
-  /**
-   * Method to return a Loggable[ List[T] ].
-   *
-   * @tparam T the underlying type of the parameter of the input to the toLog method.
-   * @return a Loggable[ List[T] ]
-   */
-  def listLoggable[T: Loggable]: Loggable[List[T]] = {
-    ts => seqLoggable[T].toLog(ts)
-  }
-
-  /**
-   * Method to return a Loggable[ Vector[T] ].
-   *
-   * @tparam T the underlying type of the parameter of the input to the toLog method.
-   * @return a Loggable[ Vector[T] ]
-   */
-  def vectorLoggable[T: Loggable]: Loggable[Vector[T]] = {
-    case v: Vector[T] => seqLoggable[T].toLog(v.toList)
+  def iterableLoggable[T: Loggable](bookends: String = "[]"): Loggable[Iterable[T]] = {
+    case Nil => "<empty>"
+    case LazyList() => "<empty lazy list>"
+    case ll@_ #:: _ =>
+      //noinspection ScalaDeprecation
+      if (ll.hasDefiniteSize) iterableLoggable[T](bookends).toLog(ll.toList) else "<LazyList>"
+    case _: View[T] =>
+      "<view>"
+    case ts =>
+      val tl = implicitly[Loggable[T]]
+      val ws = ts map tl.toLog
+      val init = ws.init
+      val n = init.size
+      val (prefix, z) = if (n > 3) (init take 3, n - 3) else (init, 0)
+      val remainder = if (z > 0) s"... ($z element" + (if (z > 1) "s" else "" + "), ... ") else ""
+      val prefixString = if (prefix.nonEmpty) prefix.mkString("", ", ", ", ") else ""
+      require(bookends.length == 2, "Bookends must have exactly two characters")
+      bookends.substring(0, 1) + prefixString + remainder + ws.last + bookends.substring(1, 2)
   }
 
   /**
@@ -75,6 +72,8 @@ trait Loggables {
    *
    * NOTE: unless the Map (passed as the bound variable) is a SeqMap, the order of the key-value pairs is undefined.
    *
+   * @param bookends (optional) an String of length two specifying the first and last characters of
+   *                 the resulting String for a given Map. Defaults to "{}".
    * @tparam K the type of the keys.
    * @tparam T the underlying type of the values.
    * @return a Loggable[ Map[K, T] ]
@@ -82,19 +81,21 @@ trait Loggables {
   def mapLoggable[K, T: Loggable](bookends: String = "{}"): Loggable[Map[K, T]] = (tKm: Map[K, T]) => {
     def z(k: K, t: T): String = k.toString + ":" + implicitly[Loggable[T]].toLog(t)
 
+    require(bookends.length == 2, "Bookends must have exactly two characters")
     tKm.map((z _).tupled).mkString(bookends.substring(0, 1), ",", bookends.substring(1, 2))
   }
 
   /**
    * Method to return a Loggable[ Either[T,U] ].
    *
-   * @tparam T the underlying type of the first parameter of the input to the render method.
+   * @tparam L the "left" type of any Either which is to be logged.
+   * @tparam R the "right" type of any Either which is to be logged.
    * @return a Loggable[ Either[T,U] ].
    */
-  def eitherLoggable[T: Loggable, U: Loggable]: Loggable[Either[T, U]] = {
-    case Left(t: T@unchecked) => s"Left(${implicitly[Loggable[T]].toLog(t)})"
-    case Right(u: Vector[T]@unchecked) => val lv = new Loggables {}.vectorLoggable[T]; s"Right(${lv.toLog(u)})"
-    case Right(u: U@unchecked) => s"Right(${implicitly[Loggable[U]].toLog(u)})"
+  def eitherLoggable[L: Loggable, R: Loggable]: Loggable[Either[L, R]] = {
+    case Left(t: L@unchecked) => s"Left(${implicitly[Loggable[L]].toLog(t)})"
+    case Right(u: Iterable[L]@unchecked) => val lv = new Loggables {}.iterableLoggable[L](); s"Right(${lv.toLog(u)})"
+    case Right(u: R@unchecked) => s"Right(${implicitly[Loggable[R]].toLog(u)})"
     case x => s"<problem with logging Either: $x"
   }
 
@@ -121,6 +122,35 @@ trait Loggables {
     tf.onComplete(ty => logFunc(s"Future completed ($uuid): ${tl.toLog(ty)}"))
     s"Future: promise ($uuid) created... "
   }
+
+  /**
+   * TESTME
+   *
+   * Method which maps an Iterable of X with a function to an Iterable of Try[X].
+   * The elements of the result are then logged utilizing the !! method.
+   * NOTE that the returned value will only include the successful elements.
+   *
+   * @param f a function X => Try[X].
+   * @tparam X the underlying type of xs.
+   * @tparam Y the underlying type of the intermediate type (must be Loggable).
+   * @return an Iterable of Try[X] such that all the failures have been logged but not included in the result.
+   */
+  def triedIterableLoggable[X, Y: Loggable](f: X => Try[Y]): Loggable[Iterable[X]] = (xs: Iterable[X]) => {
+    implicit val q: Loggable[Try[Y]] = tryLoggable
+    val z: Iterable[Try[Y]] = (for (x <- xs) yield f(x)) filter (_.isSuccess)
+    val yys: Loggable[Iterable[Try[Y]]] = iterableLoggable[Try[Y]]()
+    yys.toLog(z)
+  }
+
+  /**
+   * This method creates a Loggable instance which works for a tuple (a K-V pair).
+   * It is an alternative to loggable2 but that method names the members whereas we don't want them named here.
+   *
+   * @tparam K the key type.
+   * @tparam V the value type.
+   * @return a String rendition.
+   */
+  def kVLoggable[K: Loggable, V: Loggable]: Loggable[(K, V)] = (t: (K, V)) => s"${implicitly[Loggable[K]].toLog(t._1)}->${implicitly[Loggable[V]].toLog(t._2)}"
 
   /**
    * Method to return a Loggable[T] where T is a 1-ary Product and which is based on a function to convert a P into a T.
@@ -299,6 +329,76 @@ trait Loggables {
       p4 -> valueToLog[P4, T](t, 4),
       p5 -> valueToLog[P5, T](t, 5),
       p6 -> valueToLog[P6, T](t, 6)
+    )
+    )
+  }
+
+  /**
+   * Method to return a Loggable[T] where T is a 8-ary Product and which is based on a function to
+   * convert a (P0,P1,P2,P3,P4,P5,P6,P7) into a T.
+   *
+   * @param construct a function (P0,P1,P2,P3,P4,P5,P6,P7) => T, usually the apply method of a case class.
+   *                  The sole purpose of this function is for type inference--it is never actually invoked.
+   * @param fields    (optional parameter) an explicit list of 8 field names.
+   * @tparam P0 the type of the first field of the Product type T.
+   * @tparam P1 the type of the second field of the Product type T.
+   * @tparam P2 the type of the third field of the Product type T.
+   * @tparam P3 the type of the fourth field of the Product type T.
+   * @tparam P4 the type of the fifth field of the Product type T.
+   * @tparam P5 the type of the sixth field of the Product type T.
+   * @tparam P6 the type of the seventh field of the Product type T.
+   * @tparam P7 the type of the eighth field of the Product type T.
+   * @tparam T  the underlying type of the first parameter of the input to the render method.
+   * @return a Loggable[T].
+   */
+  def loggable8[P0: Loggable, P1: Loggable, P2: Loggable, P3: Loggable, P4: Loggable, P5: Loggable, P6: Loggable, P7: Loggable, T <: Product : ClassTag]
+  (construct: (P0, P1, P2, P3, P4, P5, P6, P7) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
+    val Array(p0, p1, p2, p3, p4, p5, p6, p7) = fieldNames(fields, "loggable7")
+    t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(
+      p0 -> valueToLog[P0, T](t, 0),
+      p1 -> valueToLog[P1, T](t, 1),
+      p2 -> valueToLog[P2, T](t, 2),
+      p3 -> valueToLog[P3, T](t, 3),
+      p4 -> valueToLog[P4, T](t, 4),
+      p5 -> valueToLog[P5, T](t, 5),
+      p6 -> valueToLog[P6, T](t, 6),
+      p7 -> valueToLog[P7, T](t, 7)
+    )
+    )
+  }
+
+  /**
+   * Method to return a Loggable[T] where T is a 9-ary Product and which is based on a function to
+   * convert a (P0,P1,P2,P3,P4,P5,P6,P7,P8) into a T.
+   *
+   * @param construct a function (P0,P1,P2,P3,P4,P5,P6,P7,P8) => T, usually the apply method of a case class.
+   *                  The sole purpose of this function is for type inference--it is never actually invoked.
+   * @param fields    (optional parameter) an explicit list of 9 field names.
+   * @tparam P0 the type of the first field of the Product type T.
+   * @tparam P1 the type of the second field of the Product type T.
+   * @tparam P2 the type of the third field of the Product type T.
+   * @tparam P3 the type of the fourth field of the Product type T.
+   * @tparam P4 the type of the fifth field of the Product type T.
+   * @tparam P5 the type of the sixth field of the Product type T.
+   * @tparam P6 the type of the seventh field of the Product type T.
+   * @tparam P7 the type of the eighth field of the Product type T.
+   * @tparam P8 the type of the ninth field of the Product type T.
+   * @tparam T  the underlying type of the first parameter of the input to the render method.
+   * @return a Loggable[T].
+   */
+  def loggable9[P0: Loggable, P1: Loggable, P2: Loggable, P3: Loggable, P4: Loggable, P5: Loggable, P6: Loggable, P7: Loggable, P8: Loggable, T <: Product : ClassTag]
+  (construct: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
+    val Array(p0, p1, p2, p3, p4, p5, p6, p7, p8) = fieldNames(fields, "loggable7")
+    t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(
+      p0 -> valueToLog[P0, T](t, 0),
+      p1 -> valueToLog[P1, T](t, 1),
+      p2 -> valueToLog[P2, T](t, 2),
+      p3 -> valueToLog[P3, T](t, 3),
+      p4 -> valueToLog[P4, T](t, 4),
+      p5 -> valueToLog[P5, T](t, 5),
+      p6 -> valueToLog[P6, T](t, 6),
+      p7 -> valueToLog[P7, T](t, 7),
+      p8 -> valueToLog[P8, T](t, 8)
     )
     )
   }

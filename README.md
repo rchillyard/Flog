@@ -48,10 +48,24 @@ This is useful if you want to temporarily suspend a particular logging construct
 The following signatures are defined for _Floggable_ (the implicit class):
 
     def !![X: Loggable](x: => X): X
+    def !![K: Loggable, V: Loggable](kVm: => Map[K,V]): Map[K,V]
     def !![X: Loggable](x: => Iterable[X]): Iterable[X]
     def !![X: Loggable](x: => Option[X]): Option[X]
     def !|[X](x: => X): X // logs using x.toString
     def |![X](x: => X): X // does no logging
+    def !!![X: Loggable](xy: Try[X]): Try[X]
+
+The signature which takes an _Iterable[X]_ does require some further discussion.
+If there are sufficient elements, the first three elements and the last element are shown in the log message.
+Only the number of non-logged elements is shown between them.
+This method is also invoked by the !!(Map) method, seeing an _Iterable[(String, String)]_.
+
+In the case of non-strict collections, no unnecessary evaluation is performed.
+Views are left as is and *LazyList*s are shown as lists only if they have definite size.
+
+The last-named (!!!) method does not return the input exactly as is (as all the other methods do).
+If _xy_ is a _Failure(e)_ then it logs the exception and returns _Failure(LoggedException(e))_.
+This allows for the code to avoid logging the exception twice.
 
 For all these !! logging mechanism to work, there must be (implicit) evidence of _Loggable[X]_ available.
 The following standard _Loggables_ are provided:
@@ -69,23 +83,59 @@ The following standard _Loggables_ are provided:
 
 Additionally, for those container types which are not explicitly handled by the !! method signatures,
 there is support, in _Loggables_, for various specific types of containers to be logged
-where, in each case, the parametric types _T_, _L_, or _R_ provide implicit evidence of type _Loggable[T]_, etc.:
+where, in each case, the parametric types _T_, _L_, _R_, _K_, or _V_ must provide implicit evidence of type _Loggable[T]_, etc.:
 
-    Seq[T]
-    List[T]
-    Vector[T]
-    Map[K, T]
-    Option[T]
-    Try[T]
-    Future[T] (this produces two log messages: on promise and completion)
-    Either[L, R] (where each of L and R are Loggable)
-    and _Product_ type up to _Product7_ (case classes and tuples) where each member type is _Loggable_.
+    def optionLoggable[T: Loggable]: Loggable[Option[T]]
+    def iterableLoggable[T: Loggable]: Loggable[Iterable[T]]
+    def mapLoggable[K, T: Loggable]: Loggable[Map[K, T]] 
+    def tryLoggable[T: Loggable]: Loggable[Try[T]]
+    def futureLoggable[T: Loggable](implicit logFunc: LogFunction, ec: ExecutionContext): Loggable[Future[T]] // this produces two log messages: on promise and on completion
+    def eitherLoggable[L: Loggable, R: Loggable]: Loggable[Either[L, R]]
+    def kVLoggable[K: Loggable, V: Loggable]: Loggable[(K, V)]
 
-Please see worksheets/FlogExamples.sc for examples of usage.
+There is also a method which can be used for any underlying type that for which there
+is no explicit loggable method:
+
+    def anyLoggable[T]: Loggable[T]
+
+Additionally, _Loggables_ defines a set of methods for creating _Loggable[P]_ where _P_ is a _Product_,
+that's to say a case class, or a tuple, with a particular number of members (fields).
+Each member type must itself be _Loggable_
+("standard" types such as Int and String--see above for definition--will implicitly find the appropriate instance).
+If a member is of a non-standard type, you will need to define an implicit val with the appropriate method
+from _Loggables_ (see above).
+For these methods, all you have to do is include a reference to the _apply_ method of the case class
+(you can skip the ".apply" if you haven't defined an explicit companion object).
+If you are familiar with, for instance, reading/writing Json, you should be comfortable with this idea.
+
+Each of these "loggableN" methods has a signature thus (using _loggable3_ as an exemplar):
+
+    def loggable3[P0: Loggable, P1: Loggable, P2: Loggable, T <: Product : ClassTag]
+        (construct: (P0, P1, P2) => T, fields: Seq[String] = Nil): Loggable[T]
+
+There are currently 9 such methods defined (_loggable1_ thru _loggable9_).
+Here is the specification used to test this particular method:
+
+    case class Threesy(x: Int, y: Boolean, z: Double)
+    val target = loggable3(Threesy)
+    target.toLog(Threesy(42, y = true, 3.1415927)) shouldBe "Threesy(x:42,y:true,z:3.1415927)"
+
+In some situations, the reflection code is unable to get the field names in order (for example when there are public lazy vals).
+In such a case, add the second parameter (after the function) to explicitly give the field names in order.
+Normally, of course, you can leave this parameter unset.
+
+Please see _worksheets/FlogExamples.sc_ for examples of usage.
 Additionally, see any of the spec files, especially _FlogSpec_ for more definition on how to use the package.
 
 ### Variations
-It is possible to change the behavior of the _Flog_ instance by invoking one of the methods:
+_Flog_ is a case class which has two members: _loggingFunction_ and _errorFunction_.
+Normally, you will use the defaults for these.
+However, if you do want to provide your own, then you need to understand
+their type, another case class:
+
+    case class LogFunction(f: String => Any, enabled: Boolean = true)
+
+It is also possible to change the behavior of the _Flog_ instance by invoking one of the methods:
 
     def disabled: Flog
     def withLogFunction(logFunc: LogFunction): Flog
@@ -117,7 +167,9 @@ If you choose to use a different logger function, you may need to change these d
   of the current scope.
   
 # Version
-1.0.4 Provides a more functional way of setting an explicit logger or disabling logging.
+1.0.5 Issue #10: Some changes to implementation of Iterable, including not evaluating non-strict collections.
+
+1.0.4 Issue #7: Provides a more functional way of setting an explicit logger or disabling logging.
 
 1.0.3 General improvements: more consistent functionality, issues with underlying logger hopefully resolved.
 

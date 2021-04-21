@@ -7,6 +7,7 @@ package com.phasmidsoftware.flog
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.reflect.ClassTag
+import scala.util.{Failure, Success, Try}
 
 /**
  * Simple functional logging class.
@@ -17,24 +18,14 @@ import scala.reflect.ClassTag
  * <li>Instantiate an new instance of Flog, specifying the parameter value described below--or
  * simply invoke the apply method: <code>Flog()</code>.
  * <dl>
- * <dt>loggingFunction</dt><dd>by default, this will be a function which uses the debug method of a logger based on ;</dd>
+ * <dt>loggingFunction</dt><dd>by default, this will be a function which uses the debug method of a logger based on this class;</dd>
+ * <dt>errorFunction</dt><dd>by default, this will be a function which uses the warn method of a logger based on this class;</dd>
  * </dl>
  * Assuming that you named the variable "flog", then "import flog._"</li>
- * <li>Create a String which will form the log message, follow it with "!!" and follow that with the expression you want to log.</li>
- * <li>Most of the time, this is all you need to do.</li>
- * <li>If you wish to override the logging function, then declare something like the following:
- * <code>implicit def logFunc(w: String): LogFunction = LogFunction(p-r-i-n-t-l-n)</code> (take out the dashes, obviously).
- * Create a new Flog instance by using the method withLogFunction(logFunc).
- * Import as before.
- * Follow this with !! and the expression, as usual.
- * </li>
- * <li>If you wish to override the default LogFunction, for example to log according to a particular class,
- * there are two methods to give you a default log function based on a specific class (MyClass in this example):
- * <code>Flog.forClass[MyClass]</code> or
- * <code>Flog.forClass(classOf[MyClass])</code>
- * </li>
+ * <li>Create a String which will form the log message, follow it with "!!" and follow that with the expression you want to log.
+ * The construct in this form (including the message and "!!") will yield the value of the expression.</li>
+ * <li>Most of the time, this is all you need to do (see README.md for much more information on this).</li>
  * </ol>
- * <p/>
  * <p>
  * There are several ways to turn logging off (temporarily or permanently) once you've added the log expressions:
  * <dl>
@@ -42,10 +33,12 @@ import scala.reflect.ClassTag
  * <dt>(2)</dt> <dd>use a disabled Flog with flog.disabled (silences all flogging everywhere);</dd>
  * <dt>(3)</dt> <dd>remove the !! expressions.</dd>
  * </dl>
- *
+ * </p>
+ * 
  * @param loggingFunction the LogFunction which is to be used by this Flog.
  */
-case class Flog(loggingFunction: LogFunction) {
+case class Flog(loggingFunction: LogFunction, errorFunction: LogFunction) {
+
     import Flog._
 
     /**
@@ -56,7 +49,7 @@ case class Flog(loggingFunction: LogFunction) {
      *
      * @param message the message itself which will be evaluated only if enabled is actually turned on.
      */
-    implicit class Flogger(message: => String) {
+    implicit class Flogger(message: => String) extends Loggables {
         /**
          * Method to generate a log entry for a (Loggable) value of X.
          * Logging is performed as a side effect.
@@ -68,27 +61,41 @@ case class Flog(loggingFunction: LogFunction) {
          */
         def !![X: Loggable](x: => X): X = logLoggable(message)(x)
 
+      /**
+       * Method to generate a log entry for a Map[K, V].
+       * Logging is performed as a side effect.
+       *
+       * @param kVm the Map to be logged.
+       * @tparam K the type of the map keys, which must provide implicit evidence of being Loggable.
+       * @tparam V the type of the map values, which must provide implicit evidence of being Loggable.
+       * @return the value of x.
+       */
+      def !![K: Loggable, V: Loggable](kVm: => Map[K, V]): Map[K, V] = {
+          implicit val g: Loggable[(K, V)] = kVLoggable
+          tee[Map[K, V]](y => logLoggable(message)(toLog(y)))(kVm)
+      }
+
         /**
          * Method to generate a log entry for an Iterable of a (Loggable) X.
          * Logging is performed as a side effect.
          * Rendering of the x value is via the toLog method of the implicit Loggable[X].
          *
-         * @param x the Iterable value to be logged.
+         * @param xs the Iterable value to be logged.
          * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
          * @return the value of x.
          */
-        def !![X: Loggable](x: => Iterable[X]): Iterable[X] = tee[Iterable[X]](y => logLoggable(message)(new Loggables {}.seqLoggable[String].toLog((y map (implicitly[Loggable[X]].toLog(_))).toSeq)))(x)
+        def !![X: Loggable](xs: => Iterable[X]): Iterable[X] = tee[Iterable[X]](y => logLoggable(message)(toLog(y)))(xs)
 
         /**
          * Method to generate a log entry for an Option of a (Loggable) X.
          * Logging is performed as a side effect.
          * Rendering of the x value is via the toLog method of the implicit Loggable[X].
          *
-         * @param x the optional value to be logged.
+         * @param xo the optional value to be logged.
          * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
          * @return the value of x.
          */
-        def !![X: Loggable](x: => Option[X]): Option[X] = tee[Option[X]](y => logLoggable(message)(new Loggables {}.optionLoggable[String].toLog(y map (implicitly[Loggable[X]].toLog(_)))))(x)
+        def !![X: Loggable](xo: => Option[X]): Option[X] = tee[Option[X]](y => logLoggable(message)(toLog(y)))(xo)
 
         /**
          * Method to generate a log entry for a type which is not itself Loggable.
@@ -109,6 +116,26 @@ case class Flog(loggingFunction: LogFunction) {
          * @return the value of x.
          */
         def |![X](x: => X): X = x
+
+        /**
+         * Method to log the value xy (a Try[X]) but which logs any failures using the errorFunction rather than
+         * the loggerFunction.
+         * NOTE that the returned value, if xy is a Failure, is not exactly the same as xy.
+         *
+         * @param xy an instance of Try[X].
+         * @tparam X the underlying type of xy.
+         * @return if xy is successful, then xy, otherwise if Failure(e) then Failure(LoggedException(e)).
+         */
+        def !!![X: Loggable](xy: Try[X]): Try[X] = xy.transform(Success(_), e => {
+            errorFunction f s"$message $e"
+            Failure(LoggedException(e))
+        })
+
+        private def toLog[X: Loggable](y: Option[X]): String = optionLoggable[String].toLog(y map implicitly[Loggable[X]].toLog)
+
+        private def toLog[X: Loggable](y: Iterable[X]): String = iterableLoggable[String]().toLog(y map implicitly[Loggable[X]].toLog)
+
+      private def toLog[K, V](y: Map[K, V])(implicit kVl: Loggable[(K, V)]): String = iterableLoggable[String]("{}").toLog(y map kVl.toLog)
     }
 
     /**
@@ -117,7 +144,7 @@ case class Flog(loggingFunction: LogFunction) {
      * @param logFunc an instance of LogFunction.
      * @return a new instance of Flog.
      */
-    def withLogFunction(logFunc: LogFunction): Flog = Flog(logFunc)
+    def withLogFunction(logFunc: LogFunction): Flog = Flog(logFunc, errorFunction)
 
     /**
      * Use this method to create a new Flog with logging disabled.
@@ -126,28 +153,29 @@ case class Flog(loggingFunction: LogFunction) {
      */
     def disabled: Flog = withLogFunction(loggingFunction.disable)
 
-    /**
-     * Method to generate a log message based on x, pass it to the logFunc, and return the x value.
-     * The value of x will be rendered as a String but invoking toLog on the implicit value of Loggable[X].
-     *
-     * @param prefix the message prefix.
-     * @param x      the value to be logged and returned.
-     * @tparam X the underlying type of x, which is required to provide evidence of Loggable[X].
-     * @return the value of x.
-     */
-    def logLoggable[X: Loggable](prefix: => String)(x: => X): X = tee[X](y => loggingFunction(s"Flog: $prefix: ${implicitly[Loggable[X]].toLog(y)}"))(x)
+  /**
+   * Method to generate a log message based on x, pass it to the logFunc, and return the x value.
+   * The value of x will be rendered as a String but invoking toLog on the implicit value of Loggable[X].
+   *
+   * @param prefix the message prefix.
+   * @param x      the value to be logged and returned.
+   * @tparam X the underlying type of x, which is required to provide evidence of Loggable[X].
+   * @return the value of x.
+   */
+  def logLoggable[X: Loggable](prefix: => String)(x: => X): X =
+    tee[X](y => loggingFunction(s"$prefix: ${implicitly[Loggable[X]].toLog(y)}"))(x)
 
-    /**
-     * Method to generate a log message, pass it to the logFunc, and return the x value.
-     * The difference between this method and the logLoggable method is that the value of x will be rendered as a String,
-     * simply by invoking toString.
-     *
-     * @param prefix the message prefix.
-     * @param x      the value to be logged and returned.
-     * @tparam X the underlying type of x.
-     * @return the value of x.
-     */
-    def logX[X](prefix: => String)(x: => X): X = tee[X](y => loggingFunction(s"Flog: $prefix: $y"))(x)
+  /**
+   * Method to generate a log message, pass it to the logFunc, and return the x value.
+   * The difference between this method and the logLoggable method is that the value of x will be rendered as a String,
+   * simply by invoking toString.
+   *
+   * @param prefix the message prefix.
+   * @param x      the value to be logged and returned.
+   * @tparam X the underlying type of x.
+   * @return the value of x.
+   */
+  def logX[X](prefix: => String)(x: => X): X = tee[X](y => loggingFunction(s"$prefix: $y"))(x)
 
     /**
      * We make this available for any Loggers (such as futureLogger) which might require a LogFunction.
@@ -167,12 +195,20 @@ object Flog {
     def apply(): Flog = Flog(defaultLogFunction[Flog])
 
     /**
+     * Method to instantiate a normal instance of Flog with logging via the given function).
+     *
+     * @param loggerFunction the LogFunction to use for logging.
+     * @return an instance of Flog.
+     */
+    def apply(loggerFunction: LogFunction): Flog = Flog(loggerFunction, defaultErrorFunction[Flog])
+
+    /**
      * Use this method to create an instance of Flog with the default logging function based on class T.
      *
      * @tparam T the class for which you want to log.
      * @return a new instance of Flog.
      */
-    def forClass[T: ClassTag]: Flog = Flog(defaultLogFunction[T])
+    def forClass[T: ClassTag]: Flog = Flog(defaultLogFunction[T], defaultErrorFunction[T])
 
     /**
      * Use this method to create an instance of Flog with the default logging function based on clazz.
@@ -180,7 +216,7 @@ object Flog {
      * @param clazz the class for which you want to log.
      * @return a new instance of Flog.
      */
-    def forClass(clazz: Class[_]): Flog = Flog(LogFunction(getDefaultLogger(clazz).debug))
+    def forClass(clazz: Class[_]): Flog = Flog(LogFunction(getDefaultLogger(clazz).debug), LogFunction(getDefaultLogger(clazz).warn))
 
     /**
      * Method to yield a default logging function (uses LoggerFactory.getLogger) for the class T.
@@ -191,18 +227,32 @@ object Flog {
     def defaultLogFunction[T: ClassTag]: LogFunction = LogFunction(getDefaultLogger.debug)
 
     /**
+     * Method to yield a default error logging function (uses LoggerFactory.getLogger) for the class T.
+     *
+     * @tparam T the class with which the logging messages should be associated.
+     * @return a LogFunction.
+     */
+    def defaultErrorFunction[T: ClassTag]: LogFunction = LogFunction(getDefaultLogger.warn)
+
+    /**
      * Method which, as a side-effect, invokes function f on the given value of x.
      * Then returns the value of x.
-     * CONSIDER making this less complex!
+     * If an exception is thrown evaluating f(xx), it is logged as a warning.
+     * However, it is possible that the exception was thrown evaluating x,
+     * in which case the tee method will throw the same exception.
+     * There is nothing to be done about this, of course, but at least there will be a log entry.
      *
      * @param f the function to invoke on x.
      * @param x the value of x.
      * @tparam X the type of x (and the result).
-     * @return x
+     * @return x.
      */
     def tee[X](f: X => Unit)(x: => X): X = {
         lazy val xx: X = x
-        f(xx)
+        Try(f(xx)) match {
+            case Failure(e) => getDefaultLogger[Flog].warn("Exception thrown in tee function", e)
+            case _ =>
+        }
         xx
     }
 
@@ -250,3 +300,5 @@ case class LogFunction(f: String => Any, enabled: Boolean = true) {
 object LogFunction {
     val noop: LogFunction = LogFunction(_ => ()).disable
 }
+
+case class LoggedException(e: Throwable) extends Exception("The cause of this exception has already been logged", e)

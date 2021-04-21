@@ -7,6 +7,7 @@ package com.phasmidsoftware.flog
 import org.scalatest.flatspec
 import org.scalatest.matchers.should
 
+import java.time.LocalDateTime
 import java.util.NoSuchElementException
 import scala.concurrent.Future
 import scala.util.Try
@@ -27,19 +28,21 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
     target.toLog(Map("x" -> 1, "y" -> 2)) shouldBe "{x:1,y:2}"
   }
 
-  it should "seqLoggable" in {
-    val target = seqLoggable[Int]
-    target.toLog(Seq(42, 99, 101, 357)) shouldBe "[42, 99, ... (1 elements), ... 357]"
+  it should "iterableLoggable0" in {
+    val target = iterableLoggable[Int]("{}")
+    target.toLog(Seq(42)) shouldBe "{42}"
+    target.toLog(Seq(42, 99)) shouldBe "{42, 99}"
+    target.toLog(Seq(42, 99, 101)) shouldBe "{42, 99, 101}"
   }
 
-  it should "listLoggable" in {
-    val target = listLoggable[Int]
-    target.toLog(List(42, 99, 101, 357)) shouldBe "[42, 99, ... (1 elements), ... 357]"
+  it should "iterableLoggable1" in {
+    val target = iterableLoggable[Int]()
+    target.toLog(Seq(42, 99, 101, 357)) shouldBe "[42, 99, 101, 357]"
   }
 
-  it should "vectorLoggable" in {
-    val target = vectorLoggable[Int]
-    target.toLog(Vector(42, 99, 101)) shouldBe "[42, 99, 101]"
+  it should "iterableLoggable2" in {
+    val target = iterableLoggable[Int]()
+    target.toLog(Seq(42, 99, 101, 357, 911)) shouldBe "[42, 99, 101, ... (1 element), ... 911]"
   }
 
   it should "tryLoggable" in {
@@ -122,5 +125,24 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
     implicit val z: Loggable[Option[Double]] = optionLoggable[Double]
     val loggable: Loggable[Complicated] = loggable7(Complicated)
     loggable.toLog(Complicated(Some(1), Some(Math.PI), 42, y = true, 3.1415927, "x", BigInt(99))) shouldBe "Complicated(a:Some(1),b:Some(3.141592653589793),x:42,y:true,z:3.1415927,q:x,r:99)"
+  }
+
+  it should "loggable8" in {
+    case class Complicated8(name: String, a: Option[Int], b: Option[Double], x: Int, y: Boolean, z: Double, q: BigDecimal, r: BigInt)
+    // NOTE: we must explicitly include an implicit Loggable[Option[Double]] because that particular value is not imported from Loggable._
+    implicit val z: Loggable[Option[Double]] = optionLoggable[Double]
+    val loggable: Loggable[Complicated8] = loggable8(Complicated8)
+    val complicated = Complicated8("Robin", Some(1), Some(Math.PI), 42, y = true, 3.1415927, BigDecimal("3.1415927"), BigInt(99))
+    loggable.toLog(complicated) shouldBe "Complicated8(name:Robin,a:Some(1),b:Some(3.141592653589793),x:42,y:true,z:3.1415927,q:3.1415927,r:99)"
+  }
+
+  it should "loggable9" in {
+    case class Complicated9(name: String, date: LocalDateTime, a: Option[Int], b: Option[Double], x: Int, y: Boolean, z: Double, q: BigDecimal, r: BigInt)
+    // NOTE: we must explicitly include an implicit Loggable[Option[Double]] because that particular value is not imported from Loggable._
+    implicit val z1: Loggable[Option[Double]] = optionLoggable[Double]
+    implicit val z2: Loggable[LocalDateTime] = anyLoggable[LocalDateTime]
+    val loggable: Loggable[Complicated9] = loggable9(Complicated9)
+    val complicated = Complicated9("Robin", LocalDateTime.of(2021, 1, 1, 12, 0), Some(1), Some(Math.PI), 42, y = true, 3.1415927, BigDecimal("3.1415927"), BigInt(99))
+    loggable.toLog(complicated) shouldBe "Complicated9(name:Robin,date:2021-01-01T12:00,a:Some(1),b:Some(3.141592653589793),x:42,y:true,z:3.1415927,q:3.1415927,r:99)"
   }
 }
