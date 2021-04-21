@@ -61,10 +61,10 @@ Only the number of non-logged elements is shown between them.
 This method is also invoked by the !!(Map) method, seeing an _Iterable[(String, String)]_.
 
 In the case of non-strict collections, no unnecessary evaluation is performed.
-Views are left as is and LazyLists are shown as lists only if they have definite size.
+Views are left as is and *LazyList*s are shown as lists only if they have definite size.
 
 The last-named (!!!) method does not return the input exactly as is (as all the other methods do).
-If xy is a Failure(e) then it logs the exception and returns Failure(LoggedException(e)).
+If _xy_ is a _Failure(e)_ then it logs the exception and returns _Failure(LoggedException(e))_.
 This allows for the code to avoid logging the exception twice.
 
 For all these !! logging mechanism to work, there must be (implicit) evidence of _Loggable[X]_ available.
@@ -124,11 +124,18 @@ In some situations, the reflection code is unable to get the field names in orde
 In such a case, add the second parameter (after the function) to explicitly give the field names in order.
 Normally, of course, you can leave this parameter unset.
 
-Please see worksheets/FlogExamples.sc for examples of usage.
+Please see _worksheets/FlogExamples.sc_ for examples of usage.
 Additionally, see any of the spec files, especially _FlogSpec_ for more definition on how to use the package.
 
 ### Variations
-It is possible to change the behavior of the _Flog_ instance by invoking one of the methods:
+_Flog_ is a case class which has two members: _loggingFunction_ and _errorFunction_.
+Normally, you will use the defaults for these.
+However, if you do want to provide your own, then you need to understand
+their type, another case class:
+
+    case class LogFunction(f: String => Any, enabled: Boolean = true)
+
+It is also possible to change the behavior of the _Flog_ instance by invoking one of the methods:
 
     def disabled: Flog
     def withLogFunction(logFunc: LogFunction): Flog
