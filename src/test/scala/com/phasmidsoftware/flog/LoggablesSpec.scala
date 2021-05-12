@@ -77,10 +77,10 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
   }
 
   // TODO invoke these via PrivateMethodTester...
-//  it should "valueToLog" in {
-//    valueToLog[Int, (Int, Int)]((42, 99), 0) shouldBe "42"
-//    valueToLog[Int, (Int, Int)]((42, 99), 1) shouldBe "99"
-//  }
+  //  it should "valueToLog" in {
+  //    valueToLog[Int, (Int, Int)]((42, 99), 0) shouldBe "42"
+  //    valueToLog[Int, (Int, Int)]((42, 99), 1) shouldBe "99"
+  //  }
 
   it should "loggable1" in {
     case class Onesy(x: Int)
