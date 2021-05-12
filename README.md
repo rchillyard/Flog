@@ -132,6 +132,17 @@ Normally, of course, you can leave this parameter unset.
 Please see _worksheets/FlogExamples.sc_ for examples of usage.
 Additionally, see any of the spec files, especially _FlogSpec_ for more definition on how to use the package.
 
+If you wish to make a class loggable which is not a case class (or other _Product_),
+then you can do it something like the following (basically you must define the _toLog_ method):
+
+    class Complex(val real: Double, val imag: Double)
+    object Complex {
+      trait LoggableComplex extends Loggable[Complex] {
+        def toLog(t: Complex): String = s"${t.real} + i${t.imag}"
+      }
+      implicit object LoggableComplex extends LoggableComplex
+    }
+
 ### Variations
 _Flog_ is a case class which has two members: _loggingFunction_ and _errorFunction_.
 Normally, you will use the defaults for these.

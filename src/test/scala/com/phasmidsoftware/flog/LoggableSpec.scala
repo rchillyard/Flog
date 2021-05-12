@@ -7,6 +7,17 @@ package com.phasmidsoftware.flog
 import org.scalatest.flatspec
 import org.scalatest.matchers.should
 
+
+class Complex(val real: Double, val imag: Double)
+
+object Complex {
+  trait LoggableComplex extends Loggable[Complex] {
+    def toLog(t: Complex): String = s"${t.real} + i${t.imag}"
+  }
+
+  implicit object LoggableComplex extends LoggableComplex
+}
+
 //noinspection ScalaStyle
 class LoggableSpec extends flatspec.AnyFlatSpec with should.Matchers {
 
@@ -36,5 +47,14 @@ class LoggableSpec extends flatspec.AnyFlatSpec with should.Matchers {
     "Hello" !! 1.0
     "Hello" !! BigInt(1)
     "Hello" !! BigDecimal(1)
+  }
+
+  it should "work for custom class" in {
+    val z = new Complex(1, 0)
+    val flog = Flog()
+    import flog._
+
+    // NOTE: this call should write to the log file but there are no tests here.
+    "One" !! z
   }
 }
