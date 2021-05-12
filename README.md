@@ -1,5 +1,10 @@
 [![CircleCI](https://circleci.com/gh/rchillyard/Flog.svg?style=svg)](https://circleci.com/gh/rchillyard/Flog)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/aa3d2f49a67f4ce58b702f4403092290)](https://www.codacy.com/gh/rchillyard/Flog/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rchillyard/Flog&amp;utm_campaign=Badge_Grade)
+![GitHub Top Languages](https://img.shields.io/github/languages/top/rchillyard/Flog)
+![GitHub](https://img.shields.io/github/license/rchillyard/Flog)
+![GitHub last commit](https://img.shields.io/github/last-commit/rchillyard/Flog)
+![GitHub issues](https://img.shields.io/github/issues-raw/rchillyard/Flog)
+![GitHub issues by-label](https://img.shields.io/github/issues/rchillyard/Flog/bug)
 
 # Flog
 This is a set of utilities for functional logging.
@@ -167,6 +172,8 @@ If you choose to use a different logger function, you may need to change these d
   of the current scope.
   
 # Version
+1.0.6 Issue #12: Minor changes to iterableLoggable;
+
 1.0.5 Issue #10: Some changes to implementation of Iterable, including not evaluating non-strict collections.
 
 1.0.4 Issue #7: Provides a more functional way of setting an explicit logger or disabling logging.

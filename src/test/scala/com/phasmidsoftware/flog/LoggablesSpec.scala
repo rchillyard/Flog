@@ -45,6 +45,11 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
     target.toLog(Seq(42, 99, 101, 357, 911)) shouldBe "[42, 99, 101, ... (1 element), ... 911]"
   }
 
+  it should "iterableLoggable3" in {
+    val target = iterableLoggable[Int]("<>", 4)
+    target.toLog(Seq(42, 99, 101, 357, 911, 1001, 2048, 4192)) shouldBe "<42, 99, 101, 357, ... (3 elements), ... 4192>"
+  }
+
   it should "tryLoggable" in {
     val target = tryLoggable[Int]
     target.toLog(Try("1".toInt)) shouldBe "Success(1)"
@@ -72,10 +77,10 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
   }
 
   // TODO invoke these via PrivateMethodTester...
-//  it should "valueToLog" in {
-//    valueToLog[Int, (Int, Int)]((42, 99), 0) shouldBe "42"
-//    valueToLog[Int, (Int, Int)]((42, 99), 1) shouldBe "99"
-//  }
+  //  it should "valueToLog" in {
+  //    valueToLog[Int, (Int, Int)]((42, 99), 0) shouldBe "42"
+  //    valueToLog[Int, (Int, Int)]((42, 99), 1) shouldBe "99"
+  //  }
 
   it should "loggable1" in {
     case class Onesy(x: Int)

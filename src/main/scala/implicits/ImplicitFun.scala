@@ -28,12 +28,12 @@ object ImplicitFun extends App {
 
   println("Monday".day)
 
-  def hello(s: String)(implicit w: String, y: Int) = {
+  def hello(s: String)(implicit w: String, y: Int): Unit = {
     println(s"Hello, $s: $w")
   }
 
-  implicit val z = "Patriot's Day"
-  implicit val q = 42
+  implicit val z: String = "Patriot's Day"
+  implicit val q: Int = 42
   hello("Monday")
 
   val pday = Holiday("Monday", "Patriot's Day")

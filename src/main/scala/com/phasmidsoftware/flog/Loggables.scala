@@ -47,7 +47,7 @@ trait Loggables {
    * @tparam T the underlying type of any list to be logged.
    * @return Loggable[ Iterable[T] ].
    */
-  def iterableLoggable[T: Loggable](bookends: String = "[]"): Loggable[Iterable[T]] = {
+  def iterableLoggable[T: Loggable](bookends: String = "[]", atLeast: Int = 3): Loggable[Iterable[T]] = {
     case Nil => "<empty>"
     case LazyList() => "<empty lazy list>"
     case ll@_ #:: _ =>
@@ -60,8 +60,13 @@ trait Loggables {
       val ws = ts map tl.toLog
       val init = ws.init
       val n = init.size
-      val (prefix, z) = if (n > 3) (init take 3, n - 3) else (init, 0)
-      val remainder = if (z > 0) s"... ($z element" + (if (z > 1) "s" else "" + "), ... ") else ""
+      val (prefix, z) = if (n > atLeast) (init take atLeast, n - atLeast) else (init, 0)
+      val remainder =
+        if (z > 0)
+          s"... ($z element" + (
+              (if (z > 1) "s" else "")
+                  + "), ... ")
+        else ""
       val prefixString = if (prefix.nonEmpty) prefix.mkString("", ", ", ", ") else ""
       require(bookends.length == 2, "Bookends must have exactly two characters")
       bookends.substring(0, 1) + prefixString + remainder + ws.last + bookends.substring(1, 2)

@@ -2,13 +2,13 @@ organization := "com.phasmidsoftware"
 
 name := "flog"
 
-version := "1.0.5"
+version := "1.0.6"
 
 scalaVersion := "2.13.5"
 
 scalacOptions += "-deprecation"
 
-val scalaTestVersion = "3.1.1"
+val scalaTestVersion = "3.2.7"
 val logBackVersion = "1.2.3"
 val slf4jVersion = "1.7.30"
 
