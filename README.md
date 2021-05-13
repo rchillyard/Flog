@@ -183,6 +183,8 @@ If you choose to use a different logger function, you may need to change these d
   of the current scope.
   
 # Version
+1.0.7 Issue #14: Implemented level-based logging;
+
 1.0.6 Issue #12: Minor changes to iterableLoggable;
 
 1.0.5 Issue #10: Some changes to implementation of Iterable, including not evaluating non-strict collections.
