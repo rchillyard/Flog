@@ -5,7 +5,6 @@
 package com.phasmidsoftware.flog
 
 import com.phasmidsoftware.flog.Loggables.fieldNames
-
 import scala.collection.immutable.LazyList.#::
 import scala.collection.{SeqMap, View}
 import scala.concurrent.{ExecutionContext, Future}
@@ -117,14 +116,15 @@ trait Loggables {
 
   /**
    * Method to return a Loggable[ Future[T] ].
+   * Note that an onComplete is established which utilizes the debug method of the given Logger.
    *
    * @tparam T the underlying type of the first parameter of the input to the render method.
    * @return a Loggable[ Future[T] ].
    */
-  def futureLoggable[T: Loggable](implicit logFunc: LogFunction, ec: ExecutionContext): Loggable[Future[T]] = (tf: Future[T]) => {
+  def futureLoggable[T: Loggable](implicit logger: Logger, ec: ExecutionContext): Loggable[Future[T]] = (tf: Future[T]) => {
     val uuid = java.util.UUID.randomUUID
     implicit val tl: Loggable[Try[T]] = tryLoggable
-    tf.onComplete(ty => logFunc(s"Future completed ($uuid): ${tl.toLog(ty)}"))
+    tf.onComplete(ty => logger.debug(s"Future completed ($uuid): ${tl.toLog(ty)}"))
     s"Future: promise ($uuid) created... "
   }
 

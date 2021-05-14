@@ -4,11 +4,10 @@
 
 package com.phasmidsoftware.flog
 
+import java.time.LocalDateTime
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should
 import org.scalatest.{BeforeAndAfterEach, flatspec}
-
-import java.time.LocalDateTime
 import scala.concurrent.Future
 import scala.language.implicitConversions
 import scala.util.matching.Regex
@@ -35,7 +34,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   it should "$bang$bang 0" in {
     val sb = new StringBuilder
-    val flog = Flog(GenericLogFunction(sb.append))
+    val flog = Flog(sb)
     import flog._
     getString !! 1
     if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
@@ -44,7 +43,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   it should "$bang$bang 1" in {
     val sb = new StringBuilder
-    val flog = Flog(GenericLogFunction(sb.append))
+    val flog = Flog(sb)
     import flog._
     getString !! Seq(1, 2, 3)
     if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
@@ -55,11 +54,11 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   it should "$bang$bang 2" in {
     val sb = new StringBuilder
 
-    val flog = Flog(GenericLogFunction(_ => ()))
+    val flog = Flog(GenericLogger(BitBucketLogFunction))
     import flog._
 
     getString !! 1
-    evaluated shouldBe true
+    evaluated shouldBe false
     sb.toString shouldBe ""
   }
 
@@ -88,7 +87,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
    */
   it should "$bang$bang 5" in {
     // NOTE: check the log files to see if FlogSpec was the class of record.
-    val flog = Flog(Flog.defaultLogFunction[FlogSpec])
+    val flog = Flog(Flog.defaultLogger[FlogSpec])
     import flog._
     val x = getString !! 99
     evaluated shouldBe true
@@ -98,9 +97,9 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   // NOTE: sometimes this test will fail. Not to worry.
   ignore should "$bang$bang 6" in {
     val sb: StringBuilder = new StringBuilder()
-    val flog = Flog(GenericLogFunction(sb.append))
+    implicit val logger: Logger = Logger(sb)
+    val flog = Flog(sb)
     import scala.concurrent.ExecutionContext.Implicits.global
-    implicit val logFunc: LogFunction = flog.loggingFunction
     implicit val z: Loggable[Future[Int]] = new Loggables {}.futureLoggable[Int]
     import flog._
     val eventualInt = getString !! Future[Int] {
@@ -133,7 +132,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   it should "$bang$bang 9" in {
     val sb = new StringBuilder
-    val flog = Flog(GenericLogFunction(sb.append))
+    val flog = Flog(sb)
     import flog._
     getString !! LazyList.from(1)
     // NOTE sb should not be empty but it might be if you run this unit test on its own.
@@ -142,7 +141,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   it should "$bang$bang 10" in {
     val sb = new StringBuilder
-    val flog = Flog(GenericLogFunction(sb.append))
+    val flog = Flog(sb)
     import flog._
     getString !! List(1, 2, 3).view.map(_.toString)
     // NOTE sb should not be empty but it might be if you run this unit test on its own.
@@ -151,7 +150,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   it should "$bang$bang 11" in {
     val sb: StringBuilder = new StringBuilder
-    val flog = Flog(GenericLogFunction(sb.append))
+    val flog = Flog(sb)
     import flog._
     implicit val z: Loggable[Map[String, String]] = new Loggables {}.mapLoggable[String, String]()
     getString !! Map("a" -> "alpha", "b" -> "bravo")
@@ -161,7 +160,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   it should "$bang$bang 12" in {
     val sb: StringBuilder = new StringBuilder
-    val flog = Flog(GenericLogFunction(sb.append))
+    val flog = Flog(sb)
     import flog._
     implicit val z: Loggable[LocalDateTime] = new Loggables {}.anyLoggable[LocalDateTime]
     getString !! Seq(LocalDateTime.now)
@@ -177,7 +176,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   it should "$bar$bang1" in {
     val sb: StringBuilder = new StringBuilder()
 
-    val flog = Flog(GenericLogFunction(sb.append))
+    val flog = Flog(sb)
     import flog._
     getString |! 1
     evaluated shouldBe false
@@ -186,7 +185,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   it should "$bar$bang2" in {
     val sb = new StringBuilder
-    val flog = Flog(GenericLogFunction(sb.append))
+    val flog = Flog(sb)
     import flog._
     "Hello" |! List(1, 2, 3, 4)
     sb.toString shouldBe ""
@@ -194,7 +193,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   it should "$bang$bar1" in {
     val sb = new StringBuilder
-    val flog = Flog().withLogger(GenericLogFunction(sb.append))
+    val flog = Flog(sb)
     import flog._
     val now = LocalDateTime.now
     "Hello" !| now
@@ -215,7 +214,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   it should "debug 0" in {
     val sb = new StringBuilder
-    val flog = Flog(GenericLogFunction(sb.append))
+    val flog = Flog(sb)
     import flog._
     getString debug 1
     if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")

@@ -4,9 +4,7 @@
 
 package com.phasmidsoftware.flog
 
-import org.slf4j
-import org.slf4j.{Logger, LoggerFactory}
-
+import org.slf4j.LoggerFactory
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
 
@@ -35,10 +33,10 @@ import scala.util.{Failure, Success, Try}
  * <dt>(3)</dt> <dd>remove the !! expressions.</dd>
  * </dl>
  * </p>
- * 
- * @param loggingFunction the LogFunction which is to be used by this Flog.
+ *
+ * @param logger the Logger which is to be used by this Flog.
  */
-case class Flog(logger: Logger, errorFunction: LogFunction) {
+case class Flog(logger: Logger) {
 
   import Flog._
 
@@ -159,7 +157,7 @@ case class Flog(logger: Logger, errorFunction: LogFunction) {
      * @return if xy is successful, then xy, otherwise if Failure(e) then Failure(LoggedException(e)).
      */
     def !!![X: Loggable](xy: Try[X]): Try[X] = xy.transform(Success(_), e => {
-      errorFunction(s"$message $e")
+      logger.error(s"$message", e)
       Failure(LoggedException(e))
     })
 
@@ -176,7 +174,7 @@ case class Flog(logger: Logger, errorFunction: LogFunction) {
    * @param logger an instance of LogFunction.
    * @return a new instance of Flog.
    */
-  def withLogger(logger: Logger): Flog = Flog(logger, errorFunction)
+  def withLogger(logger: Logger): Flog = Flog(logger)
 
   /**
    * Use this method to create a new Flog with logging disabled.
@@ -209,13 +207,6 @@ case class Flog(logger: Logger, errorFunction: LogFunction) {
    * @return the value of x.
    */
   def logX[X](function: LogFunction)(prefix: => String)(x: => X): X = logLoggable(function)(prefix)(x)(new Loggables {}.anyLoggable)
-
-  /**
-   * We make this available for any Loggers (such as futureLogger) which might require a LogFunction.
-   */
-  implicit object LogFunction$$ extends LogFunction {
-    def apply(w: => String): Unit = ???
-  }
 }
 
 /**
@@ -227,15 +218,16 @@ object Flog {
    *
    * @return an instance of Flog.
    */
-  def apply(): Flog = Flog(defaultLogFunction[Flog])
+  def apply(): Flog = Flog(defaultLogger[Flog])
 
   /**
-   * Method to instantiate a normal instance of Flog with logging via the given function).
+   * Method to create a Flog from a StringBuilder.
+   * Mostly intended for testing.
    *
-   * @param loggerFunction the LogFunction to use for logging.
+   * @param sb the StringBuilder.
    * @return an instance of Flog.
    */
-  def apply(loggerFunction: GenericLogFunction): Flog = Flog(loggerFunction, defaultErrorFunction[Flog])
+  def apply(sb: StringBuilder): Flog = Flog(GenericLogger(GenericLogFunction(sb.append)))
 
   /**
    * Use this method to create an instance of Flog with the default logging function based on class T.
@@ -243,7 +235,7 @@ object Flog {
    * @tparam T the class for which you want to log.
    * @return a new instance of Flog.
    */
-  def forClass[T: ClassTag]: Flog = Flog(defaultLogFunction[T], defaultErrorFunction[T])
+  def forClass[T: ClassTag]: Flog = Flog(defaultLogger)
 
   /**
    * Use this method to create an instance of Flog with the default logging function based on clazz.
@@ -251,23 +243,7 @@ object Flog {
    * @param clazz the class for which you want to log.
    * @return a new instance of Flog.
    */
-  def forClass(clazz: Class[_]): Flog = Flog(GenericLogFunction(getDefaultLogger(clazz).debug), GenericLogFunction(getDefaultLogger(clazz).warn))
-
-  /**
-   * Method to yield a default logging function (uses LoggerFactory.getLogger) for the class T.
-   *
-   * @tparam T the class with which the logging messages should be associated.
-   * @return a LogFunction.
-   */
-  def defaultLogFunction[T: ClassTag]: GenericLogFunction = GenericLogFunction(getDefaultLogger.debug)
-
-  /**
-   * Method to yield a default error logging function (uses LoggerFactory.getLogger) for the class T.
-   *
-   * @tparam T the class with which the logging messages should be associated.
-   * @return a LogFunction.
-   */
-  def defaultErrorFunction[T: ClassTag]: GenericLogFunction = GenericLogFunction(getDefaultLogger.warn)
+  def forClass(clazz: Class[_]): Flog = Flog(defaultLogger(clazz))
 
   /**
    * Method which, as a side-effect, invokes function f on the given value of x.
@@ -285,7 +261,7 @@ object Flog {
   def tee[X](f: X => Unit)(x: => X): X = {
     lazy val xx: X = x
     Try(f(xx)) match {
-      case Failure(e) => getDefaultLogger[Flog].warn("Exception thrown in tee function", e)
+      case Failure(e) => defaultLogger[Flog].error("Exception thrown in tee function", e)
       case _ =>
     }
     xx
@@ -297,7 +273,7 @@ object Flog {
    * @tparam T the class to be associated with logging.
    * @return a Logger.
    */
-  private def getDefaultLogger[T](implicit classTag: ClassTag[T]): Logger = getDefaultLogger(classTag.runtimeClass)
+  def defaultLogger[T](implicit classTag: ClassTag[T]): Logger = defaultLogger(classTag.runtimeClass)
 
   /**
    * Get the default logger from LoggerFactory that is associated with the given clazz.
@@ -305,28 +281,52 @@ object Flog {
    * @param clazz the class to be associated with logging.
    * @return a Logger.
    */
-  private def getDefaultLogger(clazz: Class[_]): Logger = Slf4jLogger(LoggerFactory.getLogger(clazz))
+  def defaultLogger(clazz: Class[_]): Logger = Slf4jLogger(LoggerFactory.getLogger(clazz))
 }
 
 trait Logger {
   def trace: LogFunction
+
   def debug: LogFunction
+
   def info: LogFunction
+
   def warn: LogFunction
-  def error: LogFunction
-  def none: LogFunction = bitBucket
+
+  def error: (String, Throwable) => Unit = (w, e) => {
+    System.err.println(s"$w: exception:")
+    e.printStackTrace(System.err)
+  }
+
+  def none: LogFunction = BitBucketLogFunction
+}
+
+object Logger {
+  def apply(logger: org.slf4j.Logger): Logger = Slf4jLogger(logger)
+
+  def apply(sb: StringBuilder): Logger = GenericLogger(w => sb.append(w))
 }
 
 case class Slf4jLogger(logger: org.slf4j.Logger) extends Logger {
-  def trace: LogFunction = logger.trace _
+  def trace: LogFunction = w => logger.trace(w)
 
-  def debug: LogFunction = logger.debug _
+  def debug: LogFunction = w => logger.debug(w)
 
-  def info: LogFunction = logger.info _
+  def info: LogFunction = w => logger.info(w)
 
-  def warn: LogFunction = logger.warn _
+  def warn: LogFunction = w => logger.warn(w)
 
-  def error: LogFunction = logger.error _
+  override def error: (String, Throwable) => Unit = logger.error
+}
+
+case class GenericLogger(logFunction: LogFunction) extends Logger {
+  def trace: LogFunction = logFunction
+
+  def debug: LogFunction = logFunction
+
+  def info: LogFunction = logFunction
+
+  def warn: LogFunction = logFunction
 }
 
 case object BitBucket extends Logger {
@@ -337,9 +337,6 @@ case object BitBucket extends Logger {
   def info: LogFunction = BitBucketLogFunction
 
   def warn: LogFunction = BitBucketLogFunction
-
-  def error: LogFunction = BitBucketLogFunction
-
 }
 
 trait LogFunction {
@@ -350,8 +347,6 @@ trait LogFunction {
    */
   def apply(w: => String): Unit
 }
-
-case class StandardLogFunction()
 
 /**
  * LogFunction which is a function of String => Unit (except that the String parameter is defined to be call-by-name).
