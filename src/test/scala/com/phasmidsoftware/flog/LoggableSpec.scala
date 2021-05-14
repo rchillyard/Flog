@@ -32,7 +32,7 @@ class LoggableSpec extends flatspec.AnyFlatSpec with should.Matchers {
 
   it should "work with import" in {
     // NOTE: these calls should write to the log file but there are no tests here.
-    val flog = Flog()
+    val flog = Flog[LoggableSpec]
     import flog._
 
     "Hello" !! () // log an instance of Unit
@@ -51,7 +51,7 @@ class LoggableSpec extends flatspec.AnyFlatSpec with should.Matchers {
 
   it should "work for custom class" in {
     val z = new Complex(1, 0)
-    val flog = Flog()
+    val flog = Flog[LoggableSpec]
     import flog._
 
     // NOTE: this call should write to the log file but there are no tests here.

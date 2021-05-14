@@ -8,6 +8,7 @@ import java.time.LocalDateTime
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should
 import org.scalatest.{BeforeAndAfterEach, flatspec}
+import org.slf4j
 import scala.concurrent.Future
 import scala.language.implicitConversions
 import scala.util.matching.Regex
@@ -54,7 +55,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   it should "$bang$bang 2" in {
     val sb = new StringBuilder
 
-    val flog = Flog(GenericLogger(BitBucketLogFunction))
+    val flog = Flog(Logger.bitBucket)
     import flog._
 
     getString !! 1
@@ -64,7 +65,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   it should "$bang$bang 3" in {
     val sb = new StringBuilder
-    val flog = Flog().disabled
+    val flog = Flog(sb).disabled
     import flog._
     getString !! 1
     evaluated shouldBe false
@@ -75,7 +76,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
    * In this test, we should see logging output according to the value of Flog.defaultLogFunction[Flog]
    */
   it should "$bang$bang 4" in {
-    val flog = Flog()
+    val flog = Flog[FlogSpec]
     import flog._
     val x = getString !! 1
     evaluated shouldBe true
@@ -118,14 +119,14 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   it should "$bang$bang 7" in {
     // NOTE: check the log files to see if Flog was the class of record.
-    val flog = Flog.forClass[Flog]
+    val flog = Flog[FlogSpec]
     import flog._
     getString !! Seq(1, 1, 2, 3, 5, 8)
   }
 
   it should "$bang$bang 8" in {
     // NOTE: check the log files to see if FlogSpec was the class of record.
-    val flog = Flog.forClass(classOf[FlogSpec])
+    val flog = Flog(classOf[FlogSpec])
     import flog._
     getString !! Seq(1, 1, 2, 3, 5, 8)
   }
@@ -201,7 +202,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   }
 
   it should "$bang$bang$bang 1/0" in {
-    val flog = Flog()
+    val flog = Flog[FlogSpec]
     import flog._
     val result = getString !!! Try(1 / 0)
     result match {
@@ -213,6 +214,13 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   }
 
   it should "debug 0" in {
+    val flog = Flog[FlogSpec]
+    import flog._
+    getString !? 1
+    // The message "Hello: 1" should appear in the logs provided that debug is enabled.
+  }
+
+  it should "debug 1" in {
     val sb = new StringBuilder
     val flog = Flog(sb)
     import flog._
@@ -221,6 +229,21 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     if (sb.toString != "log: Hello: 1") println("sb should not be empty but it will be if you run this unit test on its own")
   }
 
+  it should "debug 2" in {
+    val logger: slf4j.Logger = MockLogger.defaultLogger[FlogSpec]
+    val flog: Flog = Flog(logger)
+    import flog._
+    getString debug 1
+    logger.toString shouldBe "class com.phasmidsoftware.flog.FlogSpec: DEBUG: Hello: 1\n"
+    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+  }
+
+  it should "debug 3" in {
+    val flog = Flog(System.out)
+    import flog._
+    getString debug 1
+    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+    // Should see message in console.
+  }
 
 }
-

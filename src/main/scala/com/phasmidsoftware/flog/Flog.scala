@@ -4,6 +4,7 @@
 
 package com.phasmidsoftware.flog
 
+import java.io.{OutputStream, PrintStream, PrintWriter}
 import org.slf4j.LoggerFactory
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
@@ -181,7 +182,7 @@ case class Flog(logger: Logger) {
    *
    * @return a new instance of Flog.
    */
-  def disabled: Flog = withLogger(BitBucket)
+  def disabled: Flog = withLogger(Logger.bitBucket)
 
 
   /**
@@ -218,7 +219,22 @@ object Flog {
    *
    * @return an instance of Flog.
    */
-  def apply(): Flog = Flog(defaultLogger[Flog])
+  def apply[T: ClassTag]: Flog = Flog(defaultLogger)
+
+  /**
+   * Use this method to create an instance of Flog with the default logging function based on clazz.
+   *
+   * @param clazz the class for which you want to log.
+   * @return a new instance of Flog.
+   */
+  def apply(clazz: Class[_]): Flog = Flog(defaultLogger(clazz))
+
+  /**
+   * Method to instantiate a normal instance of Flog with logging via the default logging function (based on the class Flog).
+   *
+   * @return an instance of Flog.
+   */
+  def apply(logger: org.slf4j.Logger): Flog = Flog(Logger(logger))
 
   /**
    * Method to create a Flog from a StringBuilder.
@@ -227,23 +243,34 @@ object Flog {
    * @param sb the StringBuilder.
    * @return an instance of Flog.
    */
-  def apply(sb: StringBuilder): Flog = Flog(GenericLogger(GenericLogFunction(sb.append)))
+  def apply(sb: StringBuilder): Flog = Flog(Logger(sb))
 
   /**
-   * Use this method to create an instance of Flog with the default logging function based on class T.
+   * Method to create a Flog from a StringBuilder.
+   * Mostly intended for testing.
    *
-   * @tparam T the class for which you want to log.
-   * @return a new instance of Flog.
+   * @param a the Appendable.
+   * @return an instance of Flog.
    */
-  def forClass[T: ClassTag]: Flog = Flog(defaultLogger)
+  def apply(a: Appendable): Flog = Flog(Logger(a))
 
   /**
-   * Use this method to create an instance of Flog with the default logging function based on clazz.
+   * Method to create a Flog from a StringBuilder.
+   * Mostly intended for testing.
    *
-   * @param clazz the class for which you want to log.
-   * @return a new instance of Flog.
+   * @param s the PrintStream.
+   * @return an instance of Flog.
    */
-  def forClass(clazz: Class[_]): Flog = Flog(defaultLogger(clazz))
+  def apply(s: PrintStream): Flog = Flog(new PrintWriter(s))
+
+  /**
+   * Method to create a Flog from a StringBuilder.
+   * Mostly intended for testing.
+   *
+   * @param o the OutputStream.
+   * @return an instance of Flog.
+   */
+  def apply(o: OutputStream): Flog = Flog(new PrintWriter(o))
 
   /**
    * Method which, as a side-effect, invokes function f on the given value of x.
@@ -298,25 +325,35 @@ trait Logger {
     e.printStackTrace(System.err)
   }
 
-  def none: LogFunction = BitBucketLogFunction
+  def none: LogFunction = LogFunction.bitBucketLogFunction
 }
 
 object Logger {
+  def forClass(clazz: Class[_]): Logger = Flog.defaultLogger(clazz)
+
+  def apply[T: ClassTag]: Logger = Flog.defaultLogger
+
   def apply(logger: org.slf4j.Logger): Logger = Slf4jLogger(logger)
 
-  def apply(sb: StringBuilder): Logger = GenericLogger(w => sb.append(w))
+  def apply(sb: StringBuilder): Logger = GenericLogger(LogFunction(sb))
+
+  def apply(a: Appendable): Logger = GenericLogger(LogFunction(a))
+
+  def apply(f: LogFunction): Logger = GenericLogger(f)
+
+  def bitBucket: Logger = apply(GenericLogFunction(_ => ()).disable)
 }
 
 case class Slf4jLogger(logger: org.slf4j.Logger) extends Logger {
-  def trace: LogFunction = w => logger.trace(w)
+  def trace: LogFunction = LogFunction(w => if (logger.isTraceEnabled) logger.trace(w) else ())
 
-  def debug: LogFunction = w => logger.debug(w)
+  def debug: LogFunction = LogFunction(w => if (logger.isDebugEnabled()) logger.debug(w) else ())
 
-  def info: LogFunction = w => logger.info(w)
+  def info: LogFunction = LogFunction(w => if (logger.isInfoEnabled) logger.info(w) else ())
 
-  def warn: LogFunction = w => logger.warn(w)
+  def warn: LogFunction = LogFunction(w => if (logger.isWarnEnabled) logger.warn(w) else ())
 
-  override def error: (String, Throwable) => Unit = logger.error
+  override def error: (String, Throwable) => Unit = (w, x) => if (logger.isWarnEnabled) logger.warn(w) else super.error(w, x)
 }
 
 case class GenericLogger(logFunction: LogFunction) extends Logger {
@@ -329,19 +366,14 @@ case class GenericLogger(logFunction: LogFunction) extends Logger {
   def warn: LogFunction = logFunction
 }
 
-case object BitBucket extends Logger {
-  def trace: LogFunction = BitBucketLogFunction
-
-  def debug: LogFunction = BitBucketLogFunction
-
-  def info: LogFunction = BitBucketLogFunction
-
-  def warn: LogFunction = BitBucketLogFunction
-}
-
+/**
+ * LogFunction which, almost, extends String => Unit.
+ * BUT, and this is a big but, if you simply write type LogFunction = String => Unit,
+ * you won't get the benefit of call-by-name parameter handling.
+ */
 trait LogFunction {
   /**
-   * Apply method which, if enabled, processes the given call-by-name string.
+   * Apply method which processes the given call-by-name string.
    *
    * @param w a String to be logged.
    */
@@ -372,12 +404,17 @@ case class GenericLogFunction(f: String => Any, enabled: Boolean = true) extends
   def disable: LogFunction = GenericLogFunction(f, enabled = false)
 }
 
-object GenericLogFunction {
-  val noop: LogFunction = GenericLogFunction(_ => ()).disable
-}
+object LogFunction {
 
-object BitBucketLogFunction extends LogFunction {
-  def apply(w: => String): Unit = ()
+  def apply(f: String => Any): LogFunction = GenericLogFunction(f)
+
+  def apply(sb: StringBuilder): LogFunction = GenericLogFunction(sb.append)
+
+  def apply(a: Appendable): LogFunction = GenericLogFunction(a.append)
+
+  val noop: LogFunction = GenericLogFunction(_ => ()).disable
+
+  val bitBucketLogFunction: LogFunction = noop
 }
 
 case class LoggedException(e: Throwable) extends Exception("The cause of this exception has already been logged", e)

@@ -15,7 +15,6 @@ object Holiday {
   }
 }
 
-
 object ImplicitFun extends App {
 
   implicit class RedSox(w: String) {
@@ -36,9 +35,9 @@ object ImplicitFun extends App {
   implicit val q: Int = 42
   hello("Monday")
 
-  val pday = Holiday("Monday", "Patriot's Day")
+  val pDay = Holiday("Monday", "Patriot's Day")
 
-  show(pday)
+    show(pDay)
 
   def show[T: Showable](t: T): Unit = implicitly[Showable[T]].show(t)
 }
