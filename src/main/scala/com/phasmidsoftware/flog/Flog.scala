@@ -4,8 +4,9 @@
 
 package com.phasmidsoftware.flog
 
-import java.io.{OutputStream, PrintStream, PrintWriter}
 import org.slf4j.LoggerFactory
+
+import java.io.{OutputStream, PrintStream, PrintWriter}
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
 
@@ -15,21 +16,19 @@ import scala.util.{Failure, Success, Try}
  * Here are the steps you need to follow to enable logging:
  *
  * <ol>
- * <li>Instantiate an new instance of Flog, specifying the parameter value described below--or
- * simply invoke the apply method: <code>Flog()</code>.
- * <dl>
- * <dt>loggingFunction</dt><dd>by default, this will be a function which uses the debug method of a logger based on this class;</dd>
- * <dt>errorFunction</dt><dd>by default, this will be a function which uses the warn method of a logger based on this class;</dd>
- * </dl>
+ * <li>To instantiate a new instance of Flog, specifying the class for which you are logging:
+ * simply invoke the apply method: <code>Flog[MyClass]</code>.
  * Assuming that you named the variable "flog", then "import flog._"</li>
- * <li>Create a String which will form the log message, follow it with "!!" and follow that with the expression you want to log.
+ * <li>Create a String which will form the log message, follow it with "!!" (info), or "!?" (debug), or other method,
+ * and follow that with the expression you want to log.
  * The construct in this form (including the message and "!!") will yield the value of the expression.</li>
  * <li>Most of the time, this is all you need to do (see README.md for much more information on this).</li>
  * </ol>
  * <p>
  * There are several ways to turn logging off (temporarily or permanently) once you've added the log expressions:
  * <dl>
- * <dt>(1A)</dt> <dd>replace the !! method with the |! method for each expression you wish to silence;</dd>
+ * <dt>(0)</dt> <dd>configure the logger (using logback.xml or similar) to ignore the particular log level;</dd>
+ * <dt>(1)</dt> <dd>replace the !! method with the |! method for each expression you wish to silence;</dd>
  * <dt>(2)</dt> <dd>use a disabled Flog with flog.disabled (silences all flogging everywhere);</dd>
  * <dt>(3)</dt> <dd>remove the !! expressions.</dd>
  * </dl>
@@ -60,7 +59,7 @@ case class Flog(logger: Logger) {
     def !![X: Loggable](x: => X): X = info(x)
 
     /**
-     * Method to generate a log entry for a (Loggable) value of X.
+     * Method to generate an INFO-level log entry for a (Loggable) value of X.
      * Logging is performed as a side effect.
      * Rendering of the x value is via the toLog method of the implicit Loggable[X].
      *
@@ -80,7 +79,7 @@ case class Flog(logger: Logger) {
     def !?[X: Loggable](x: => X): X = debug(x)
 
     /**
-     * Method to generate a log entry for a (Loggable) value of X.
+     * Method to generate a DEBUG-level log entry for a (Loggable) value of X.
      * Logging is performed as a side effect.
      * Rendering of the x value is via the toLog method of the implicit Loggable[X].
      *
@@ -89,6 +88,28 @@ case class Flog(logger: Logger) {
      * @return the value of x.
      */
     def debug[X: Loggable](x: => X): X = logLoggable(logger.debug)(message)(x)
+
+    /**
+     * Method to generate a TRACE-level log entry for a (Loggable) value of X.
+     * Logging is performed as a side effect.
+     * Rendering of the x value is via the toLog method of the implicit Loggable[X].
+     *
+     * @param x the value to be logged.
+     * @tparam X the type of x, which must provide implicit evidence of being Loggable.
+     * @return the value of x.
+     */
+    def trace[X: Loggable](x: => X): X = logLoggable(logger.trace)(message)(x)
+
+    /**
+     * Method to generate a WARN-level log entry for a (Loggable) value of X.
+     * Logging is performed as a side effect.
+     * Rendering of the x value is via the toLog method of the implicit Loggable[X].
+     *
+     * @param x the value to be logged.
+     * @tparam X the type of x, which must provide implicit evidence of being Loggable.
+     * @return the value of x.
+     */
+    def warn[X: Loggable](x: => X): X = logLoggable(logger.warn)(message)(x)
 
     /**
      * Method to generate a log entry for a Map[K, V].
@@ -183,7 +204,6 @@ case class Flog(logger: Logger) {
    * @return a new instance of Flog.
    */
   def disabled: Flog = withLogger(Logger.bitBucket)
-
 
   /**
    * Method to generate a log message based on x, pass it to the logFunc, and return the x value.

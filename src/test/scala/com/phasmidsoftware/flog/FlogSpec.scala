@@ -4,11 +4,12 @@
 
 package com.phasmidsoftware.flog
 
-import java.time.LocalDateTime
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should
 import org.scalatest.{BeforeAndAfterEach, flatspec}
 import org.slf4j
+
+import java.time.LocalDateTime
 import scala.concurrent.Future
 import scala.language.implicitConversions
 import scala.util.matching.Regex
@@ -244,6 +245,27 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     getString debug 1
     if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
     // Should see message in console.
+  }
+
+  it should "trace" in {
+    val flog = Flog[FlogSpec]
+    import flog._
+    getString trace 1
+    // The message "Hello: 1" should appear in the logs provided that debug is enabled.
+  }
+
+  it should "info" in {
+    val flog = Flog[FlogSpec]
+    import flog._
+    getString info 1
+    // The message "Hello: 1" should appear in the logs provided that debug is enabled.
+  }
+
+  it should "warn" in {
+    val flog = Flog[FlogSpec]
+    import flog._
+    getString warn 1
+    // The message "Hello: 1" should appear in the logs provided that debug is enabled.
   }
 
 }
