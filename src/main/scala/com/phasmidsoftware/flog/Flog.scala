@@ -6,7 +6,7 @@ package com.phasmidsoftware.flog
 
 import org.slf4j.LoggerFactory
 
-import java.io.{OutputStream, PrintStream, PrintWriter}
+import java.io.{Flushable, OutputStream, PrintStream, PrintWriter}
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
 
@@ -36,7 +36,7 @@ import scala.util.{Failure, Success, Try}
  *
  * @param logger the Logger which is to be used by this Flog.
  */
-case class Flog(logger: Logger) {
+case class Flog(logger: Logger) extends AutoCloseable {
 
   import Flog._
 
@@ -228,6 +228,11 @@ case class Flog(logger: Logger) {
    * @return the value of x.
    */
   def logX[X](function: LogFunction)(prefix: => String)(x: => X): X = logLoggable(function)(prefix)(x)(new Loggables {}.anyLoggable)
+
+  /**
+   * Close this Flog.
+   */
+  def close(): Unit = logger.close()
 }
 
 /**
@@ -239,7 +244,7 @@ object Flog {
    *
    * @return an instance of Flog.
    */
-  def apply[T: ClassTag]: Flog = Flog(defaultLogger)
+  def apply[T: ClassTag]: Flog = Flog(Logger[T])
 
   /**
    * Use this method to create an instance of Flog with the default logging function based on clazz.
@@ -247,7 +252,7 @@ object Flog {
    * @param clazz the class for which you want to log.
    * @return a new instance of Flog.
    */
-  def apply(clazz: Class[_]): Flog = Flog(defaultLogger(clazz))
+  def apply(clazz: Class[_]): Flog = Flog(Logger.forClass(clazz))
 
   /**
    * Method to instantiate a normal instance of Flog with logging via the default logging function (based on the class Flog).
@@ -266,17 +271,15 @@ object Flog {
   def apply(sb: StringBuilder): Flog = Flog(Logger(sb))
 
   /**
-   * Method to create a Flog from a StringBuilder.
-   * Mostly intended for testing.
+   * Method to create a Flog from an Appendable, AutoCloseable, Flushable object.
    *
-   * @param a the Appendable.
+   * @param a the Appendable, which must also be AutoCloseable and Flushable.
    * @return an instance of Flog.
    */
-  def apply(a: Appendable): Flog = Flog(Logger(a))
+  def apply(a: Appendable with AutoCloseable with Flushable): Flog = Flog(Logger(a))
 
   /**
    * Method to create a Flog from a StringBuilder.
-   * Mostly intended for testing.
    *
    * @param s the PrintStream.
    * @return an instance of Flog.
@@ -308,62 +311,140 @@ object Flog {
   def tee[X](f: X => Unit)(x: => X): X = {
     lazy val xx: X = x
     Try(f(xx)) match {
-      case Failure(e) => defaultLogger[Flog].error("Exception thrown in tee function", e)
+      case Failure(e) => Logger[Flog].error("Exception thrown in tee function", e)
       case _ =>
     }
     xx
   }
-
-  /**
-   * Get the default logger from LoggerFactory that is associated with the given class.
-   *
-   * @tparam T the class to be associated with logging.
-   * @return a Logger.
-   */
-  def defaultLogger[T](implicit classTag: ClassTag[T]): Logger = defaultLogger(classTag.runtimeClass)
-
-  /**
-   * Get the default logger from LoggerFactory that is associated with the given clazz.
-   *
-   * @param clazz the class to be associated with logging.
-   * @return a Logger.
-   */
-  def defaultLogger(clazz: Class[_]): Logger = Slf4jLogger(LoggerFactory.getLogger(clazz))
 }
 
-trait Logger {
+/**
+ * Trait to represent a Logger.
+ */
+trait Logger extends AutoCloseable with Flushable {
+  /**
+   * Method to furnish a LogFunction corresponding to the trace level of logging.
+   *
+   * @return a LogFunction
+   */
   def trace: LogFunction
 
+  /**
+   * Method to furnish a LogFunction corresponding to the debug level of logging.
+   *
+   * @return a LogFunction
+   */
   def debug: LogFunction
 
+  /**
+   * Method to furnish a LogFunction corresponding to the info level of logging.
+   *
+   * @return a LogFunction
+   */
   def info: LogFunction
 
+  /**
+   * Method to furnish a LogFunction corresponding to the warn level of logging.
+   *
+   * @return a LogFunction
+   */
   def warn: LogFunction
 
+  /**
+   * Method to furnish a (String, Throwable) -> Unit for dealing with errors in the logs.
+   * This default implementation is over-ridden for Slf4J-based loggers.
+   *
+   * @return a function (String, Throwable) => Unit.
+   */
   def error: (String, Throwable) => Unit = (w, e) => {
     System.err.println(s"$w: exception:")
     e.printStackTrace(System.err)
   }
 
-  def none: LogFunction = LogFunction.bitBucketLogFunction
+  /**
+   * Method to furnish a LogFunction that does nothing and which does not cause evaluation of the message.
+   *
+   * @return a LogFunction which does nothing.
+   */
+  def none: LogFunction = LogFunction.bitBucket
+
+  /**
+   * Method to flush. By default, this does nothing.
+   */
+  def flush(): Unit = ()
+
+  /**
+   * Method to close. By default, this does nothing.
+   */
+  def close(): Unit = ()
+
 }
 
 object Logger {
-  def forClass(clazz: Class[_]): Logger = Flog.defaultLogger(clazz)
 
-  def apply[T: ClassTag]: Logger = Flog.defaultLogger
+  /**
+   * Method to yield an slf4j-based Logger for a particular org.slf4j.Logger.
+   *
+   * @param slf4jLogger the given org.slf4j.Logger.
+   * @return a new instance of Slf4jLogger.
+   */
+  def apply(slf4jLogger: org.slf4j.Logger): Logger = Slf4jLogger(slf4jLogger)
 
-  def apply(logger: org.slf4j.Logger): Logger = Slf4jLogger(logger)
+  /**
+   * Method to yield an slf4j-based Logger for a particular class.
+   * There's no real reason to use this method directly, when you can use the apply method immediately below.
+   *
+   * @param clazz the Class for which you require a Logger.
+   * @return a new instance of Slf4jLogger.
+   */
+  def forClass(clazz: Class[_]): Logger = Logger(LoggerFactory.getLogger(clazz))
 
-  def apply(sb: StringBuilder): Logger = GenericLogger(LogFunction(sb))
+  /**
+   * Normal method for creating an slf4j-based Logger for a particular class.
+   *
+   * @tparam T the class for which you require a Logger.
+   * @return a new instance of Slf4jLogger.
+   */
+  def apply[T: ClassTag]: Logger = forClass(implicitly[ClassTag[T]].runtimeClass)
 
-  def apply(a: Appendable): Logger = GenericLogger(LogFunction(a))
-
+  /**
+   * Method to create a Logger based on a LogFunction.
+   *
+   * @param f an instance of LogFunction.
+   * @return a new instance of GenericLogger.
+   */
   def apply(f: LogFunction): Logger = GenericLogger(f)
 
-  def bitBucket: Logger = apply(GenericLogFunction(_ => ()).disable)
+  /**
+   * Method to create a Logger based on a StringBuilder.
+   * This is primarily for testing.
+   *
+   * @param sb an instance of StringBuilder.
+   * @return a new instance of GenericLogger.
+   */
+  def apply(sb: StringBuilder): Logger = Logger(LogFunction(sb))
+
+  /**
+   * Method to create a Logger based on an Appendable, for example PrintStream, or any Writer.
+   *
+   * @param a an instance of Appendable
+   * @return a new instance of GenericLogger.
+   */
+  def apply(a: Appendable with AutoCloseable with Flushable): Logger = AppendableLogger(a)
+
+  /**
+   * Method to create a Logger which does nothing (and does not evaluate the log message).
+   *
+   * @return a new instance of GenericLogger.
+   */
+  lazy val bitBucket: Logger = Logger(LogFunction.bitBucket)
 }
 
+/**
+ * Class to create a Logger based on Slf4j (simple logging facade for Java).
+ *
+ * @param logger an instance of org.slf4j.Logger.
+ */
 case class Slf4jLogger(logger: org.slf4j.Logger) extends Logger {
   def trace: LogFunction = LogFunction(w => if (logger.isTraceEnabled) logger.trace(w) else ())
 
@@ -373,9 +454,14 @@ case class Slf4jLogger(logger: org.slf4j.Logger) extends Logger {
 
   def warn: LogFunction = LogFunction(w => if (logger.isWarnEnabled) logger.warn(w) else ())
 
-  override def error: (String, Throwable) => Unit = (w, x) => if (logger.isWarnEnabled) logger.warn(w) else super.error(w, x)
+  override def error: (String, Throwable) => Unit = (w, x) => if (logger.isErrorEnabled) logger.error(w) else super.error(w, x)
 }
 
+/**
+ * Class to represent a Logger which is based on a LogFunction.
+ *
+ * @param logFunction the LogFunction.
+ */
 case class GenericLogger(logFunction: LogFunction) extends Logger {
   def trace: LogFunction = logFunction
 
@@ -384,6 +470,33 @@ case class GenericLogger(logFunction: LogFunction) extends Logger {
   def info: LogFunction = logFunction
 
   def warn: LogFunction = logFunction
+}
+
+/**
+ * Class to represent a Logger which is based on an Appendable (which must also be AutoCloseable and Flushable.
+ *
+ * @param appendable an instance of Appendable with is also AutoCloseable and Flushable.
+ */
+case class AppendableLogger(appendable: Appendable with AutoCloseable with Flushable) extends Logger {
+  def trace: LogFunction = LogFunction(appendable)
+
+  def debug: LogFunction = LogFunction(appendable)
+
+  def info: LogFunction = LogFunction(appendable)
+
+  def warn: LogFunction = LogFunction(appendable)
+
+  /**
+   * Method to flush the appendable.
+   */
+  override def flush(): Unit = appendable.flush()
+
+  /**
+   * Method to close the appendable.
+   * NOTE: we close it by flushing (and nothing else).
+   * TODO figure out why it doesn't work if we try to close it too.
+   */
+  override def close(): Unit = flush()
 }
 
 /**
@@ -425,16 +538,35 @@ case class GenericLogFunction(f: String => Any, enabled: Boolean = true) extends
 }
 
 object LogFunction {
-
+  /**
+   * Method to create a LogFunction based on a function String => Any.
+   *
+   * @param f the given function.
+   * @return a new instance of LogFunction.
+   */
   def apply(f: String => Any): LogFunction = GenericLogFunction(f)
 
+  /**
+   * Method to create a LogFunction based on a StringBuilder.
+   * This is primarily for testing.
+   *
+   * @param sb an instance of StringBuilder.
+   * @return a new instance of GenericLogFunction.
+   */
   def apply(sb: StringBuilder): LogFunction = GenericLogFunction(sb.append)
 
+  /**
+   * Method to create a LogFunction based on an Appendable, such as PrintStream, Writer.
+   *
+   * @param sb an instance of Appendable.
+   * @return a new instance of GenericLogFunction.
+   */
   def apply(a: Appendable): LogFunction = GenericLogFunction(a.append)
 
-  val noop: LogFunction = GenericLogFunction(_ => ()).disable
-
-  val bitBucketLogFunction: LogFunction = noop
+  /**
+   * A LogFunction which does nothing (and does not evaluate the log message).
+   */
+  lazy val bitBucket: LogFunction = GenericLogFunction(_ => ()).disable
 }
 
 case class LoggedException(e: Throwable) extends Exception("The cause of this exception has already been logged", e)

@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 import scala.concurrent.Future
 import scala.language.implicitConversions
 import scala.util.matching.Regex
-import scala.util.{Failure, Try}
+import scala.util.{Failure, Try, Using}
 
 class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndAfterEach with ScalaFutures {
 
@@ -89,7 +89,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
    */
   it should "$bang$bang 5" in {
     // NOTE: check the log files to see if FlogSpec was the class of record.
-    val flog = Flog(Flog.defaultLogger[FlogSpec])
+    val flog = Flog(Logger[FlogSpec])
     import flog._
     val x = getString !! 99
     evaluated shouldBe true
@@ -268,4 +268,11 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     // The message "Hello: 1" should appear in the logs provided that debug is enabled.
   }
 
+  it should "write to Appendable" in {
+    Using(Flog(System.out)) {
+      f =>
+        import f._
+        getString warn 1
+    }
+  }
 }

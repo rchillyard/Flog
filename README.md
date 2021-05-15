@@ -146,10 +146,10 @@ then you can do it something like the following (basically you must define the _
     }
 
 ### Variations
-_Flog_ is a case class which has one members: _logger_ which is of type _Logger_.
+_Flog_ is a case class which has one member: _logger_ which is of type _Logger_.
 In normal usage, the logger will be of type _Slf4jLogger_ and will be derived from the
 _org.slf4j.Logger_ for the particular class specified.
-However, you can also provide other loggers, particularly of the type _GenericLogger_.
+However, you can also provide other loggers, particularly of the type _GenericLogger_ or _AppendableLogger_.
 This is a case class with a member of type _LogFunction_, a trait with the following method definition:
 
     def apply(w: => String): Unit
@@ -159,6 +159,18 @@ However, if you do want to provide your own, then you need to understand
 their type, another case class:
 
     case class GenericLogFunction(f: String => Any, enabled: Boolean = true) extends LogFunction
+
+Additionally, there is a type of Logger called _AppendableLogger_:
+
+    case class AppendableLogger(appendable: Appendable with AutoCloseable with Flushable) extends Logger
+
+If you use this type, you should run invoke it something like the following:
+
+    Using(Flog(System.out)) {
+      f =>
+        import f._
+        message info x
+    }
 
 It is also possible to change the behavior of the _Flog_ instance by invoking one of the methods:
 
