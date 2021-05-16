@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019. Phasmid Software
+ * Copyright (c) 2021. Phasmid Software
  */
 
 package com.phasmidsoftware.flog
@@ -65,13 +65,13 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
   }
 
   it should "futureLoggable" in {
-    val flog = Flog()
+    val flog = Flog[LoggablesSpec]
     import scala.concurrent.ExecutionContext.Implicits.global
-    implicit val logFunction: LogFunction = flog.loggingFunction
+    implicit val logger: Logger = flog.logger
     val target = futureLoggable[Int]
     // NOTE that this future task takes no time at all and, in any case,
-    // we do not wait for the Future to complete.
-    // See FlogSpec for a slightly more realistic example.
+    // XXX we do not wait for the Future to complete.
+    // XXX FlogSpec for a slightly more realistic example.
     val str = target.toLog(Future("1".toInt))
     str.replaceAll("""\(\S+\)""", "") shouldBe "Future: promise  created... "
   }

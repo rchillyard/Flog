@@ -26,12 +26,12 @@ on an implicit inner class of _Flog_ called _Floggable_ which has a _String_ par
 
 The basic usage pattern is thus:
 
-    val flog = Flog()
+    val flog = Flog[MyClass]
     import flog._
     val x: X = msg !! expr
 
 where _msg_ evaluates to a String and _expr_ evaluates to a value of type _X_ which will be assigned to _x_ (footnote 2)
-while, as a side effect, the value of _expr_ is logged.
+while, as a side effect, the value of _expr_ is logged at level INFO.
 In other words, if you take away the "msg !!" the program will work exactly the same, but without the side effect of
 logging.
 
@@ -44,8 +44,10 @@ A further advantage of this mechanism is that we can define the various methods 
 call-by-name (i.e. non-strict).
 This avoids constructing the string when logging is turned off.
 
-In addition to the !! method,
-there is also !| for logging a generic type that isn't necessarily _Loggable_.
+In addition to the !! method, there is also a !? method, which logs at DEBUG level.
+Additionally, there are the methods in words:
+trace, debug (synonym of !?), info (synonym of !!), and warn.
+Additionally, there is also !| for logging a generic type that isn't necessarily _Loggable_.
 In this case, we simply invoke _toString_ on the object to get a rendition for logging.
 There's also a |! method which ignores the message and does no logging at all.
 This is useful if you want to temporarily suspend a particular logging construct without removing the instrumentation.
@@ -69,7 +71,7 @@ In the case of non-strict collections, no unnecessary evaluation is performed.
 Views are left as is and *LazyList*s are shown as lists only if they have definite size.
 
 The last-named (!!!) method does not return the input exactly as is (as all the other methods do).
-If _xy_ is a _Failure(e)_ then it logs the exception and returns _Failure(LoggedException(e))_.
+If _xy_ is a _Failure(e)_ then it logs the exception as an error and returns _Failure(LoggedException(e))_.
 This allows for the code to avoid logging the exception twice.
 
 For all these !! logging mechanism to work, there must be (implicit) evidence of _Loggable[X]_ available.
@@ -144,27 +146,36 @@ then you can do it something like the following (basically you must define the _
     }
 
 ### Variations
-_Flog_ is a case class which has two members: _loggingFunction_ and _errorFunction_.
-Normally, you will use the defaults for these.
+_Flog_ is a case class which has one member: _logger_ which is of type _Logger_.
+In normal usage, the logger will be of type _Slf4jLogger_ and will be derived from the
+_org.slf4j.Logger_ for the particular class specified.
+However, you can also provide other loggers, particularly of the type _GenericLogger_ or _AppendableLogger_.
+This is a case class with a member of type _LogFunction_, a trait with the following method definition:
+
+    def apply(w: => String): Unit
+
+There is a _GenericLogFunction_ type which implements this trait.
 However, if you do want to provide your own, then you need to understand
 their type, another case class:
 
-    case class LogFunction(f: String => Any, enabled: Boolean = true)
+    case class GenericLogFunction(f: String => Any, enabled: Boolean = true) extends LogFunction
+
+Additionally, there is a type of Logger called _AppendableLogger_:
+
+    case class AppendableLogger(appendable: Appendable with AutoCloseable with Flushable) extends Logger
+
+If you use this type, you should run invoke it something like the following:
+
+    Using(Flog(System.out)) {
+      f =>
+        import f._
+        message info x
+    }
 
 It is also possible to change the behavior of the _Flog_ instance by invoking one of the methods:
 
     def disabled: Flog
-    def withLogFunction(logFunc: LogFunction): Flog
-
-The default logger function uses _org.slf4j.LoggerFactory.getLogger_ to provide a logger.
-
-You can create a _Flog_ instance based on logging for a particular class by starting with (where _MyClass_ is the class):
-
-    val flog = Flog.forClass[MyClass]
-
-or
-
-    val flog = Flog.forClass(classOf[MyClass])
+    def withLogger(logger: Logger): Flog
 
 ## Dependencies
 For the default logging function, we include the following dependencies:
@@ -173,6 +184,12 @@ For the default logging function, we include the following dependencies:
     "ch.qos.logback" % "logback-classic" % "1.2.3" % "runtime"
 
 If you choose to use a different logger function, you may need to change these dependencies.
+
+## Please Note
+Currently, the synonyms info, debug, trace are only valid for simple types of _X_.
+For _Iterable[X]. Option[X], Map[K, V]_, use the operators !!, !?, and !?? respectively.
+Note also that if you want to use warn or error, you can only log simple types and that there
+are no operator-type synonyms.
 
 ## Footnotes
 * (1) At present, this mechanism is not truly referentially transparent.
@@ -183,6 +200,8 @@ If you choose to use a different logger function, you may need to change these d
   of the current scope.
   
 # Version
+1.0.7 Issue #14: Implemented level-based logging;
+
 1.0.6 Issue #12: Minor changes to iterableLoggable;
 
 1.0.5 Issue #10: Some changes to implementation of Iterable, including not evaluating non-strict collections.

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2021. Phasmid Software
+ */
+
 package implicits
 
 import scala.language.implicitConversions
@@ -14,7 +18,6 @@ object Holiday {
     def show(t: Holiday): Unit = println(t)
   }
 }
-
 
 object ImplicitFun extends App {
 
@@ -36,9 +39,9 @@ object ImplicitFun extends App {
   implicit val q: Int = 42
   hello("Monday")
 
-  val pday = Holiday("Monday", "Patriot's Day")
+  val pDay = Holiday("Monday", "Patriot's Day")
 
-  show(pday)
+    show(pDay)
 
   def show[T: Showable](t: T): Unit = implicitly[Showable[T]].show(t)
 }

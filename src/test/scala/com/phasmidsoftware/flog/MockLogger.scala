@@ -1,10 +1,12 @@
 /*
- * Copyright (c) 2019. Phasmid Software
+ * Copyright (c) 2021. Phasmid Software
  */
 
 package com.phasmidsoftware.flog
 
 import org.slf4j.{Logger, Marker}
+
+import scala.reflect.ClassTag
 
 /**
  * MockLogger for unit testing log messages
@@ -146,11 +148,17 @@ case class MockLogger(name: String, level: String = "DEBUG", sb: StringBuilder =
 
   def info(marker: Marker, msg: String, t: Throwable) = doLogX()
 
-  private def doLog(msg: String, e: Throwable = null) = {
-    sb.append(s"$name: $level: $msg")
-    if (e != null) sb.append(s" threw an exception: ${e.getLocalizedMessage}")
-    sb.append("\n")
-  }
+    private def doLog(msg: String, e: Throwable = null) = {
+        sb.append(s"$name: $level: $msg")
+        if (e != null) sb.append(s" threw an exception: ${e.getLocalizedMessage}")
+        sb.append("\n")
+    }
 
-  private def doLogX(): Unit = {}
+    private def doLogX(): Unit = {}
+}
+
+object MockLogger {
+    def defaultLogger[T](implicit classTag: ClassTag[T]): MockLogger = defaultLogger(classTag.runtimeClass)
+
+  def defaultLogger(clazz: Class[_]): MockLogger = MockLogger(clazz.toString, "DEBUG", new StringBuilder())
 }
