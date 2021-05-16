@@ -126,7 +126,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def !![X: Loggable](xs: => Iterable[X]): Iterable[X] = logIterable(xs, logger.info)
+    def !![X: Loggable](xs: => Iterable[X]): Iterable[X] = logIterable(logger.info, xs)
 
     /**
      * Method to generate an info log entry for an Option of a (Loggable) X.
@@ -137,7 +137,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def !![X: Loggable](xo: => Option[X]): Option[X] = logOption(xo, logger.info)
+    def !![X: Loggable](xo: => Option[X]): Option[X] = logOption(logger.info, xo)
 
     /**
      * Method to generate an info log entry for a Map[K, V].
@@ -148,7 +148,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam V the type of the map values, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def !![K: Loggable, V: Loggable](kVm: => Map[K, V]): Map[K, V] = logMap(kVm, logger.info)
+    def !![K: Loggable, V: Loggable](kVm: => Map[K, V]): Map[K, V] = logMap(logger.info, kVm)
 
     /**
      * Method to generate a debug log entry for an Iterable of a (Loggable) X.
@@ -159,7 +159,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def !?[X: Loggable](xs: => Iterable[X]): Iterable[X] = logIterable(xs, logger.debug)
+    def !?[X: Loggable](xs: => Iterable[X]): Iterable[X] = logIterable(logger.debug, xs)
 
     /**
      * Method to generate a debug log entry for an Option of a (Loggable) X.
@@ -170,7 +170,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def !?[X: Loggable](xo: => Option[X]): Option[X] = logOption(xo, logger.debug)
+    def !?[X: Loggable](xo: => Option[X]): Option[X] = logOption(logger.debug, xo)
 
     /**
      * Method to generate a trace log entry for a Map[K, V].
@@ -181,7 +181,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam V the type of the map values, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def !?[K: Loggable, V: Loggable](kVm: => Map[K, V]): Map[K, V] = logMap(kVm, logger.trace)
+    def !?[K: Loggable, V: Loggable](kVm: => Map[K, V]): Map[K, V] = logMap(logger.trace, kVm)
 
     /**
      * Method to generate a trace log entry for an Iterable of a (Loggable) X.
@@ -192,7 +192,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def !??[X: Loggable](xs: => Iterable[X]): Iterable[X] = logIterable(xs, logger.trace)
+    def !??[X: Loggable](xs: => Iterable[X]): Iterable[X] = logIterable(logger.trace, xs)
 
     /**
      * Method to generate a trace log entry for an Option of a (Loggable) X.
@@ -203,7 +203,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def !??[X: Loggable](xo: => Option[X]): Option[X] = logOption(xo, logger.trace)
+    def !??[X: Loggable](xo: => Option[X]): Option[X] = logOption(logger.trace, xo)
 
     /**
      * Method to generate a debug log entry for a Map[K, V].
@@ -214,7 +214,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam V the type of the map values, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def !??[K: Loggable, V: Loggable](kVm: => Map[K, V]): Map[K, V] = logMap(kVm, logger.debug)
+    def !??[K: Loggable, V: Loggable](kVm: => Map[K, V]): Map[K, V] = logMap(logger.debug, kVm)
 
     /**
      * Method to generate a log entry for a type which is not itself Loggable.
@@ -250,15 +250,15 @@ case class Flog(logger: Logger) extends AutoCloseable {
       Failure(LoggedException(e))
     })
 
-    private def logMap[K: Loggable, V: Loggable](kVm: => Map[K, V], logFunction: LogFunction): Map[K, V] = {
+    private def logMap[K: Loggable, V: Loggable](logFunction: LogFunction, kVm: => Map[K, V]): Map[K, V] = {
       implicit val g: Loggable[(K, V)] = kVLoggable
       tee[Map[K, V]](y => logLoggable(logFunction)(message)(toLog(y)))(kVm)
     }
 
-    private def logIterable[X: Loggable](xo: => Iterable[X], logFunction: LogFunction): Iterable[X] =
+    private def logIterable[X: Loggable](logFunction: LogFunction, xo: => Iterable[X]): Iterable[X] =
       tee[Iterable[X]](y => logLoggable(logFunction)(message)(toLog(y)))(xo)
 
-    private def logOption[X: Loggable](xo: => Option[X], logFunction: LogFunction): Option[X] =
+    private def logOption[X: Loggable](logFunction: LogFunction, xo: => Option[X]): Option[X] =
       tee[Option[X]](y => logLoggable(logFunction)(message)(toLog(y)))(xo)
 
     private def toLog[X: Loggable](y: Option[X]): String = optionLoggable[String].toLog(y map implicitly[Loggable[X]].toLog)
