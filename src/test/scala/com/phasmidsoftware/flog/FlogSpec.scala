@@ -7,7 +7,6 @@ package com.phasmidsoftware.flog
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should
 import org.scalatest.{BeforeAndAfterEach, flatspec}
-import org.slf4j
 
 import java.time.LocalDateTime
 import scala.concurrent.Future
@@ -231,7 +230,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   }
 
   it should "debug 2" in {
-    val logger: slf4j.Logger = MockLogger.defaultLogger[FlogSpec]
+    val logger: MockLogger = MockLogger.defaultLogger[FlogSpec]
     val flog: Flog = Flog(logger)
     import flog._
     getString debug 1
@@ -240,32 +239,91 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   }
 
   it should "debug 3" in {
-    val flog = Flog(System.out)
-    import flog._
-    getString debug 1
-    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
-    // Should see message in console.
+    Using(Flog(System.out)) {
+      f =>
+        import f._
+        getString debug 1
+        if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+      // Should see message in console.
+    }
   }
 
-  it should "trace" in {
+  it should "debug 4" in {
+    Using(Flog(System.out)) {
+      f =>
+        import f._
+        getString !? Seq(1, 2, 3)
+        if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+      // Should see message in console.
+    }
+  }
+
+  it should "debug 5" in {
+    Using(Flog(System.out)) {
+      f =>
+        import f._
+        getString !? Some(1)
+        if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+      // Should see message in console.
+    }
+  }
+
+  it should "debug 6" in {
+    Using(Flog(System.out)) {
+      f =>
+        import f._
+        getString !? Map(1 -> "a", 2 -> "b")
+        if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+      // Should see message in console.
+    }
+  }
+
+  it should "trace 0" in {
+    val flog = Flog[FlogSpec]
+    import flog._
+    getString !?? 1
+    // The message "Hello: 1" should appear in the logs provided that trace is enabled.
+  }
+
+  it should "trace 1" in {
     val flog = Flog[FlogSpec]
     import flog._
     getString trace 1
-    // The message "Hello: 1" should appear in the logs provided that debug is enabled.
+    // The message "Hello: 1" should appear in the logs provided that trace is enabled.
   }
 
-  it should "info" in {
+  it should "trace 2" in {
+    val logger: MockLogger = MockLogger.defaultLogger[FlogSpec]
+    val flog: Flog = Flog(logger)
+    import flog._
+    getString trace 1
+    // The following will be true only if TRACE is enabled.
+    //    logger.toString shouldBe "class com.phasmidsoftware.flog.FlogSpec: TRACE: Hello: 1\n"
+    //    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+  }
+
+  it should "info 1" in {
     val flog = Flog[FlogSpec]
     import flog._
     getString info 1
-    // The message "Hello: 1" should appear in the logs provided that debug is enabled.
+    // The message "Hello: 1" should appear in the logs provided that info is enabled.
+  }
+
+  // This does indeed write to the logs but it shows DEBUG as level, not INFO.
+  ignore should "info 2" in {
+    val logger: MockLogger = MockLogger.defaultLogger[FlogSpec]
+    val flog: Flog = Flog(logger)
+    import flog._
+    getString info 1
+    logger.toString shouldBe "class com.phasmidsoftware.flog.FlogSpec: INFO: Hello: 1\n"
+    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
   }
 
   it should "warn" in {
     val flog = Flog[FlogSpec]
     import flog._
     getString warn 1
-    // The message "Hello: 1" should appear in the logs provided that debug is enabled.
+    // The message "Hello: 1" should appear in the logs provided that warn is enabled.
   }
 
   it should "write to Appendable" in {
