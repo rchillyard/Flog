@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019. Phasmid Software
+ * Copyright (c) 2021. Phasmid Software
  */
 
 package com.phasmidsoftware.flog

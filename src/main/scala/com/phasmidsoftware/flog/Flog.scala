@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019. Phasmid Software
+ * Copyright (c) 2021. Phasmid Software
  */
 
 package com.phasmidsoftware.flog
@@ -43,10 +43,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
   /**
    * Implicit class to implement functional logging.
    *
-   * If you are using the default logging function (Flog.loggingFunction), then you can instantiate and utilize
-   * a new instance of Flogger simply by applying the "!!" operator to a String.
-   *
-   * @param message the message itself which will be evaluated only if enabled is actually turned on.
+   * @param message the (call-by-name) message which will be evaluated only any logging takes place.
    */
   implicit class Flogger(message: => String) extends Loggables {
     /**
@@ -287,6 +284,11 @@ case class Flog(logger: Logger) extends AutoCloseable {
   def disabled: Flog = withLogger(Logger.bitBucket)
 
   /**
+   * Close this Flog.
+   */
+  def close(): Unit = logger.close()
+
+  /**
    * Method to generate a log message based on x, pass it to the logFunc, and return the x value.
    * The value of x will be rendered as a String but invoking toLog on the implicit value of Loggable[X].
    *
@@ -295,7 +297,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
    * @tparam X the underlying type of x, which is required to provide evidence of Loggable[X].
    * @return the value of x.
    */
-  def logLoggable[X: Loggable](function: LogFunction)(prefix: => String)(x: => X): X =
+  private def logLoggable[X: Loggable](function: LogFunction)(prefix: => String)(x: => X): X =
     tee[X](y => function(s"$prefix: ${implicitly[Loggable[X]].toLog(y)}"))(x)
 
   /**
@@ -308,12 +310,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
    * @tparam X the underlying type of x.
    * @return the value of x.
    */
-  def logX[X](function: LogFunction)(prefix: => String)(x: => X): X = logLoggable(function)(prefix)(x)(new Loggables {}.anyLoggable)
-
-  /**
-   * Close this Flog.
-   */
-  def close(): Unit = logger.close()
+  private def logX[X](function: LogFunction)(prefix: => String)(x: => X): X = logLoggable(function)(prefix)(x)(new Loggables {}.anyLoggable)
 }
 
 /**

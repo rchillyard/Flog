@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2021. Phasmid Software
+ */
+
 package implicits
 
 import scala.language.implicitConversions

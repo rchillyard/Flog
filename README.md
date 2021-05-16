@@ -185,6 +185,12 @@ For the default logging function, we include the following dependencies:
 
 If you choose to use a different logger function, you may need to change these dependencies.
 
+## Please Note
+Currently, the synonyms info, debug, trace are only valid for simple types of _X_.
+For _Iterable[X]. Option[X], Map[K, V]_, use the operators !!, !?, and !?? respectively.
+Note also that if you want to use warn or error, you can only log simple types and that there
+are no operator-type synonyms.
+
 ## Footnotes
 * (1) At present, this mechanism is not truly referentially transparent.
   In the future, we may provide an actor mechanism to allow for pure functional logging which is RT.

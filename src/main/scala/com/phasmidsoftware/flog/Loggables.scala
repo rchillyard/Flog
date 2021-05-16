@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2019. Phasmid Software
+ * Copyright (c) 2021. Phasmid Software
  */
 
 package com.phasmidsoftware.flog
 
 import com.phasmidsoftware.flog.Loggables.fieldNames
+
 import scala.collection.immutable.LazyList.#::
 import scala.collection.{SeqMap, View}
 import scala.concurrent.{ExecutionContext, Future}

@@ -1,13 +1,14 @@
 /*
- * Copyright (c) 2019. Phasmid Software
+ * Copyright (c) 2021. Phasmid Software
  */
 
 package com.phasmidsoftware.flog
 
-import java.time.LocalDateTime
-import java.util.NoSuchElementException
 import org.scalatest.flatspec
 import org.scalatest.matchers.should
+
+import java.time.LocalDateTime
+import java.util.NoSuchElementException
 import scala.concurrent.Future
 import scala.util.Try
 
