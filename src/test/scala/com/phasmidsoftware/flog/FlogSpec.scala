@@ -44,12 +44,23 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   it should "$bang$bang 1" in {
     val sb = new StringBuilder
-    val flog = Flog(sb)
+    val flog: Flog = Flog(sb)
     import flog._
-    getString !! Seq(1, 2, 3)
+    getString !! List(1, 2, 3)
     if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
     if (sb.toString.isEmpty) println("sb should not be empty but it will be if you run this unit test on its own")
-    sb.toString shouldBe "Hello: [1, 2, 3]"
+    sb.toString shouldBe "Hello: [1, 2, 3]\n"
+  }
+
+  it should "$bang$bang 1a" in {
+    val sb = new StringBuilder
+    val flog: Flog = Flog(sb)
+    import flog._
+    val xs = getString !! List(1, 2, 3)
+    xs shouldBe List(1, 2, 3)
+    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+    if (sb.toString.isEmpty) println("sb should not be empty but it will be if you run this unit test on its own")
+    sb.toString shouldBe "Hello: [1, 2, 3]\n"
   }
 
   it should "$bang$bang 2" in {
@@ -137,7 +148,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     import flog._
     getString !! LazyList.from(1)
     // NOTE sb should not be empty but it might be if you run this unit test on its own.
-    sb.toString shouldBe "Hello: <LazyList>"
+    sb.toString shouldBe "Hello: <LazyList>\n"
   }
 
   it should "$bang$bang 10" in {
@@ -146,7 +157,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     import flog._
     getString !! List(1, 2, 3).view.map(_.toString)
     // NOTE sb should not be empty but it might be if you run this unit test on its own.
-    sb.toString shouldBe "Hello: <view>"
+    sb.toString shouldBe "Hello: <view>\n"
   }
 
   it should "$bang$bang 11" in {
@@ -156,7 +167,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     implicit val z: Loggable[Map[String, String]] = new Loggables {}.mapLoggable[String, String]()
     getString !! Map("a" -> "alpha", "b" -> "bravo")
     // NOTE sb should not be empty but it might be if you run this unit test on its own.
-    sb.toString shouldBe "Hello: {a->alpha, b->bravo}"
+    sb.toString shouldBe "Hello: {a->alpha, b->bravo}\n"
   }
 
   it should "$bang$bang 12" in {
@@ -165,7 +176,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     import flog._
     implicit val z: Loggable[LocalDateTime] = new Loggables {}.anyLoggable[LocalDateTime]
     getString !! Seq(LocalDateTime.now)
-    val dateTimeR: Regex = """Hello: \[(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3,})]""".r
+    val dateTimeR: Regex = """Hello: \[(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3,})]\n""".r
     // NOTE sb should not be empty but it might be if you run this unit test on its own.
 
     sb.toString match {
@@ -198,7 +209,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     import flog._
     val now = LocalDateTime.now
     "Hello" !| now
-    sb.toString shouldBe s"Hello: $now"
+    sb.toString shouldBe s"Hello: $now\n"
   }
 
   it should "$bang$bang$bang 1/0" in {
