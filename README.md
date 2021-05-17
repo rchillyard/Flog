@@ -191,6 +191,19 @@ For _Iterable[X]. Option[X], Map[K, V]_, use the operators !!, !?, and !?? respe
 Note also that if you want to use warn or error, you can only log simple types and that there
 are no operator-type synonyms.
 
+When using the !! operator for _Iterable[X]_, you need to take care that the context is _Iterable_,
+rather than a more specific type such as _Seq_ or _List_.
+Thus,
+
+    "Hello" !! List(1, 2, 3)
+
+or
+
+    val xs = "Hello" !! List(1, 2, 3)
+    xs shouldBe List(1, 2, 3)
+
+See also unit tests $bang$bang 1 and $bang$bang 1a for more detail.
+
 ## Footnotes
 * (1) At present, this mechanism is not truly referentially transparent.
   In the future, we may provide an actor mechanism to allow for pure functional logging which is RT.

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra">
-  <info organisation="com.phasmidsoftware" module="flog_2.13" revision="1.0.7" status="release" publication="20210516163957">
+  <info organisation="com.phasmidsoftware" module="flog_2.13" revision="1.0.7" status="release" publication="20210516230610">
     <description>flog</description>
   </info>
   <configurations>

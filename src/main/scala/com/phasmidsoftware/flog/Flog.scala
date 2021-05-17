@@ -631,7 +631,7 @@ object LogFunction {
    * @param sb an instance of StringBuilder.
    * @return a new instance of GenericLogFunction.
    */
-  def apply(sb: StringBuilder): LogFunction = GenericLogFunction(sb.append)
+  def apply(sb: StringBuilder): LogFunction = GenericLogFunction{s => sb.append(s); sb.append("\n")}
 
   /**
    * Method to create a LogFunction based on an Appendable, such as PrintStream, Writer.
@@ -639,7 +639,7 @@ object LogFunction {
    * @param a an instance of Appendable.
    * @return a new instance of GenericLogFunction.
    */
-  def apply(a: Appendable): LogFunction = GenericLogFunction(a.append)
+  def apply(a: Appendable): LogFunction = GenericLogFunction{s => a.append(s); a.append("\n")}
 
   /**
    * A LogFunction which does nothing (and does not evaluate the log message).
