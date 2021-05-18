@@ -50,8 +50,7 @@ trait Loggables {
     case Nil => "<empty>"
     case LazyList() => "<empty lazy list>"
     case ll@_ #:: _ =>
-      //noinspection ScalaDeprecation
-      if (ll.hasDefiniteSize) iterableLoggable[T](bookends).toLog(ll.toList) else "<LazyList>"
+      if (ll.knownSize >= 0) iterableLoggable[T](bookends).toLog(ll.toList) else "<LazyList>"
     case _: View[T] =>
       "<view>"
     case ts =>

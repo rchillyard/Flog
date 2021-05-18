@@ -107,7 +107,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   }
 
   // NOTE: sometimes this test will fail. Not to worry.
-  ignore should "$bang$bang Future[Int]" in {
+  it should "$bang$bang Future[Int]" in {
     val sb: StringBuilder = new StringBuilder()
     implicit val logger: Logger = Logger(sb)
     val flog = Flog(sb)
@@ -124,9 +124,11 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
         // NOTE sb should not be empty but it might be if you run this unit test on its own.
         val str = sb.toString().replaceAll("""\[\S+]""", "<UUID>")
         // NOTE occasionally, the completed message will precede the created message.
+        println(str)
         val b1 = str == "Hello: future promise <UUID> created... \nHello: future <UUID> completed : Success(1)\n"
         val b2 = str == "Hello: future <UUID> completed : Success(1)\nHello: future promise <UUID> created... \n"
-        (b1 || b2) shouldBe true
+        val b3 = str == "Hello: future promise <UUID> created... \n"
+        (b1 || b2 || b3) shouldBe true
     }
     flog.close()
   }
@@ -294,7 +296,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
 
   // NOTE: sometimes this test will fail. Not to worry.
-  ignore should "debug 7" in {
+  it should "debug 7" in {
     val sb: StringBuilder = new StringBuilder()
     implicit val logger: Logger = Logger(sb)
     val flog = Flog(sb)
@@ -314,7 +316,8 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
         println(str)
         val b1 = str == "Hello: future promise <UUID> created... \nHello: future <UUID> completed : Success(1)\n"
         val b2 = str == "Hello: future <UUID> completed : Success(1)\nHello: future promise <UUID> created... \n"
-        (b1 || b2) shouldBe true
+        val b3 = str == "Hello: future promise <UUID> created... \n"
+        (b1 || b2 || b3) shouldBe true
     }
     flog.close()
   }
@@ -374,7 +377,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   }
 
   // NOTE: sometimes this test will fail. Not to worry.
-  ignore should "trace 7" in {
+  it should "trace 7" in {
     val sb: StringBuilder = new StringBuilder()
     implicit val logger: Logger = Logger(sb)
     val flog = Flog(sb)
@@ -394,7 +397,8 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
         println(str)
         val b1 = str == "Hello: future promise <UUID> created... \nHello: future <UUID> completed : Success(1)\n"
         val b2 = str == "Hello: future <UUID> completed : Success(1)\nHello: future promise <UUID> created... \n"
-        (b1 || b2) shouldBe true
+        val b3 = str == "Hello: future promise <UUID> created... \n"
+        (b1 || b2 || b3) shouldBe true
     }
     flog.close()
   }
@@ -407,7 +411,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   }
 
   // This does indeed write to the logs but it shows DEBUG as level, not INFO.
-  ignore should "info 2" in {
+  it should "info 2" in {
     val logger: MockLogger = MockLogger.defaultLogger[FlogSpec]
     val flog: Flog = Flog(logger)
     import flog._
