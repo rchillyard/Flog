@@ -135,11 +135,15 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * Logging is performed as a side effect.
      * Rendering of the x value is via the toLog method of the implicit Loggable[X].
      *
+     * NOTE: there is a null coded here for the default value of t.
+     * It's justified because it is simply following the Java calling convention.
+     *
      * @param x the value to be logged.
+     * @param t a Throwable (defaults to null) -- but don't forget the empty parentheses in that case.
      * @tparam X the type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def error[X: Loggable](x: => X)(t: Throwable): X = logLoggable(w => logger.error(w, t))(message)(x)
+    def error[X: Loggable](x: => X)(t: Throwable = null): X = logLoggable(w => logger.error(w, t))(message)(x)
 
     /**
      * Method to generate an info log entry for an Iterable of a (Loggable) X.
@@ -331,6 +335,14 @@ case class Flog(logger: Logger) extends AutoCloseable {
   }
 
   /**
+   * Method to capture any text held by this Flog.
+   * In the case of a "standard" slf4j logger, the returned value will is undefined.
+   *
+   * @return the value of logger.toString.
+   */
+  override def toString: String = logger.toString
+
+  /**
    * Use this method to create a new Flog based on the given logging function.
    *
    * @param logger an instance of LogFunction.
@@ -503,7 +515,7 @@ trait Logger extends AutoCloseable with Flushable {
    */
   def error: (String, Throwable) => Unit = (w, e) => {
     System.err.println(s"$w: exception:")
-    e.printStackTrace(System.err)
+    Option(e) map (t => t.printStackTrace(System.err))
   }
 
   /**
@@ -567,7 +579,7 @@ object Logger {
    * @param sb an instance of StringBuilder.
    * @return a new instance of GenericLogger.
    */
-  def apply(sb: StringBuilder): Logger = Logger(LogFunction(sb))
+  def apply(sb: StringBuilder): Logger = StringBuilderLogger(sb)
 
   /**
    * Method to create a Logger based on an Appendable, for example PrintStream, or any Writer.
@@ -600,6 +612,8 @@ case class Slf4jLogger(logger: org.slf4j.Logger) extends Logger {
   def warn: LogFunction = LogFunction(w => if (logger.isWarnEnabled) logger.warn(w) else ())
 
   override def error: (String, Throwable) => Unit = (w, x) => if (logger.isErrorEnabled) logger.error(w, x) else super.error(w, x)
+
+  override def toString: String = "<org.slf4j.Logger>"
 }
 
 /**
@@ -642,6 +656,52 @@ case class AppendableLogger(appendable: Appendable with AutoCloseable with Flush
    * TODO figure out why it doesn't work if we try to close it too.
    */
   override def close(): Unit = flush()
+
+  override def toString: String = "<appendable>"
+}
+
+
+/**
+ * Class to represent a Logger which is based on a StringBuilder.
+ *
+ * @param sb an instance of StringBuilder.
+ */
+case class StringBuilderLogger(sb: StringBuilder) extends Logger {
+  def trace: LogFunction = LogFunction(sb)
+
+  def debug: LogFunction = LogFunction(sb)
+
+  def info: LogFunction = LogFunction(sb)
+
+  def warn: LogFunction = LogFunction(sb)
+
+  /**
+   * Method to furnish a (String, Throwable) -> Unit for dealing with errors in the logs.
+   * This default implementation is over-ridden for Slf4J-based loggers.
+   *
+   * NOTE: there is a null coded here for the situation where error is called without a Throwable.
+   * It's justified because it is simply following the Java calling convention.
+   *
+   * @return a function (String, Throwable) => Unit.
+   */
+  override def error: (String, Throwable) => Unit = {
+    case (s, null) => sb.append(s"$s: ERROR\n")
+    case (s, x) => sb.append(s"$s: ERROR: ${x.getLocalizedMessage}\n")
+  }
+
+  /**
+   * Method to flush the appendable.
+   */
+  override def flush(): Unit = ()
+
+  /**
+   * Method to close the appendable.
+   * NOTE: we close it by flushing (and nothing else).
+   * TODO figure out why it doesn't work if we try to close it too.
+   */
+  override def close(): Unit = flush()
+
+  override def toString: String = sb.toString()
 }
 
 /**
