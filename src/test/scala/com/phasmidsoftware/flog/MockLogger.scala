@@ -66,7 +66,7 @@ case class MockLogger(name: String, level: String = "DEBUG", sb: StringBuilder =
 
   def error(format: String, arguments: AnyRef*) = doLogX()
 
-  def error(msg: String, t: Throwable) = doLogX()
+  def error(msg: String, t: Throwable) = doLog(msg, t)
 
   def error(marker: Marker, msg: String) = doLogX()
 
@@ -118,7 +118,7 @@ case class MockLogger(name: String, level: String = "DEBUG", sb: StringBuilder =
 
   def isInfoEnabled(marker: Marker) = true
 
-  def isErrorEnabled = level == "ERROR" || isWarnEnabled
+  def isErrorEnabled = true
 
   def isErrorEnabled(marker: Marker) = false
 
