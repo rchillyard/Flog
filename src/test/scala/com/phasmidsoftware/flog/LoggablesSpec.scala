@@ -9,7 +9,6 @@ import org.scalatest.matchers.should
 
 import java.time.LocalDateTime
 import java.util.NoSuchElementException
-import scala.concurrent.Future
 import scala.util.Try
 
 //noinspection ScalaStyle
@@ -62,18 +61,6 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
     val target = eitherLoggable[Int, Double]
     target.toLog(x) shouldBe "Right(3.141592653589793)"
     target.toLog(y) shouldBe "Left(1)"
-  }
-
-  it should "futureLoggable" in {
-    val flog = Flog[LoggablesSpec]
-    import scala.concurrent.ExecutionContext.Implicits.global
-    implicit val logger: Logger = flog.logger
-    val target = futureLoggable[Int]
-    // NOTE that this future task takes no time at all and, in any case,
-    // XXX we do not wait for the Future to complete.
-    // XXX FlogSpec for a slightly more realistic example.
-    val str = target.toLog(Future("1".toInt))
-    str.replaceAll("""\(\S+\)""", "") shouldBe "Future: promise  created... "
   }
 
   // TODO invoke these via PrivateMethodTester...

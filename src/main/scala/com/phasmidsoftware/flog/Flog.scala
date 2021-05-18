@@ -7,6 +7,7 @@ package com.phasmidsoftware.flog
 import org.slf4j.LoggerFactory
 
 import java.io.{Flushable, OutputStream, PrintStream, PrintWriter}
+import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
 
@@ -47,7 +48,9 @@ case class Flog(logger: Logger) extends AutoCloseable {
    */
   implicit class Flogger(message: => String) extends Loggables {
     /**
-     * Synonym for info.
+     * Method to generate an INFO-level log entry for a (Loggable) value of X.
+     * Logging is performed as a side effect.
+     * Rendering of the x value is via the toLog method of the implicit Loggable[X].
      *
      * @param x the value to be logged.
      * @tparam X the type of x, which must provide implicit evidence of being Loggable.
@@ -56,7 +59,9 @@ case class Flog(logger: Logger) extends AutoCloseable {
     def !![X: Loggable](x: => X): X = info(x)
 
     /**
-     * Synonym for debug.
+     * Method to generate a DEBUG-level log entry for a (Loggable) value of X.
+     * Logging is performed as a side effect.
+     * Rendering of the x value is via the toLog method of the implicit Loggable[X].
      *
      * @param x the value to be logged.
      * @tparam X the type of x, which must provide implicit evidence of being Loggable.
@@ -65,7 +70,9 @@ case class Flog(logger: Logger) extends AutoCloseable {
     def !?[X: Loggable](x: => X): X = debug(x)
 
     /**
-     * Synonym for debug.
+     * Method to generate a TRACE-level log entry for a (Loggable) value of X.
+     * Logging is performed as a side effect.
+     * Rendering of the x value is via the toLog method of the implicit Loggable[X].
      *
      * @param x the value to be logged.
      * @tparam X the type of x, which must provide implicit evidence of being Loggable.
@@ -74,6 +81,8 @@ case class Flog(logger: Logger) extends AutoCloseable {
     def !??[X: Loggable](x: => X): X = trace(x)
 
     /**
+     * Synonym for: def !![X: Loggable](x: => X): X
+     *
      * Method to generate an INFO-level log entry for a (Loggable) value of X.
      * Logging is performed as a side effect.
      * Rendering of the x value is via the toLog method of the implicit Loggable[X].
@@ -85,6 +94,8 @@ case class Flog(logger: Logger) extends AutoCloseable {
     def info[X: Loggable](x: => X): X = logLoggable(logger.info)(message)(x)
 
     /**
+     * Synonym for: def !?[X: Loggable](x: => X): X.
+     *
      * Method to generate a DEBUG-level log entry for a (Loggable) value of X.
      * Logging is performed as a side effect.
      * Rendering of the x value is via the toLog method of the implicit Loggable[X].
@@ -96,6 +107,8 @@ case class Flog(logger: Logger) extends AutoCloseable {
     def debug[X: Loggable](x: => X): X = logLoggable(logger.debug)(message)(x)
 
     /**
+     * Synonym for: def !??[X: Loggable](x: => X): X
+     *
      * Method to generate a TRACE-level log entry for a (Loggable) value of X.
      * Logging is performed as a side effect.
      * Rendering of the x value is via the toLog method of the implicit Loggable[X].
@@ -116,6 +129,21 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @return the value of x.
      */
     def warn[X: Loggable](x: => X): X = logLoggable(logger.warn)(message)(x)
+
+    /**
+     * Method to generate an ERROR-level log entry for a (Loggable) value of X.
+     * Logging is performed as a side effect.
+     * Rendering of the x value is via the toLog method of the implicit Loggable[X].
+     *
+     * NOTE: there is a null coded here for the default value of t.
+     * It's justified because it is simply following the Java calling convention.
+     *
+     * @param x the value to be logged.
+     * @param t a Throwable (defaults to null) -- but don't forget the empty parentheses in that case.
+     * @tparam X the type of x, which must provide implicit evidence of being Loggable.
+     * @return the value of x.
+     */
+    def error[X: Loggable](x: => X)(t: Throwable = null): X = logLoggable(w => logger.error(w, t))(message)(x)
 
     /**
      * Method to generate an info log entry for an Iterable of a (Loggable) X.
@@ -151,6 +179,16 @@ case class Flog(logger: Logger) extends AutoCloseable {
     def !![K: Loggable, V: Loggable](kVm: => Map[K, V]): Map[K, V] = logMap(logger.info, kVm)
 
     /**
+     * Method to generate an info log entry for a Future[X].
+     * Logging is performed as a side effect.
+     *
+     * @param xf the future value to be logged.
+     * @tparam X the underlying type of the given input.
+     * @return the value of xf.
+     */
+    def !![X: Loggable](xf: => Future[X])(implicit ec: ExecutionContext): Future[X] = logFuture(logger.info, xf)
+
+    /**
      * Method to generate a debug log entry for an Iterable of a (Loggable) X.
      * Logging is performed as a side effect.
      * Rendering of the x value is via the toLog method of the implicit Loggable[X].
@@ -184,6 +222,16 @@ case class Flog(logger: Logger) extends AutoCloseable {
     def !?[K: Loggable, V: Loggable](kVm: => Map[K, V]): Map[K, V] = logMap(logger.trace, kVm)
 
     /**
+     * Method to generate an debug log entry for a Future[X].
+     * Logging is performed as a side effect.
+     *
+     * @param xf the future value to be logged.
+     * @tparam X the underlying type of the given input.
+     * @return the value of xf.
+     */
+    def !?[X: Loggable](xf: => Future[X])(implicit ec: ExecutionContext): Future[X] = logFuture(logger.debug, xf)
+
+    /**
      * Method to generate a trace log entry for an Iterable of a (Loggable) X.
      * Logging is performed as a side effect.
      * Rendering of the x value is via the toLog method of the implicit Loggable[X].
@@ -215,6 +263,16 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @return the value of x.
      */
     def !??[K: Loggable, V: Loggable](kVm: => Map[K, V]): Map[K, V] = logMap(logger.debug, kVm)
+
+    /**
+     * Method to generate a trace log entry for a Future[X].
+     * Logging is performed as a side effect.
+     *
+     * @param xf the future value to be logged.
+     * @tparam X the underlying type of the given input.
+     * @return the value of xf.
+     */
+    def !??[X: Loggable](xf: => Future[X])(implicit ec: ExecutionContext): Future[X] = logFuture(logger.trace, xf)
 
     /**
      * Method to generate a log entry for a type which is not itself Loggable.
@@ -261,12 +319,28 @@ case class Flog(logger: Logger) extends AutoCloseable {
     private def logOption[X: Loggable](logFunction: LogFunction, xo: => Option[X]): Option[X] =
       tee[Option[X]](y => logLoggable(logFunction)(message)(toLog(y)))(xo)
 
+    private def logFuture[X: Loggable](logFunction: LogFunction, xf: => Future[X])(implicit ec: ExecutionContext): Future[X] = {
+      val uuid = java.util.UUID.randomUUID
+      implicit val z: Logger = logger
+      implicit val xtl: Loggable[Try[X]] = tryLoggable
+      xf.onComplete(xy => logLoggable(logFunction)(message)(s"future [$uuid] completed : ${xtl.toLog(xy)}"))
+      tee[Future[X]](_ => logLoggable(logFunction)(message)(s"future promise [$uuid] created... "))(xf)
+    }
+
     private def toLog[X: Loggable](y: Option[X]): String = optionLoggable[String].toLog(y map implicitly[Loggable[X]].toLog)
 
     private def toLog[X: Loggable](y: Iterable[X]): String = iterableLoggable[String]().toLog(y map implicitly[Loggable[X]].toLog)
 
     private def toLog[K, V](y: Map[K, V])(implicit kVl: Loggable[(K, V)]): String = iterableLoggable[String]("{}").toLog(y map kVl.toLog)
   }
+
+  /**
+   * Method to capture any text held by this Flog.
+   * In the case of a "standard" slf4j logger, the returned value will is undefined.
+   *
+   * @return the value of logger.toString.
+   */
+  override def toString: String = logger.toString
 
   /**
    * Use this method to create a new Flog based on the given logging function.
@@ -285,6 +359,8 @@ case class Flog(logger: Logger) extends AutoCloseable {
 
   /**
    * Close this Flog.
+   * For standard slf4j loggers, this does nothing.
+   * However, for Appendable loggers, this call will typically flush and close the appendable instance.
    */
   def close(): Unit = logger.close()
 
@@ -350,6 +426,7 @@ object Flog {
 
   /**
    * Method to create a Flog from an Appendable, AutoCloseable, Flushable object.
+   * Don't forget to close this Flog.
    *
    * @param a the Appendable, which must also be AutoCloseable and Flushable.
    * @return an instance of Flog.
@@ -357,7 +434,8 @@ object Flog {
   def apply(a: Appendable with AutoCloseable with Flushable): Flog = Flog(Logger(a))
 
   /**
-   * Method to create a Flog from a StringBuilder.
+   * Method to create a Flog from a PrintStream.
+   * NOTE: invokes apply(Appendable).
    *
    * @param s the PrintStream.
    * @return an instance of Flog.
@@ -365,8 +443,9 @@ object Flog {
   def apply(s: PrintStream): Flog = Flog(new PrintWriter(s))
 
   /**
-   * Method to create a Flog from a StringBuilder.
-   * Mostly intended for testing.
+   * Method to create a Flog from an OutputStream.
+   * NOTE: invokes apply(Appendable).
+   * Don't forget to close this Flog.
    *
    * @param o the OutputStream.
    * @return an instance of Flog.
@@ -374,10 +453,10 @@ object Flog {
   def apply(o: OutputStream): Flog = Flog(new PrintWriter(o))
 
   /**
-   * Method which, as a side-effect, invokes function f on the given value of x.
-   * Then returns the value of x.
-   * If an exception is thrown evaluating f(xx), it is logged as a warning.
-   * However, it is possible that the exception was thrown evaluating x,
+   * Private method which, as a side-effect, invokes function f on the given value of x,
+   * and returns the value of x.
+   * If an exception is raised while evaluating f(xx), it is caught and logged as an error.
+   * However, it is possible that the exception is thrown while evaluating x,
    * in which case the tee method will throw the same exception.
    * There is nothing to be done about this, of course, but at least there will be a log entry.
    *
@@ -386,7 +465,7 @@ object Flog {
    * @tparam X the type of x (and the result).
    * @return x.
    */
-  def tee[X](f: X => Unit)(x: => X): X = {
+  private def tee[X](f: X => Unit)(x: => X): X = {
     lazy val xx: X = x
     Try(f(xx)) match {
       case Failure(e) => Logger[Flog].error("Exception thrown in tee function", e)
@@ -436,7 +515,7 @@ trait Logger extends AutoCloseable with Flushable {
    */
   def error: (String, Throwable) => Unit = (w, e) => {
     System.err.println(s"$w: exception:")
-    e.printStackTrace(System.err)
+    Option(e) map (t => t.printStackTrace(System.err))
   }
 
   /**
@@ -500,7 +579,7 @@ object Logger {
    * @param sb an instance of StringBuilder.
    * @return a new instance of GenericLogger.
    */
-  def apply(sb: StringBuilder): Logger = Logger(LogFunction(sb))
+  def apply(sb: StringBuilder): Logger = StringBuilderLogger(sb)
 
   /**
    * Method to create a Logger based on an Appendable, for example PrintStream, or any Writer.
@@ -532,7 +611,9 @@ case class Slf4jLogger(logger: org.slf4j.Logger) extends Logger {
 
   def warn: LogFunction = LogFunction(w => if (logger.isWarnEnabled) logger.warn(w) else ())
 
-  override def error: (String, Throwable) => Unit = (w, x) => if (logger.isErrorEnabled) logger.error(w) else super.error(w, x)
+  override def error: (String, Throwable) => Unit = (w, x) => if (logger.isErrorEnabled) logger.error(w, x) else super.error(w, x)
+
+  override def toString: String = "<org.slf4j.Logger>"
 }
 
 /**
@@ -575,6 +656,52 @@ case class AppendableLogger(appendable: Appendable with AutoCloseable with Flush
    * TODO figure out why it doesn't work if we try to close it too.
    */
   override def close(): Unit = flush()
+
+  override def toString: String = "<appendable>"
+}
+
+
+/**
+ * Class to represent a Logger which is based on a StringBuilder.
+ *
+ * @param sb an instance of StringBuilder.
+ */
+case class StringBuilderLogger(sb: StringBuilder) extends Logger {
+  def trace: LogFunction = LogFunction(sb)
+
+  def debug: LogFunction = LogFunction(sb)
+
+  def info: LogFunction = LogFunction(sb)
+
+  def warn: LogFunction = LogFunction(sb)
+
+  /**
+   * Method to furnish a (String, Throwable) -> Unit for dealing with errors in the logs.
+   * This default implementation is over-ridden for Slf4J-based loggers.
+   *
+   * NOTE: there is a null coded here for the situation where error is called without a Throwable.
+   * It's justified because it is simply following the Java calling convention.
+   *
+   * @return a function (String, Throwable) => Unit.
+   */
+  override def error: (String, Throwable) => Unit = {
+    case (s, null) => sb.append(s"$s: ERROR\n")
+    case (s, x) => sb.append(s"$s: ERROR: ${x.getLocalizedMessage}\n")
+  }
+
+  /**
+   * Method to flush the appendable.
+   */
+  override def flush(): Unit = ()
+
+  /**
+   * Method to close the appendable.
+   * NOTE: we close it by flushing (and nothing else).
+   * TODO figure out why it doesn't work if we try to close it too.
+   */
+  override def close(): Unit = flush()
+
+  override def toString: String = sb.toString()
 }
 
 /**

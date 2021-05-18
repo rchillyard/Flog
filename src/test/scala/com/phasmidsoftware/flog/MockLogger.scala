@@ -13,12 +13,12 @@ import scala.reflect.ClassTag
  *
  * TODO implement all of the unimplemented stuff
  *
- * @param name  the name of this logger
- * @param level the level of this logger
- * @param sb    a StringBuilder to which we append messages
+ * @param name     the name of this logger
+ * @param logLevel the level of this logger
+ * @param sb       a StringBuilder to which we append messages
  */
 //noinspection TypeAnnotation,NotImplementedCode
-case class MockLogger(name: String, level: String = "DEBUG", sb: StringBuilder = new StringBuilder()) extends Logger {
+case class MockLogger(name: String, logLevel: String = "DEBUG", sb: StringBuilder = new StringBuilder()) extends Logger {
 
   def clear(): Unit = {
     sb.clear()
@@ -28,13 +28,13 @@ case class MockLogger(name: String, level: String = "DEBUG", sb: StringBuilder =
 
   def getName = name
 
-  def debug(msg: String) = doLog(msg)
+  def debug(msg: String) = doLog(msg, "DEBUG")
 
-  def info(msg: String) = doLog(msg)
+  def info(msg: String) = doLog(msg, "INFO")
 
-  def warn(msg: String) = doLog(msg)
+  def warn(msg: String) = doLog(msg, "WARN")
 
-  def warn(msg: String, t: Throwable) = doLog(msg, t)
+  def warn(msg: String, t: Throwable) = doLog(msg, "WARN", t)
 
   def debug(format: String, arg: scala.Any) = doLogX()
 
@@ -54,11 +54,11 @@ case class MockLogger(name: String, level: String = "DEBUG", sb: StringBuilder =
 
   def debug(marker: Marker, msg: String, t: Throwable) = doLogX()
 
-  def isWarnEnabled = level == "WARN" || isInfoEnabled
+  def isWarnEnabled = logLevel == "WARN" || isInfoEnabled
 
   def isWarnEnabled(marker: Marker) = false
 
-  def error(msg: String) = doLog(msg)
+  def error(msg: String) = doLog(msg, "ERROR")
 
   def error(format: String, arg: scala.Any) = doLogX()
 
@@ -66,7 +66,7 @@ case class MockLogger(name: String, level: String = "DEBUG", sb: StringBuilder =
 
   def error(format: String, arguments: AnyRef*) = doLogX()
 
-  def error(msg: String, t: Throwable) = doLogX()
+  def error(msg: String, t: Throwable) = doLog(msg, "ERROR", t)
 
   def error(marker: Marker, msg: String) = doLogX()
 
@@ -94,7 +94,7 @@ case class MockLogger(name: String, level: String = "DEBUG", sb: StringBuilder =
 
   def warn(marker: Marker, msg: String, t: Throwable) = doLogX()
 
-  def trace(msg: String) = doLog(msg)
+  def trace(msg: String) = doLog(msg, "TRACE")
 
   def trace(format: String, arg: scala.Any) = doLogX()
 
@@ -114,19 +114,19 @@ case class MockLogger(name: String, level: String = "DEBUG", sb: StringBuilder =
 
   def trace(marker: Marker, msg: String, t: Throwable) = doLogX()
 
-  def isInfoEnabled = level == "INFO" || isDebugEnabled
+  def isInfoEnabled = logLevel == "INFO" || isDebugEnabled
 
   def isInfoEnabled(marker: Marker) = true
 
-  def isErrorEnabled = level == "ERROR" || isWarnEnabled
+  def isErrorEnabled = true
 
   def isErrorEnabled(marker: Marker) = false
 
-  def isTraceEnabled = level == "TRACE"
+  def isTraceEnabled = logLevel == "TRACE"
 
   def isTraceEnabled(marker: Marker) = false
 
-  def isDebugEnabled = level == "DEBUG" || isTraceEnabled
+  def isDebugEnabled = logLevel == "DEBUG" || isTraceEnabled
 
   def isDebugEnabled(marker: Marker) = false
 
@@ -148,11 +148,12 @@ case class MockLogger(name: String, level: String = "DEBUG", sb: StringBuilder =
 
   def info(marker: Marker, msg: String, t: Throwable) = doLogX()
 
-    private def doLog(msg: String, e: Throwable = null) = {
-        sb.append(s"$name: $level: $msg")
-        if (e != null) sb.append(s" threw an exception: ${e.getLocalizedMessage}")
-        sb.append("\n")
-    }
+  private def doLog(msg: String, level: String, e: Throwable = null): Unit = {
+    sb.append(s"$name: $level: $msg")
+    if (e != null) sb.append(s" threw an exception: ${e.getLocalizedMessage}")
+    sb.append("\n")
+    ()
+  }
 
     private def doLogX(): Unit = {}
 }

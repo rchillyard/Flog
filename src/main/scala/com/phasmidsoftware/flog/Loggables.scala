@@ -8,7 +8,6 @@ import com.phasmidsoftware.flog.Loggables.fieldNames
 
 import scala.collection.immutable.LazyList.#::
 import scala.collection.{SeqMap, View}
-import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
 
@@ -51,8 +50,7 @@ trait Loggables {
     case Nil => "<empty>"
     case LazyList() => "<empty lazy list>"
     case ll@_ #:: _ =>
-      //noinspection ScalaDeprecation
-      if (ll.hasDefiniteSize) iterableLoggable[T](bookends).toLog(ll.toList) else "<LazyList>"
+      if (ll.knownSize >= 0) iterableLoggable[T](bookends).toLog(ll.toList) else "<LazyList>"
     case _: View[T] =>
       "<view>"
     case ts =>
@@ -113,20 +111,6 @@ trait Loggables {
   def tryLoggable[T: Loggable]: Loggable[Try[T]] = {
     case Success(t) => s"Success(${implicitly[Loggable[T]].toLog(t)})"
     case Failure(x) => s"Failure(${x.getLocalizedMessage})"
-  }
-
-  /**
-   * Method to return a Loggable[ Future[T] ].
-   * Note that an onComplete is established which utilizes the debug method of the given Logger.
-   *
-   * @tparam T the underlying type of the first parameter of the input to the render method.
-   * @return a Loggable[ Future[T] ].
-   */
-  def futureLoggable[T: Loggable](implicit logger: Logger, ec: ExecutionContext): Loggable[Future[T]] = (tf: Future[T]) => {
-    val uuid = java.util.UUID.randomUUID
-    implicit val tl: Loggable[Try[T]] = tryLoggable
-    tf.onComplete(ty => logger.debug(s"Future completed ($uuid): ${tl.toLog(ty)}"))
-    s"Future: promise ($uuid) created... "
   }
 
   /**

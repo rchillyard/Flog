@@ -107,13 +107,13 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   }
 
   // NOTE: sometimes this test will fail. Not to worry.
-  ignore should "$bang$bang 6" in {
+  it should "$bang$bang Future[Int]" in {
     val sb: StringBuilder = new StringBuilder()
     implicit val logger: Logger = Logger(sb)
     val flog = Flog(sb)
-    import scala.concurrent.ExecutionContext.Implicits.global
-    implicit val z: Loggable[Future[Int]] = new Loggables {}.futureLoggable[Int]
     import flog._
+
+    import scala.concurrent.ExecutionContext.Implicits.global
     val eventualInt = getString !! Future[Int] {
       Thread.sleep(100)
       "1".toInt
@@ -122,14 +122,19 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
       result =>
         result shouldBe 1
         // NOTE sb should not be empty but it might be if you run this unit test on its own.
-        val str = sb.toString().replaceAll("""\(\S+\)""", "")
+        val str = sb.toString().replaceAll("""\[\S+]""", "<UUID>")
         // NOTE occasionally, the completed message will precede the created message.
-        str shouldBe "Hello: Future: promise  created... Future completed : Success"
+        println(str)
+        val b1 = str == "Hello: future promise <UUID> created... \nHello: future <UUID> completed : Success(1)\n"
+        val b2 = str == "Hello: future <UUID> completed : Success(1)\nHello: future promise <UUID> created... \n"
+        val b3 = str == "Hello: future promise <UUID> created... \n"
+        (b1 || b2 || b3) shouldBe true
     }
+    flog.close()
   }
 
   it should "$bang$bang 7" in {
-    // NOTE: check the log files to see if Flog was the class of record.
+    // NOTE: check the log files to see if FlogSpec was the class of record.
     val flog = Flog[FlogSpec]
     import flog._
     getString !! Seq(1, 1, 2, 3, 5, 8)
@@ -289,6 +294,34 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     }
   }
 
+
+  // NOTE: sometimes this test will fail. Not to worry.
+  it should "debug 7" in {
+    val sb: StringBuilder = new StringBuilder()
+    implicit val logger: Logger = Logger(sb)
+    val flog = Flog(sb)
+    import flog._
+
+    import scala.concurrent.ExecutionContext.Implicits.global
+    val eventualInt = getString !? Future[Int] {
+      Thread.sleep(100)
+      "1".toInt
+    }
+    whenReady(eventualInt) {
+      result =>
+        result shouldBe 1
+        // NOTE sb should not be empty but it might be if you run this unit test on its own.
+        val str = sb.toString().replaceAll("""\[\S+]""", "<UUID>")
+        // NOTE occasionally, the completed message will precede the created message.
+        println(str)
+        val b1 = str == "Hello: future promise <UUID> created... \nHello: future <UUID> completed : Success(1)\n"
+        val b2 = str == "Hello: future <UUID> completed : Success(1)\nHello: future promise <UUID> created... \n"
+        val b3 = str == "Hello: future promise <UUID> created... \n"
+        (b1 || b2 || b3) shouldBe true
+    }
+    flog.close()
+  }
+
   it should "trace 0" in {
     val flog = Flog[FlogSpec]
     import flog._
@@ -313,6 +346,63 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     //    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
   }
 
+  it should "trace 4" in {
+    Using(Flog(System.out)) {
+      f =>
+        import f._
+        getString !?? Seq(1, 2, 3)
+        if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+      // Should see message in console.
+    }
+  }
+
+  it should "trace 5" in {
+    Using(Flog(System.out)) {
+      f =>
+        import f._
+        getString !?? Some(1)
+        if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+      // Should see message in console.
+    }
+  }
+
+  it should "trace 6" in {
+    Using(Flog(System.out)) {
+      f =>
+        import f._
+        getString !?? Map(1 -> "a", 2 -> "b")
+        if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+      // Should see message in console.
+    }
+  }
+
+  // NOTE: sometimes this test will fail. Not to worry.
+  it should "trace 7" in {
+    val sb: StringBuilder = new StringBuilder()
+    implicit val logger: Logger = Logger(sb)
+    val flog = Flog(sb)
+    import flog._
+
+    import scala.concurrent.ExecutionContext.Implicits.global
+    val eventualInt = getString !?? Future[Int] {
+      Thread.sleep(100)
+      "1".toInt
+    }
+    whenReady(eventualInt) {
+      result =>
+        result shouldBe 1
+        // NOTE sb should not be empty but it might be if you run this unit test on its own.
+        val str = sb.toString().replaceAll("""\[\S+]""", "<UUID>")
+        // NOTE occasionally, the completed message will precede the created message.
+        println(str)
+        val b1 = str == "Hello: future promise <UUID> created... \nHello: future <UUID> completed : Success(1)\n"
+        val b2 = str == "Hello: future <UUID> completed : Success(1)\nHello: future promise <UUID> created... \n"
+        val b3 = str == "Hello: future promise <UUID> created... \n"
+        (b1 || b2 || b3) shouldBe true
+    }
+    flog.close()
+  }
+
   it should "info 1" in {
     val flog = Flog[FlogSpec]
     import flog._
@@ -321,7 +411,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   }
 
   // This does indeed write to the logs but it shows DEBUG as level, not INFO.
-  ignore should "info 2" in {
+  it should "info 2" in {
     val logger: MockLogger = MockLogger.defaultLogger[FlogSpec]
     val flog: Flog = Flog(logger)
     import flog._
@@ -335,6 +425,42 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     import flog._
     getString warn 1
     // The message "Hello: 1" should appear in the logs provided that warn is enabled.
+  }
+
+  it should "error 1" in {
+    val logger: MockLogger = MockLogger(classOf[FlogSpec].toString, "ERROR")
+    val flog: Flog = Flog(logger)
+    import flog._
+    getString.error(1)(new Exception("test"))
+    logger.toString shouldBe "class com.phasmidsoftware.flog.FlogSpec: ERROR: Hello: 1 threw an exception: test\n"
+    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+  }
+
+  it should "error 2" in {
+    val logger: MockLogger = MockLogger(classOf[FlogSpec].toString, "ERROR")
+    val flog: Flog = Flog(logger)
+    import flog._
+    getString.error(1)()
+    logger.toString shouldBe "class com.phasmidsoftware.flog.FlogSpec: ERROR: Hello: 1\n"
+    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+  }
+
+  it should "error 3" in {
+    val sb = new StringBuilder()
+    val flog: Flog = Flog(sb)
+    import flog._
+    getString.error(1)(new Exception("test"))
+    flog.toString shouldBe "Hello: 1: ERROR: test\n"
+    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+  }
+
+  it should "error 4" in {
+    val sb = new StringBuilder()
+    val flog: Flog = Flog(sb)
+    import flog._
+    getString.error(1)()
+    flog.toString shouldBe "Hello: 1: ERROR\n"
+    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
   }
 
   it should "write to Appendable" in {

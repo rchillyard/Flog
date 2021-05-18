@@ -8,7 +8,7 @@
 
 # Flog
 This is a set of utilities for functional logging.
-You can copy the jar files, etc. from the _releases_ directory.
+Flog is not yet released to maven central, but you may copy the jar files, etc. from the _releases_ directory.
 
 ## Introduction and Usage
 _Flog_ is a functional logger:
@@ -44,9 +44,9 @@ A further advantage of this mechanism is that we can define the various methods 
 call-by-name (i.e. non-strict).
 This avoids constructing the string when logging is turned off.
 
-In addition to the !! method, there is also a !? method, which logs at DEBUG level.
+In addition to the !! method, there is also a !? method, which logs at DEBUG level, and a !?? method for TRACE level.
 Additionally, there are the methods in words:
-trace, debug (synonym of !?), info (synonym of !!), and warn.
+trace (synonym of !??), debug (synonym of !?), info (synonym of !!), warn, and error.
 Additionally, there is also !| for logging a generic type that isn't necessarily _Loggable_.
 In this case, we simply invoke _toString_ on the object to get a rendition for logging.
 There's also a |! method which ignores the message and does no logging at all.
@@ -55,9 +55,13 @@ This is useful if you want to temporarily suspend a particular logging construct
 The following signatures are defined for _Floggable_ (the implicit class):
 
     def !![X: Loggable](x: => X): X
-    def !![K: Loggable, V: Loggable](kVm: => Map[K,V]): Map[K,V]
     def !![X: Loggable](x: => Iterable[X]): Iterable[X]
     def !![X: Loggable](x: => Option[X]): Option[X]
+    def !![K: Loggable, V: Loggable](kVm: => Map[K,V]): Map[K,V]
+    def !![X: Loggable](xf: => Future[X])(implicit ec: ExecutionContext): Future[X]
+
+These same five signatures (above) are also available for !? (debug) and !!? (trace).
+
     def !|[X](x: => X): X // logs using x.toString
     def |![X](x: => X): X // does no logging
     def !!![X: Loggable](xy: Try[X]): Try[X]
@@ -96,7 +100,6 @@ where, in each case, the parametric types _T_, _L_, _R_, _K_, or _V_ must provid
     def iterableLoggable[T: Loggable]: Loggable[Iterable[T]]
     def mapLoggable[K, T: Loggable]: Loggable[Map[K, T]] 
     def tryLoggable[T: Loggable]: Loggable[Try[T]]
-    def futureLoggable[T: Loggable](implicit logFunc: LogFunction, ec: ExecutionContext): Loggable[Future[T]] // this produces two log messages: on promise and on completion
     def eitherLoggable[L: Loggable, R: Loggable]: Loggable[Either[L, R]]
     def kVLoggable[K: Loggable, V: Loggable]: Loggable[(K, V)]
 
@@ -172,6 +175,10 @@ If you use this type, you should run invoke it something like the following:
         message info x
     }
 
+Furthermore, there is also (primarily for unit testing) a type of Logger called _StringBuilderLogger_:
+
+    case class StringBuilderLogger(sb: StringBuilder) extends Logger
+
 It is also possible to change the behavior of the _Flog_ instance by invoking one of the methods:
 
     def disabled: Flog
@@ -187,7 +194,7 @@ If you choose to use a different logger function, you may need to change these d
 
 ## Please Note
 Currently, the synonyms info, debug, trace are only valid for simple types of _X_.
-For _Iterable[X]. Option[X], Map[K, V]_, use the operators !!, !?, and !?? respectively.
+For _Iterable[X]. Option[X], Future[X], Map[K, V]_, use the operators !!, !?, and !?? respectively.
 Note also that if you want to use warn or error, you can only log simple types and that there
 are no operator-type synonyms.
 
@@ -213,6 +220,9 @@ See also unit tests $bang$bang 1 and $bang$bang 1a for more detail.
   of the current scope.
   
 # Version
+
+1.0.8 Issue #17: Fixed regression in handling of futures; improved the error method;
+
 1.0.7 Issue #14: Implemented level-based logging;
 
 1.0.6 Issue #12: Minor changes to iterableLoggable;
