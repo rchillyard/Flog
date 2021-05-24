@@ -397,7 +397,7 @@ trait Loggables {
 
 object Loggables {
 
-  val lazyNil = LazyList.empty
+  private val lazyNil = LazyList.empty
 
   private def fieldNames[T: ClassTag](fields: Seq[String], method: String): Array[String] = fields match {
     case Nil => extractFieldNames(implicitly[ClassTag[T]], method)
