@@ -48,7 +48,7 @@ trait Loggables {
    */
   def iterableLoggable[T: Loggable](bookends: String = "[]", atLeast: Int = 3): Loggable[Iterable[T]] = {
     case Nil => "<empty>"
-    case LazyList() => "<empty lazy list>"
+    case Loggables.lazyNil => "<empty lazy list>"
     case ll@_ #:: _ =>
       if (ll.knownSize >= 0) iterableLoggable[T](bookends).toLog(ll.toList) else "<LazyList>"
     case _: View[T] =>
@@ -96,10 +96,9 @@ trait Loggables {
    * @return a Loggable[ Either[T,U] ].
    */
   def eitherLoggable[L: Loggable, R: Loggable]: Loggable[Either[L, R]] = {
-    case Left(t: L@unchecked) => s"Left(${implicitly[Loggable[L]].toLog(t)})"
-    case Right(u: Iterable[L]@unchecked) => val lv = new Loggables {}.iterableLoggable[L](); s"Right(${lv.toLog(u)})"
-    case Right(u: R@unchecked) => s"Right(${implicitly[Loggable[R]].toLog(u)})"
-    case x => s"<problem with logging Either: $x"
+    case Left(l: L@unchecked) => s"Left(${implicitly[Loggable[L]].toLog(l)})"
+    case Right(ls: Iterable[L]@unchecked) => val lv = new Loggables {}.iterableLoggable[L](); s"Right(${lv.toLog(ls)})"
+    case Right(r: R@unchecked) => s"Right(${implicitly[Loggable[R]].toLog(r)})"
   }
 
   /**
@@ -397,6 +396,8 @@ trait Loggables {
 }
 
 object Loggables {
+
+  val lazyNil = LazyList.empty
 
   private def fieldNames[T: ClassTag](fields: Seq[String], method: String): Array[String] = fields match {
     case Nil => extractFieldNames(implicitly[ClassTag[T]], method)
