@@ -8,7 +8,7 @@ scalaVersion := "2.13.6"
 
 scalacOptions += "-deprecation"
 
-val scalaTestVersion = "3.2.7"
+val scalaTestVersion = "3.2.9"
 val logBackVersion = "1.2.3"
 val slf4jVersion = "1.7.30"
 
