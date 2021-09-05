@@ -35,7 +35,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
 
   it should "$bang$bang 0" in {
     val sb = new StringBuilder
-    val flog = Flog(sb)
+    val flog: Flog = Flog(sb)
     import flog._
     getString !! 1
     if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
