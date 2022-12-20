@@ -48,10 +48,13 @@ This avoids constructing the string when logging is turned off.
 In addition to the !! method, there is also a !? method, which logs at DEBUG level, and a !?? method for TRACE level.
 Additionally, there are the methods in words:
 trace (synonym of !??), debug (synonym of !?), info (synonym of !!), warn, and error.
-Additionally, there is also !| for logging a generic type that isn't necessarily _Loggable_.
-In this case, we simply invoke _toString_ on the object to get a rendition for logging.
 There's also a |! method which ignores the message and does no logging at all.
 This is useful if you want to temporarily suspend a particular logging construct without removing the instrumentation.
+
+Additionally, there is also !| (soon to be deprecated) for logging a generic type that isn't necessarily _Loggable_.
+In this case, we simply invoke _toString_ on the object to get a rendition for logging.
+The recommended way to handle this situation is via the implicit def loggableAny\[T] which will produce a Loggable\[T]
+which uses the toString method. 
 
 The following signatures are defined for _Floggable_ (the implicit class):
 
@@ -63,14 +66,14 @@ The following signatures are defined for _Floggable_ (the implicit class):
 
 These same five signatures (above) are also available for !? (debug) and !!? (trace).
 
-    def !|[X](x: => X): X // logs using x.toString
+    def !|[X](x: => X): X // logs using x.toString (soon to be deprecated)
     def |![X](x: => X): X // does no logging
     def !!![X: Loggable](xy: Try[X]): Try[X]
 
-The signature which takes an _Iterable[X]_ does require some further discussion.
+The signature which takes an _Iterable\[X]_ does require some further discussion.
 If there are sufficient elements, the first three elements and the last element are shown in the log message.
 Only the number of non-logged elements is shown between them.
-This method is also invoked by the !!(Map) method, seeing an _Iterable[(String, String)]_.
+This method is also invoked by the !!(Map) method, seeing an _Iterable\[(String, String)]_.
 
 In the case of non-strict collections, no unnecessary evaluation is performed.
 Views are left as is and *LazyList*s are shown as lists only if they have definite size.
@@ -79,7 +82,7 @@ The last-named (!!!) method does not return the input exactly as is (as all the 
 If _xy_ is a _Failure(e)_ then it logs the exception as an error and returns _Failure(LoggedException(e))_.
 This allows for the code to avoid logging the exception twice.
 
-For all these !! logging mechanism to work, there must be (implicit) evidence of _Loggable[X]_ available.
+For all these !! logging mechanism to work, there must be (implicit) evidence of _Loggable\[X]_ available.
 The following standard _Loggables_ are provided:
 
     implicit object LoggableBoolean extends Loggable[Boolean]
@@ -95,7 +98,7 @@ The following standard _Loggables_ are provided:
 
 Additionally, for those container types which are not explicitly handled by the !! method signatures,
 there is support, in _Loggables_, for various specific types of containers to be logged
-where, in each case, the parametric types _T_, _L_, _R_, _K_, or _V_ must provide implicit evidence of type _Loggable[T]_, etc.:
+where, in each case, the parametric types _T_, _L_, _R_, _K_, or _V_ must provide implicit evidence of type _Loggable\[T]_, etc.:
 
     def optionLoggable[T: Loggable]: Loggable[Option[T]]
     def iterableLoggable[T: Loggable]: Loggable[Iterable[T]]
@@ -105,11 +108,12 @@ where, in each case, the parametric types _T_, _L_, _R_, _K_, or _V_ must provid
     def kVLoggable[K: Loggable, V: Loggable]: Loggable[(K, V)]
 
 There is also a method which can be used for any underlying type that for which there
-is no explicit loggable method:
+is no explicit loggable method (although this method is no longer necessary because
+there is an implicit def _loggableAny\[T]_ in _Loggable_.:
 
     def anyLoggable[T]: Loggable[T]
 
-Additionally, _Loggables_ defines a set of methods for creating _Loggable[P]_ where _P_ is a _Product_,
+Additionally, _Loggables_ defines a set of methods for creating _Loggable\[P]_ where _P_ is a _Product_,
 that's to say a case class, or a tuple, with a particular number of members (fields).
 Each member type must itself be _Loggable_
 ("standard" types such as Int and String--see above for definition--will implicitly find the appropriate instance).
@@ -195,11 +199,11 @@ If you choose to use a different logger function, you may need to change these d
 
 ## Please Note
 Currently, the synonyms info, debug, trace are only valid for simple types of _X_.
-For _Iterable[X]. Option[X], Future[X], Map[K, V]_, use the operators !!, !?, and !?? respectively.
+For _Iterable\[X]. Option\[X], Future\[X], Map\[K, V]_, use the operators !!, !?, and !?? respectively.
 Note also that if you want to use warn or error, you can only log simple types and that there
 are no operator-type synonyms.
 
-When using the !! operator for _Iterable[X]_, you need to take care that the context is _Iterable_,
+When using the !! operator for _Iterable\[X]_, you need to take care that the context is _Iterable_,
 rather than a more specific type such as _Seq_ or _List_.
 Thus,
 
@@ -221,6 +225,8 @@ See also unit tests $bang$bang 1 and $bang$bang 1a for more detail.
   of the current scope.
   
 # Version
+
+1.0.9 Issue #20: Alternative means of getting a Loggable when no explicit Loggable\[T] is available.
 
 1.0.8 Issue #17: Fixed regression in handling of futures; improved the error method;
 

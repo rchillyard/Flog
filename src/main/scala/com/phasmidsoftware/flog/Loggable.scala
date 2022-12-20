@@ -12,7 +12,7 @@ import scala.annotation.implicitNotFound
  * @tparam T the underlying type of the Loggable.
  */
 @implicitNotFound(msg = "Cannot find an implicit instance of Loggable[${T}]. Typically, you should invoke a suitable method from Loggables.")
-trait Loggable[T] {
+trait Loggable[-T] {
 
   /**
    * Generate a compact String without any newlines for t.
@@ -28,6 +28,15 @@ trait Loggable[T] {
  * This is where the compiler can find the various implicit values of Loggable[T].
  */
 object Loggable {
+
+  /**
+   * Implicit method to yield a Loggable[T] which depends only on the toString method.
+   * This method will be invoked to produce a Loggable[T] if no other (implicit) Loggable[T] is in scope.
+   *
+   * @tparam T the underlying type of the required Loggable.
+   * @return a Loggable[T].
+   */
+  implicit def loggableAny[T]: Loggable[T] = (t: Any) => t.toString
 
   trait LoggableUnit extends Loggable[Unit] {
     def toLog(t: Unit): String = ""

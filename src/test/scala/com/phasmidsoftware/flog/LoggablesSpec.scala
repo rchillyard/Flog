@@ -4,11 +4,9 @@
 
 package com.phasmidsoftware.flog
 
+import java.time.LocalDateTime
 import org.scalatest.flatspec
 import org.scalatest.matchers.should
-
-import java.time.LocalDateTime
-import java.util.NoSuchElementException
 import scala.util.Try
 
 //noinspection ScalaStyle
@@ -132,8 +130,7 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
     case class Complicated9(name: String, date: LocalDateTime, a: Option[Int], b: Option[Double], x: Int, y: Boolean, z: Double, q: BigDecimal, r: BigInt)
     // NOTE: we must explicitly include an implicit Loggable[Option[Double]] because that particular value is not imported from Loggable._
     implicit val z1: Loggable[Option[Double]] = optionLoggable[Double]
-    implicit val z2: Loggable[LocalDateTime] = anyLoggable[LocalDateTime]
-    val loggable: Loggable[Complicated9] = loggable9(Complicated9)
+    val loggable: Loggable[Complicated9] = loggable9(Complicated9) // finds loggableAny
     val complicated = Complicated9("Robin", LocalDateTime.of(2021, 1, 1, 12, 0), Some(1), Some(Math.PI), 42, y = true, 3.1415927, BigDecimal("3.1415927"), BigInt(99))
     loggable.toLog(complicated) shouldBe "Complicated9(name:Robin,date:2021-01-01T12:00,a:Some(1),b:Some(3.141592653589793),x:42,y:true,z:3.1415927,q:3.1415927,r:99)"
   }

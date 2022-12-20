@@ -4,9 +4,8 @@
 
 package com.phasmidsoftware.flog
 
-import org.slf4j.LoggerFactory
-
 import java.io.{Flushable, OutputStream, PrintStream, PrintWriter}
+import org.slf4j.LoggerFactory
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
@@ -279,6 +278,9 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * Logging is performed as a side effect.
      * Rendering of the x value is via the toString method.
      *
+     * This !| method will be deprecated soon as Loggable is now contravariant in T and there
+     * is an implicit def loggableAny[T] which is available.
+     *
      * @param x the value to be logged.
      * @tparam X the type of x.
      * @return the value of x.
@@ -321,7 +323,6 @@ case class Flog(logger: Logger) extends AutoCloseable {
 
     private def logFuture[X: Loggable](logFunction: LogFunction, xf: => Future[X])(implicit ec: ExecutionContext): Future[X] = {
       val uuid = java.util.UUID.randomUUID
-      implicit val z: Logger = logger
       implicit val xtl: Loggable[Try[X]] = tryLoggable
       xf.onComplete(xy => logLoggable(logFunction)(message)(s"future [$uuid] completed : ${xtl.toLog(xy)}"))
       tee[Future[X]](_ => logLoggable(logFunction)(message)(s"future promise [$uuid] created... "))(xf)
@@ -380,6 +381,8 @@ case class Flog(logger: Logger) extends AutoCloseable {
    * Method to generate a log message, pass it to the logFunc, and return the x value.
    * The difference between this method and the logLoggable method is that the value of x will be rendered as a String,
    * simply by invoking toString.
+   *
+   * CONSIDER using loggableAny instead of anyLoggable.
    *
    * @param prefix the message prefix.
    * @param x      the value to be logged and returned.
