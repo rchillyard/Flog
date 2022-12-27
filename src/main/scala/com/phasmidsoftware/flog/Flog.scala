@@ -142,7 +142,15 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X the type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def error[X: Loggable](x: => X)(t: Throwable = null): X = logLoggable(w => logger.error(w, t))(message)(x)
+    def error[X: Loggable](x: => X)(t: Throwable = null): X = logLoggable(new LogFunction {
+      def apply(w: => String): Unit = logger.error(w, t)
+
+      def isDebugEnabled: Boolean = logger.isDebugEnabled
+
+      def isInfoEnabled: Boolean = logger.isInfoEnabled
+
+      def isTraceEnabled: Boolean = logger.isTraceEnabled
+    })(message)(x)
 
     /**
      * Method to generate an info log entry for an Iterable of a (Loggable) X.
@@ -482,6 +490,7 @@ object Flog {
  * Trait to represent a Logger.
  */
 trait Logger extends AutoCloseable with Flushable {
+
   /**
    * Method to furnish a LogFunction corresponding to the trace level of logging.
    *
@@ -520,6 +529,12 @@ trait Logger extends AutoCloseable with Flushable {
     System.err.println(s"$w: exception:")
     Option(e) map (t => t.printStackTrace(System.err))
   }
+
+  def isTraceEnabled: Boolean = trace.isTraceEnabled
+
+  def isDebugEnabled: Boolean = trace.isDebugEnabled
+
+  def isInfoEnabled: Boolean = trace.isInfoEnabled
 
   /**
    * Method to furnish a LogFunction that does nothing and which does not cause evaluation of the message.
@@ -569,6 +584,8 @@ object Logger {
 
   /**
    * Method to create a Logger based on a LogFunction.
+   *
+   * NOTE: this appears to be used only by the bitBucket method.
    *
    * @param f an instance of LogFunction.
    * @return a new instance of GenericLogger.
@@ -663,7 +680,6 @@ case class AppendableLogger(appendable: Appendable with AutoCloseable with Flush
   override def toString: String = "<appendable>"
 }
 
-
 /**
  * Class to represent a Logger which is based on a StringBuilder.
  *
@@ -719,6 +735,12 @@ trait LogFunction {
    * @param w a String to be logged.
    */
   def apply(w: => String): Unit
+
+  def isDebugEnabled: Boolean
+
+  def isInfoEnabled: Boolean
+
+  def isTraceEnabled: Boolean
 }
 
 /**
@@ -743,6 +765,12 @@ case class GenericLogFunction(f: String => Any, enabled: Boolean = true) extends
    * @return a LogFunction which does nothing.
    */
   def disable: LogFunction = GenericLogFunction(f, enabled = false)
+
+  def isDebugEnabled: Boolean = enabled
+
+  def isInfoEnabled: Boolean = enabled
+
+  def isTraceEnabled: Boolean = enabled
 }
 
 object LogFunction {

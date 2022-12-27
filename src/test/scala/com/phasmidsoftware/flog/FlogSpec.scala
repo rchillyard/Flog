@@ -10,6 +10,7 @@ import org.scalatest.matchers.should
 import org.scalatest.{BeforeAndAfterEach, flatspec}
 import scala.concurrent.Future
 import scala.language.implicitConversions
+import scala.util.control.NonFatal
 import scala.util.matching.Regex
 import scala.util.{Failure, Try, Using}
 
@@ -187,6 +188,18 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     }
   }
 
+  it should "$bang$bang 13" in {
+    val flog = Flog[FlogSpec]
+    import flog._
+    val result = getString !! Try(1 / 0)
+    result match {
+      case Failure(NonFatal(e)) =>
+        e.getClass shouldBe classOf[ArithmeticException]
+        e.getLocalizedMessage shouldBe "/ by zero"
+      case _ => fail("logic error")
+    }
+  }
+
   it should "$bar$bang1" in {
     val sb: StringBuilder = new StringBuilder()
 
@@ -223,6 +236,10 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     sb.toString shouldBe s"Hello: $now\n"
   }
 
+  /**
+   * NOTE you should see a full stack trace of the arithmetic exception in the log file.
+   * NOTE if you want to avoid that stack trace, then don't use !!!
+   */
   it should "$bang$bang$bang 1/0" in {
     val flog = Flog[FlogSpec]
     import flog._
@@ -330,7 +347,10 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   it should "trace 0" in {
     val flog = Flog[FlogSpec]
     import flog._
+    val trace = flog.logger.isTraceEnabled
+    if (trace) println("Trace enabled: expect to see log entry following")
     getString !?? 1
+    evaluated shouldBe trace
     // The message "Hello: 1" should appear in the logs provided that trace is enabled.
   }
 
