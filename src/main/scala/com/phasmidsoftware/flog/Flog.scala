@@ -158,10 +158,21 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * Rendering of the x value is via the toLog method of the implicit Loggable[X].
      *
      * @param xs the Iterable value to be logged.
-     * @tparam X the underlying type of x, which must provide implicit evidence of being Loggable.
+     * @tparam X the underlying type of xs, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
     def !![X: Loggable](xs: => Iterable[X]): Iterable[X] = logIterable(logger.info, xs)
+
+    /**
+     * Method to generate an info log entry for an Iterator of a (Loggable) X.
+     * Logging is performed as a side effect.
+     * Rendering of the x value is via the logIterable method.
+     *
+     * @param xs the Iterator value to be logged.
+     * @tparam X the underlying type of xs, which must provide implicit evidence of being Loggable.
+     * @return the value of x.
+     */
+    def !![X: Loggable](xs: => Iterator[X]): Iterator[X] = logIterator(logger.info, xs)
 
     /**
      * Method to generate an info log entry for an Option of a (Loggable) X.
@@ -318,17 +329,62 @@ case class Flog(logger: Logger) extends AutoCloseable {
       Failure(LoggedException(e))
     })
 
+    /**
+     * Logs the entries of a given map using a provided log function and ensures logging behavior for key-value pairs.
+     *
+     * @param logFunction the logging function to be applied
+     * @param kVm         the map containing key-value pairs to be logged
+     * @return the original map after logging its entries
+     */
     private def logMap[K: Loggable, V: Loggable](logFunction: LogFunction, kVm: => Map[K, V]): Map[K, V] = {
       implicit val g: Loggable[(K, V)] = kVLoggable
       tee[Map[K, V]](y => logLoggable(logFunction)(message)(toLog(y)))(kVm)
     }
 
-    private def logIterable[X: Loggable](logFunction: LogFunction, xo: => Iterable[X]): Iterable[X] =
-      tee[Iterable[X]](y => logLoggable(logFunction)(message)(toLog(y)))(xo)
+    /**
+     * Logs each element of the provided iterable using the specified log function,
+     * while returning the original iterable.
+     *
+     * @param logFunction the function responsible for logging activity
+     * @param xs          the iterable containing elements of type X to be logged
+     * @return the original iterable after logging its elements
+     */
+    private def logIterable[X: Loggable](logFunction: LogFunction, xs: => Iterable[X]): Iterable[X] =
+      tee[Iterable[X]](y => logLoggable(logFunction)(message)(toLog(y)))(xs)
 
+    /**
+     * Logs the elements of the provided iterator using the given log function
+     * and returns a new iterator with the same elements.
+     *
+     * @param logFunction the log function used to log the elements
+     * @param xs          the lazily evaluated iterator whose elements will be logged
+     * @return an iterator containing the same elements as the provided iterator
+     */
+    private def logIterator[X: Loggable](logFunction: LogFunction, xs: => Iterator[X]): Iterator[X] = {
+       val seq = xs.toSeq
+      logIterable(logFunction, seq)
+      seq.iterator
+    }
+
+    /**
+     * Logs an `Option` value if it exists, using the provided log function and implicit `Loggable` type class.
+     *
+     * @param logFunction the logging function to be used for logging the value
+     * @param xo          a lazily evaluated `Option` value to be logged
+     * @return the original `Option` value after logging if applicable
+     */
     private def logOption[X: Loggable](logFunction: LogFunction, xo: => Option[X]): Option[X] =
       tee[Option[X]](y => logLoggable(logFunction)(message)(toLog(y)))(xo)
 
+    /**
+     * Logs the lifecycle events (creation and completion) of a future and returns the same future.
+     *
+     * @param logFunction The function used to log messages.
+     * @param xf          The future to monitor and log.
+     * @param ec          The execution context used for handling the future.
+     * @tparam X The type of the value contained within the future.
+     * @return The original future with its lifecycle events logged.
+     */
     private def logFuture[X: Loggable](logFunction: LogFunction, xf: => Future[X])(implicit ec: ExecutionContext): Future[X] = {
       val uuid = java.util.UUID.randomUUID
       implicit val xtl: Loggable[Try[X]] = tryLoggable
@@ -336,10 +392,29 @@ case class Flog(logger: Logger) extends AutoCloseable {
       tee[Future[X]](_ => logLoggable(logFunction)(message)(s"future promise [$uuid] created... "))(xf)
     }
 
+    /**
+     * Converts an optional value of type X to a loggable string representation.
+     *
+     * @param y An optional value of type X that needs to be logged.
+     * @return A string representation of the optional value, processed by the loggable instance.
+     */
     private def toLog[X: Loggable](y: Option[X]): String = optionLoggable[String].toLog(y map implicitly[Loggable[X]].toLog)
 
+    /**
+     * Converts an iterable of elements of type X to its corresponding log string representation.
+     *
+     * @param y an iterable containing elements of type X, where X must have an implicit Loggable implementation
+     * @return a string representing the loggable form of the provided iterable
+     */
     private def toLog[X: Loggable](y: Iterable[X]): String = iterableLoggable[String]().toLog(y map implicitly[Loggable[X]].toLog)
 
+    /**
+     * Converts a map of key-value pairs into a loggable string representation.
+     *
+     * @param y   the map containing key-value pairs to be logged
+     * @param kVl an implicit Loggable instance for key-value pairs
+     * @return a string representation suitable for logging the map
+     */
     private def toLog[K, V](y: Map[K, V])(implicit kVl: Loggable[(K, V)]): String = iterableLoggable[String]("{}").toLog(y map kVl.toLog)
   }
 
@@ -530,10 +605,25 @@ trait Logger extends AutoCloseable with Flushable {
     Option(e) map (t => t.printStackTrace(System.err))
   }
 
+  /**
+   * Checks if trace level logging is enabled.
+   *
+   * @return true if trace level logging is enabled, otherwise false
+   */
   def isTraceEnabled: Boolean = trace.isTraceEnabled
 
+  /**
+   * Checks if debug level logging is enabled.
+   *
+   * @return true if debug logging is enabled; false otherwise.
+   */
   def isDebugEnabled: Boolean = trace.isDebugEnabled
 
+  /**
+   * Determines whether the logging level for informational messages is enabled.
+   *
+   * @return true if informational logging is enabled, otherwise false.
+   */
   def isInfoEnabled: Boolean = trace.isInfoEnabled
 
   /**
@@ -623,16 +713,53 @@ object Logger {
  * @param logger an instance of org.slf4j.Logger.
  */
 case class Slf4jLogger(logger: org.slf4j.Logger) extends Logger {
+  /**
+   * Provides a logging function for trace-level log messages.
+   * The function executes the logging operation only if trace-level logging is enabled
+   * for the underlying SLF4J logger.
+   *
+   * @return an instance of LogFunction that logs a given call-by-name string
+   *         at the trace logging level or does nothing if trace logging is not enabled.
+   */
   def trace: LogFunction = LogFunction(w => if (logger.isTraceEnabled) logger.trace(w) else ())
 
+  /**
+   * Provides a debug-level logging function.
+   *
+   * @return a LogFunction that logs messages at the debug level if debugging is enabled.
+   */
   def debug: LogFunction = LogFunction(w => if (logger.isDebugEnabled()) logger.debug(w) else ())
 
+  /**
+   * Provides a logging function for messages at the "info" level.
+   * The function logs the provided message if the logger's info level is enabled.
+   *
+   * @return a LogFunction that can log messages conditionally based on the info logging level.
+   */
   def info: LogFunction = LogFunction(w => if (logger.isInfoEnabled) logger.info(w) else ())
 
+  /**
+   * Provides a log function for warning-level messages.
+   * If the underlying logger has warning enabled, it logs the message;
+   * otherwise, it does nothing.
+   *
+   * @return a LogFunction instance which logs warning messages.
+   */
   def warn: LogFunction = LogFunction(w => if (logger.isWarnEnabled) logger.warn(w) else ())
 
+  /**
+   * Logs an error message and an associated throwable if error-level logging is enabled.
+   * Falls back to the super implementation if error-level logging is not enabled in the underlying logger.
+   *
+   * @return a function that takes a message of type String and a Throwable, and logs them at the error level.
+   */
   override def error: (String, Throwable) => Unit = (w, x) => if (logger.isErrorEnabled) logger.error(w, x) else super.error(w, x)
 
+  /**
+   * Provides a string representation of the object.
+   *
+   * @return A string identifying the object as "<org.slf4j.Logger>".
+   */
   override def toString: String = "<org.slf4j.Logger>"
 }
 
@@ -642,12 +769,32 @@ case class Slf4jLogger(logger: org.slf4j.Logger) extends Logger {
  * @param logFunction the LogFunction.
  */
 case class GenericLogger(logFunction: LogFunction) extends Logger {
+  /**
+   * Returns the LogFunction associated with this logger for logging trace-level messages.
+   *
+   * @return the LogFunction instance for trace-level logging.
+   */
   def trace: LogFunction = logFunction
 
+  /**
+   * Returns the LogFunction associated with the debug logging level.
+   *
+   * @return the LogFunction for debug level logging.
+   */
   def debug: LogFunction = logFunction
 
+  /**
+   * Provides the logging functionality for informational level logs.
+   *
+   * @return the `LogFunction` implementation associated with the informational level for the logger.
+   */
   def info: LogFunction = logFunction
 
+  /**
+   * Returns the logging function for the warning log level.
+   *
+   * @return the LogFunction instance associated with the warning log level.
+   */
   def warn: LogFunction = logFunction
 }
 
@@ -657,12 +804,33 @@ case class GenericLogger(logFunction: LogFunction) extends Logger {
  * @param appendable an instance of Appendable with is also AutoCloseable and Flushable.
  */
 case class AppendableLogger(appendable: Appendable with AutoCloseable with Flushable) extends Logger {
+  /**
+   * Method to return a logging function specifically for trace-level messages.
+   *
+   * @return an instance of LogFunction created using the configured Appendable.
+   */
   def trace: LogFunction = LogFunction(appendable)
 
+  /**
+   * Returns a LogFunction for debug-level logging. The LogFunction allows debug-level messages to be logged
+   * to the specified Appendable provided during the creation of the instance.
+   *
+   * @return a LogFunction instance configured for debug-level logging.
+   */
   def debug: LogFunction = LogFunction(appendable)
 
+  /**
+   * Provides the info-level logging function for the logger.
+   *
+   * @return a LogFunction associated with the info logging level, wrapping the provided Appendable instance.
+   */
   def info: LogFunction = LogFunction(appendable)
 
+  /**
+   * Provides a logging function for warning-level messages.
+   *
+   * @return a LogFunction instance associated with the logger's appendable, enabling logging of warning messages.
+   */
   def warn: LogFunction = LogFunction(appendable)
 
   /**
@@ -686,12 +854,32 @@ case class AppendableLogger(appendable: Appendable with AutoCloseable with Flush
  * @param sb an instance of StringBuilder.
  */
 case class StringBuilderLogger(sb: StringBuilder) extends Logger {
+  /**
+   * Method to retrieve a LogFunction for trace-level logging using the associated StringBuilder.
+   *
+   * @return a LogFunction that logs trace-level messages into the StringBuilder.
+   */
   def trace: LogFunction = LogFunction(sb)
 
+  /**
+   * Method to provide a debug-level logging function.
+   *
+   * @return an instance of LogFunction configured for debug-level logging.
+   */
   def debug: LogFunction = LogFunction(sb)
 
+  /**
+   * Method to provide a LogFunction configured for logging informational messages.
+   *
+   * @return a LogFunction instance initialized with the provided StringBuilder.
+   */
   def info: LogFunction = LogFunction(sb)
 
+  /**
+   * Method to log a warning message using a StringBuilder-based log function.
+   *
+   * @return an instance of LogFunction configured to append warning messages to a StringBuilder.
+   */
   def warn: LogFunction = LogFunction(sb)
 
   /**
@@ -736,10 +924,25 @@ trait LogFunction {
    */
   def apply(w: => String): Unit
 
+  /**
+   * Determines if debug level logging is enabled or not.
+   *
+   * @return true if debug logging is enabled, false otherwise.
+   */
   def isDebugEnabled: Boolean
 
+  /**
+   * Determines whether the INFO level is enabled for logging.
+   *
+   * @return true if INFO level logging is enabled, false otherwise.
+   */
   def isInfoEnabled: Boolean
 
+  /**
+   * Method to check if trace level logging is enabled.
+   *
+   * @return true if trace level logging is enabled; otherwise, false.
+   */
   def isTraceEnabled: Boolean
 }
 
@@ -766,10 +969,25 @@ case class GenericLogFunction(f: String => Any, enabled: Boolean = true) extends
    */
   def disable: LogFunction = GenericLogFunction(f, enabled = false)
 
+  /**
+   * Determines if the debug logging level is enabled.
+   *
+   * @return true if debug logging is enabled, false otherwise.
+   */
   def isDebugEnabled: Boolean = enabled
 
+  /**
+   * Checks if the "info" logging level is currently enabled.
+   *
+   * @return true if "info" logging is enabled, otherwise false.
+   */
   def isInfoEnabled: Boolean = enabled
 
+  /**
+   * Indicates whether trace-level logging is enabled.
+   *
+   * @return true if trace logging is enabled, false otherwise.
+   */
   def isTraceEnabled: Boolean = enabled
 }
 
@@ -805,4 +1023,12 @@ object LogFunction {
   lazy val bitBucket: LogFunction = GenericLogFunction(_ => ()).disable
 }
 
+/**
+ * A specialized exception that indicates its underlying cause has already been logged.
+ *
+ * This exception is useful in scenarios where the original exception has been logged
+ * and there's no need to log it again, minimizing duplicate logs for the same issue.
+ *
+ * @param e the underlying cause of this exception.
+ */
 case class LoggedException(e: Throwable) extends Exception("The cause of this exception has already been logged", e)

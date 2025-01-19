@@ -225,6 +225,7 @@ See also unit tests $bang$bang 1 and $bang$bang 1a for more detail.
   of the current scope.
   
 # Version
+1.0.10 Added logger for iterator
 
 1.0.9 Issue #20: Alternative means of getting a Loggable when no explicit Loggable\[T] is available.
 

@@ -164,6 +164,14 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     sb.toString shouldBe "Hello: <view>\n"
   }
 
+  it should "!! 10a" in {
+    println("!! 14")
+    val flog = Flog(classOf[FlogSpec])
+    import flog._
+    val iterator = Seq(1, 1, 2, 3, 5, 8).iterator
+    getString !! iterator
+  }
+
   it should "$bang$bang 11" in {
     val sb: StringBuilder = new StringBuilder
     val flog = Flog(sb)

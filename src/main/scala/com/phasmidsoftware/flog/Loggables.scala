@@ -43,7 +43,8 @@ trait Loggables {
    *
    * @param bookends (optional) an String of length two specifying the first and last characters of
    *                 the resulting String for a given Iterable. Defaults to "[]".
-   * @tparam T the underlying type of any list to be logged.
+   * @param atLeast the minimum number of elements to show in the log message before the ellipsis section starts.
+   * @tparam T the underlying type of the elements to be logged. Must provide evidence of Loggable[T].
    * @return Loggable[ Iterable[T] ].
    */
   def iterableLoggable[T: Loggable](bookends: String = "[]", atLeast: Int = 3): Loggable[Iterable[T]] = {
@@ -399,11 +400,30 @@ object Loggables {
 
   private val lazyNil = LazyList.empty
 
+  /**
+   * Retrieves an array of field names from a given sequence of strings, or extracts them based on a specified method
+   * if the input sequence is empty.
+   *
+   * @param fields a sequence of field names provided explicitly; if empty, the field names will be extracted
+   *               automatically based on the type parameter and method.
+   * @param method the name of the method used during automatic extraction for identifying case class fields.
+   * @tparam T the type parameter representing the expected class type from which fields may be extracted.
+   * @return an array of field names either derived from the input sequence or extracted based on the provided type and method.
+   */
   private def fieldNames[T: ClassTag](fields: Seq[String], method: String): Array[String] = fields match {
     case Nil => extractFieldNames(implicitly[ClassTag[T]], method)
     case ps => ps.toArray
   }
 
+  /**
+   * Extracts the field names of a case class using reflection based on the class type provided in the `ClassTag`.
+   * This method ensures that field names match the declaration order within the case class. It also compares the
+   * declared fields with the associated Scala-generated methods to ensure consistency.
+   *
+   * @param classTag The `ClassTag` of the class whose field names are to be extracted.
+   * @param method   The name of the calling method for error reporting purposes.
+   * @return An array of field names extracted from the specified case class.
+   */
   private def extractFieldNames(classTag: ClassTag[_], method: String): Array[String] = {
     import java.lang.reflect.Modifier
     import scala.util.control.NonFatal
