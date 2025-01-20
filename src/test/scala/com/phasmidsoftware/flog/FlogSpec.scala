@@ -4,6 +4,7 @@
 
 package com.phasmidsoftware.flog
 
+import com.phasmidsoftware.flog.Loggable.loggableAny
 import java.time.LocalDateTime
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should
@@ -182,11 +183,11 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     sb.toString shouldBe "Hello: {a->alpha, b->bravo}\n"
   }
 
-  it should "$bang$bang 12 (there is no Loggable for LocalDateTime)" in {
+  it should "$bang$bang 12A using implict loggable for LocalDateTime" in {
     val sb: StringBuilder = new StringBuilder
     val flog = Flog(sb)
     import flog._
-    getString !! Seq(LocalDateTime.now) // finds loggableAny
+    getString !! Seq(LocalDateTime.now)
     val dateTimeR: Regex = """Hello: \[(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3,})]\n""".r
     // NOTE sb should not be empty but it might be if you run this unit test on its own.
 
@@ -197,15 +198,28 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   }
 
   it should "$bang$bang 13" in {
-    val flog = Flog[FlogSpec]
+    val flog: Flog = Flog[FlogSpec]
     import flog._
-    val result = getString !! Try(1 / 0)
+    implicit val loggableTryInt: Loggable[Try[Int]] = new Loggables{}.tryLoggable[Int]
+    val result: Try[Int] = getString !! Try(1 / 0)
     result match {
       case Failure(NonFatal(e)) =>
         e.getClass shouldBe classOf[ArithmeticException]
         e.getLocalizedMessage shouldBe "/ by zero"
       case _ => fail("logic error")
     }
+  }
+
+  it should "$bang$bang 14 (alternative when using something for which there is no implicit Loggable)" in {
+    case class Complex(r: Double, i: Double)
+    val sb: StringBuilder = new StringBuilder
+    val flog = Flog(sb)
+    import flog._
+    (getString !! List(Complex(0, 0)))(using loggableAny)
+
+    sb.toString shouldBe
+            """Hello: [Complex(0.0,0.0)]
+              |""".stripMargin
   }
 
   it should "$bar$bang1" in {

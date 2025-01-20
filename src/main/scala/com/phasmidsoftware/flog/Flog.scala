@@ -4,6 +4,7 @@
 
 package com.phasmidsoftware.flog
 
+import com.phasmidsoftware.flog.Loggable.loggableAny
 import java.io.{Flushable, OutputStream, PrintStream, PrintWriter}
 import org.slf4j.LoggerFactory
 import scala.concurrent.{ExecutionContext, Future}
@@ -90,7 +91,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X the type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def info[X: Loggable](x: => X): X = logLoggable(logger.info)(message)(x)
+    infix def info[X: Loggable](x: => X): X = logLoggable(logger.info)(message)(x)
 
     /**
      * Synonym for: def !?[X: Loggable](x: => X): X.
@@ -103,7 +104,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X the type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def debug[X: Loggable](x: => X): X = logLoggable(logger.debug)(message)(x)
+    infix def debug[X: Loggable](x: => X): X = logLoggable(logger.debug)(message)(x)
 
     /**
      * Synonym for: def !??[X: Loggable](x: => X): X
@@ -116,7 +117,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X the type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def trace[X: Loggable](x: => X): X = logLoggable(logger.trace)(message)(x)
+    infix def trace[X: Loggable](x: => X): X = logLoggable(logger.trace)(message)(x)
 
     /**
      * Method to generate a WARN-level log entry for a (Loggable) value of X.
@@ -127,7 +128,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X the type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def warn[X: Loggable](x: => X): X = logLoggable(logger.warn)(message)(x)
+    infix def warn[X: Loggable](x: => X): X = logLoggable(logger.warn)(message)(x)
 
     /**
      * Method to generate an ERROR-level log entry for a (Loggable) value of X.
@@ -338,7 +339,9 @@ case class Flog(logger: Logger) extends AutoCloseable {
      */
     private def logMap[K: Loggable, V: Loggable](logFunction: LogFunction, kVm: => Map[K, V]): Map[K, V] = {
       implicit val g: Loggable[(K, V)] = kVLoggable
-      tee[Map[K, V]](y => logLoggable(logFunction)(message)(toLog(y)))(kVm)
+      tee[Map[K, V]] { y =>
+        logLoggable(logFunction)(message)(toLog(y))
+      }(kVm)
     }
 
     /**
@@ -361,7 +364,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @return an iterator containing the same elements as the provided iterator
      */
     private def logIterator[X: Loggable](logFunction: LogFunction, xs: => Iterator[X]): Iterator[X] = {
-       val seq = xs.toSeq
+      val seq = xs.toSeq
       logIterable(logFunction, seq)
       seq.iterator
     }
@@ -472,7 +475,8 @@ case class Flog(logger: Logger) extends AutoCloseable {
    * @tparam X the underlying type of x.
    * @return the value of x.
    */
-  private def logX[X](function: LogFunction)(prefix: => String)(x: => X): X = logLoggable(function)(prefix)(x)(new Loggables {}.anyLoggable)
+  private def logX[X](function: LogFunction)(prefix: => String)(x: => X): X =
+    logLoggable(function)(prefix)(x)(using loggableAny[X])
 }
 
 /**
@@ -492,7 +496,7 @@ object Flog {
    * @param clazz the class for which you want to log.
    * @return a new instance of Flog.
    */
-  def apply(clazz: Class[_]): Flog = Flog(Logger.forClass(clazz))
+  def apply(clazz: Class[?]): Flog = Flog(Logger.forClass(clazz))
 
   /**
    * Method to instantiate a normal instance of Flog with logging via the default logging function (based on the class Flog).
@@ -517,7 +521,7 @@ object Flog {
    * @param a the Appendable, which must also be AutoCloseable and Flushable.
    * @return an instance of Flog.
    */
-  def apply(a: Appendable with AutoCloseable with Flushable): Flog = Flog(Logger(a))
+  def apply(a: Appendable & AutoCloseable & Flushable): Flog = Flog(Logger(a))
 
   /**
    * Method to create a Flog from a PrintStream.
@@ -662,7 +666,7 @@ object Logger {
    * @param clazz the Class for which you require a Logger.
    * @return a new instance of Slf4jLogger.
    */
-  def forClass(clazz: Class[_]): Logger = Logger(LoggerFactory.getLogger(clazz))
+  def forClass(clazz: Class[?]): Logger = Logger(LoggerFactory.getLogger(clazz))
 
   /**
    * Normal method for creating an slf4j-based Logger for a particular class.
@@ -697,7 +701,7 @@ object Logger {
    * @param a an instance of Appendable
    * @return a new instance of GenericLogger.
    */
-  def apply(a: Appendable with AutoCloseable with Flushable): Logger = AppendableLogger(a)
+  def apply(a: Appendable & AutoCloseable & Flushable): Logger = AppendableLogger(a)
 
   /**
    * Method to create a Logger which does nothing (and does not evaluate the log message).
@@ -803,7 +807,7 @@ case class GenericLogger(logFunction: LogFunction) extends Logger {
  *
  * @param appendable an instance of Appendable with is also AutoCloseable and Flushable.
  */
-case class AppendableLogger(appendable: Appendable with AutoCloseable with Flushable) extends Logger {
+case class AppendableLogger(appendable: Appendable & AutoCloseable & Flushable) extends Logger {
   /**
    * Method to return a logging function specifically for trace-level messages.
    *

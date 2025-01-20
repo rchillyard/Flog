@@ -86,7 +86,7 @@ trait Loggables {
     def z(k: K, t: T): String = k.toString + ":" + implicitly[Loggable[T]].toLog(t)
 
     require(bookends.length == 2, "Bookends must have exactly two characters")
-    tKm.map((z _).tupled).mkString(bookends.substring(0, 1), ",", bookends.substring(1, 2))
+    tKm.map(z.tupled).mkString(bookends.substring(0, 1), ",", bookends.substring(1, 2))
   }
 
   /**
@@ -424,7 +424,7 @@ object Loggables {
    * @param method   The name of the calling method for error reporting purposes.
    * @return An array of field names extracted from the specified case class.
    */
-  private def extractFieldNames(classTag: ClassTag[_], method: String): Array[String] = {
+  private def extractFieldNames(classTag: ClassTag[?], method: String): Array[String] = {
     import java.lang.reflect.Modifier
     import scala.util.control.NonFatal
 

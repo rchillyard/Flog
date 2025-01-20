@@ -27,7 +27,7 @@ on an implicit inner class of _Flog_ called _Floggable_ which has a _String_ par
 
 The basic usage pattern is thus:
 
-    val flog = Flog[MyClass]
+    val flog: Flog = Flog[MyClass]
     import flog._
     val x: X = msg !! expr
 
@@ -35,6 +35,9 @@ where _msg_ evaluates to a String and _expr_ evaluates to a value of type _X_ wh
 while, as a side effect, the value of _expr_ is logged at level INFO.
 In other words, if you take away the "msg !!" the program will work exactly the same, but without the side effect of
 logging.
+
+Note that it is not required to add the type annotation in Scala 2 but may be
+in some cases in Scala 3.
 
 Because we want to control the way a log message looks, we define the trait _Loggable[X]_ which is a type constructor.
 In particular, we need reasonably brief but informative strings.
@@ -54,7 +57,11 @@ This is useful if you want to temporarily suspend a particular logging construct
 Additionally, there is also !| (soon to be deprecated) for logging a generic type that isn't necessarily _Loggable_.
 In this case, we simply invoke _toString_ on the object to get a rendition for logging.
 The recommended way to handle this situation is via the implicit def loggableAny\[T] which will produce a Loggable\[T]
-which uses the toString method. 
+which uses the toString method.
+However, in this case when using Scala3, you will need to write the entire expression as something like:
+(where there is no implicit `Loggable` for `Complex`) 
+
+    (getString !! List(Complex(0, 0)))(using loggableAny)
 
 The following signatures are defined for _Floggable_ (the implicit class):
 
@@ -108,8 +115,7 @@ where, in each case, the parametric types _T_, _L_, _R_, _K_, or _V_ must provid
     def kVLoggable[K: Loggable, V: Loggable]: Loggable[(K, V)]
 
 There is also a method which can be used for any underlying type that for which there
-is no explicit loggable method (although this method is no longer necessary because
-there is an implicit def _loggableAny\[T]_ in _Loggable_.:
+is no explicit loggable method:
 
     def anyLoggable[T]: Loggable[T]
 
@@ -225,7 +231,7 @@ See also unit tests $bang$bang 1 and $bang$bang 1a for more detail.
   of the current scope.
   
 # Version
-1.0.10 Added logger for iterator
+1.0.10 Added logger for iterator and made available for Scala 3.
 
 1.0.9 Issue #20: Alternative means of getting a Loggable when no explicit Loggable\[T] is available.
 

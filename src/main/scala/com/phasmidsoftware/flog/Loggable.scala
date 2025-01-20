@@ -4,6 +4,7 @@
 
 package com.phasmidsoftware.flog
 
+import java.time.temporal.Temporal
 import scala.annotation.implicitNotFound
 
 /**
@@ -36,7 +37,7 @@ object Loggable {
    * @tparam T the underlying type of the required Loggable.
    * @return a Loggable[T].
    */
-  implicit def loggableAny[T]: Loggable[T] = (t: Any) => t.toString
+  def loggableAny[T]: Loggable[T] = (t: Any) => t.toString
 
   /**
    * A Loggable implementation for the `Unit` type.
@@ -309,4 +310,36 @@ object Loggable {
    * with the logic defined in `LoggableOption`.
    */
   implicit object LoggableOptionString extends LoggableOption[String]
+
+  /**
+   * A trait that extends the `Loggable` type class to provide logging functionality
+   * for types that implement the `Temporal` interface.
+   *
+   * This trait specializes the generic `Loggable` interface for `Temporal`, a date-time abstraction
+   * in the Java time API. It enables objects of type `Temporal` to be represented as strings
+   * suitable for logging purposes.
+   */
+  trait LoggableTemporal extends Loggable[Temporal] {
+    /**
+     * Converts a given `Temporal` instance to its string representation suitable for logging.
+     *
+     * @param t the `Temporal` instance to be converted
+     * @return a string representation of the given `Temporal` instance
+     */
+    def toLog(t: Temporal): String = t.toString
+  }
+
+  /**
+   * Provides an implicit object that extends the `LoggableTemporal` trait.
+   *
+   * The LoggableTemporal object specializes the `Loggable` type class for `Temporal`
+   * instances, enabling logging functionality specifically for date-time abstractions 
+   * within the Java time API.
+   *
+   * It offers a mechanism for converting `Temporal` instances into their string 
+   * representation, which can be used in logging frameworks or other contexts 
+   * requiring a string-based representation of date-time values.
+   */
+  implicit object LoggableTemporal extends LoggableTemporal
+
 }
