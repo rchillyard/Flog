@@ -20,7 +20,7 @@ ThisBuild / developers := List(
 )
 
 ThisBuild / description := "This project is a Scala library to facilitate functional logging."
-ThisBuild / licenses := List("MIT" -> url("http://opensource.org/licenses/MIT"))
+ThisBuild / licenses := List("MIT" -> url("https://opensource.org/licenses/MIT"))
 ThisBuild / homepage := Some(url("https://github.com/rchillyard/Flog"))
 
 // Remove all additional repository other than Maven Central from POM

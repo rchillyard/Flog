@@ -2,17 +2,17 @@ organization := "com.phasmidsoftware"
 
 name := "flog"
 
-version := "1.0.8"
+version := "1.0.10"
 
-scalaVersion := "2.13.6"
+scalaVersion := "3.6.2"
 
 scalacOptions += "-deprecation"
 
-val scalaTestVersion = "3.2.9"
-val logBackVersion = "1.2.3"
-val slf4jVersion = "1.7.30"
+val scalaTestVersion = "3.2.19"
+val logBackVersion = "1.5.16"
+val slf4jVersion = "2.0.16"
 
-Compile / scalacOptions ++= Seq("-deprecation")
+Compile / scalacOptions ++= Seq("-deprecation", "-explain-cyclic")
 
 resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
 

@@ -159,7 +159,7 @@ case class MockLogger(name: String, logLevel: String = "DEBUG", sb: StringBuilde
 }
 
 object MockLogger {
-    def defaultLogger[T](implicit classTag: ClassTag[T]): MockLogger = defaultLogger(classTag.runtimeClass)
+  def defaultLogger[T](implicit classTag: ClassTag[T]): MockLogger = defaultLogger(classTag.runtimeClass)
 
-  def defaultLogger(clazz: Class[_]): MockLogger = MockLogger(clazz.toString, "DEBUG", new StringBuilder())
+  def defaultLogger(clazz: Class[?]): MockLogger = MockLogger(clazz.toString, "DEBUG", new StringBuilder())
 }

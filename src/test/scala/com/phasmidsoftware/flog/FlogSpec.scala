@@ -4,13 +4,14 @@
 
 package com.phasmidsoftware.flog
 
+import com.phasmidsoftware.flog.Loggable.loggableAny
+import java.time.LocalDateTime
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should
 import org.scalatest.{BeforeAndAfterEach, flatspec}
-
-import java.time.LocalDateTime
 import scala.concurrent.Future
 import scala.language.implicitConversions
+import scala.util.control.NonFatal
 import scala.util.matching.Regex
 import scala.util.{Failure, Try, Using}
 
@@ -109,10 +110,9 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   // NOTE: sometimes this test will fail. Not to worry.
   it should "$bang$bang Future[Int]" in {
     val sb: StringBuilder = new StringBuilder()
-    implicit val logger: Logger = Logger(sb)
+    implicit val sbLogger: Logger = Logger(sb) // TODO why is this not used?
     val flog = Flog(sb)
     import flog._
-
     import scala.concurrent.ExecutionContext.Implicits.global
     val eventualInt = getString !! Future[Int] {
       Thread.sleep(100)
@@ -165,21 +165,28 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     sb.toString shouldBe "Hello: <view>\n"
   }
 
+  it should "!! 10a" in {
+    println("!! 14")
+    val flog = Flog(classOf[FlogSpec])
+    import flog._
+    val iterator = Seq(1, 1, 2, 3, 5, 8).iterator
+    getString !! iterator
+  }
+
   it should "$bang$bang 11" in {
     val sb: StringBuilder = new StringBuilder
     val flog = Flog(sb)
     import flog._
-    implicit val z: Loggable[Map[String, String]] = new Loggables {}.mapLoggable[String, String]()
+    implicit val z: Loggable[Map[String, String]] = new Loggables {}.mapLoggable[String, String]() // XXX why not used?
     getString !! Map("a" -> "alpha", "b" -> "bravo")
     // NOTE sb should not be empty but it might be if you run this unit test on its own.
     sb.toString shouldBe "Hello: {a->alpha, b->bravo}\n"
   }
 
-  it should "$bang$bang 12" in {
+  it should "$bang$bang 12A using implict loggable for LocalDateTime" in {
     val sb: StringBuilder = new StringBuilder
     val flog = Flog(sb)
     import flog._
-    implicit val z: Loggable[LocalDateTime] = new Loggables {}.anyLoggable[LocalDateTime]
     getString !! Seq(LocalDateTime.now)
     val dateTimeR: Regex = """Hello: \[(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3,})]\n""".r
     // NOTE sb should not be empty but it might be if you run this unit test on its own.
@@ -188,6 +195,31 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
       case dateTimeR(_) =>
       case x => fail(s"incorrect response: $x")
     }
+  }
+
+  it should "$bang$bang 13" in {
+    val flog: Flog = Flog[FlogSpec]
+    import flog._
+    implicit val loggableTryInt: Loggable[Try[Int]] = new Loggables{}.tryLoggable[Int]
+    val result: Try[Int] = getString !! Try(1 / 0)
+    result match {
+      case Failure(NonFatal(e)) =>
+        e.getClass shouldBe classOf[ArithmeticException]
+        e.getLocalizedMessage shouldBe "/ by zero"
+      case _ => fail("logic error")
+    }
+  }
+
+  it should "$bang$bang 14 (alternative when using something for which there is no implicit Loggable)" in {
+    case class Complex(r: Double, i: Double)
+    val sb: StringBuilder = new StringBuilder
+    val flog = Flog(sb)
+    import flog._
+    (getString !! List(Complex(0, 0)))(using loggableAny)
+
+    sb.toString shouldBe
+            """Hello: [Complex(0.0,0.0)]
+              |""".stripMargin
   }
 
   it should "$bar$bang1" in {
@@ -217,6 +249,19 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     sb.toString shouldBe s"Hello: $now\n"
   }
 
+  it should "handle unloggable class via LoggableAny" in {
+    val sb = new StringBuilder
+    val flog: Flog = Flog(sb)
+    import flog._
+    val now = LocalDateTime.now
+    "Hello" !! now
+    sb.toString shouldBe s"Hello: $now\n"
+  }
+
+  /**
+   * NOTE you should see a full stack trace of the arithmetic exception in the log file.
+   * NOTE if you want to avoid that stack trace, then don't use !!!
+   */
   it should "$bang$bang$bang 1/0" in {
     val flog = Flog[FlogSpec]
     import flog._
@@ -298,10 +343,9 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   // NOTE: sometimes this test will fail. Not to worry.
   it should "debug 7" in {
     val sb: StringBuilder = new StringBuilder()
-    implicit val logger: Logger = Logger(sb)
+    implicit val logger: Logger = Logger(sb) // XXX why not used?
     val flog = Flog(sb)
     import flog._
-
     import scala.concurrent.ExecutionContext.Implicits.global
     val eventualInt = getString !? Future[Int] {
       Thread.sleep(100)
@@ -325,7 +369,10 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   it should "trace 0" in {
     val flog = Flog[FlogSpec]
     import flog._
+    val trace = flog.logger.isTraceEnabled
+    if (trace) println("Trace enabled: expect to see log entry following")
     getString !?? 1
+    evaluated shouldBe trace
     // The message "Hello: 1" should appear in the logs provided that trace is enabled.
   }
 
@@ -379,10 +426,9 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   // NOTE: sometimes this test will fail. Not to worry.
   it should "trace 7" in {
     val sb: StringBuilder = new StringBuilder()
-    implicit val logger: Logger = Logger(sb)
+    implicit val logger: Logger = Logger(sb) // XXX why not used?
     val flog = Flog(sb)
     import flog._
-
     import scala.concurrent.ExecutionContext.Implicits.global
     val eventualInt = getString !?? Future[Int] {
       Thread.sleep(100)
