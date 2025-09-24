@@ -91,7 +91,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X the type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    infix def info[X: Loggable](x: => X): X = logLoggable(logger.info)(message)(x)
+    def info[X: Loggable](x: => X): X = logLoggable(logger.info)(message)(x)
 
     /**
      * Synonym for: def !?[X: Loggable](x: => X): X.
@@ -104,7 +104,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X the type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    infix def debug[X: Loggable](x: => X): X = logLoggable(logger.debug)(message)(x)
+    def debug[X: Loggable](x: => X): X = logLoggable(logger.debug)(message)(x)
 
     /**
      * Synonym for: def !??[X: Loggable](x: => X): X
@@ -117,7 +117,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X the type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    infix def trace[X: Loggable](x: => X): X = logLoggable(logger.trace)(message)(x)
+    def trace[X: Loggable](x: => X): X = logLoggable(logger.trace)(message)(x)
 
     /**
      * Method to generate a WARN-level log entry for a (Loggable) value of X.
@@ -128,7 +128,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X the type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    infix def warn[X: Loggable](x: => X): X = logLoggable(logger.warn)(message)(x)
+    def warn[X: Loggable](x: => X): X = logLoggable(logger.warn)(message)(x)
 
     /**
      * Method to generate an ERROR-level log entry for a (Loggable) value of X.
@@ -521,7 +521,7 @@ object Flog {
    * @param a the Appendable, which must also be AutoCloseable and Flushable.
    * @return an instance of Flog.
    */
-  def apply(a: Appendable & AutoCloseable & Flushable): Flog = Flog(Logger(a))
+  def apply(a: Appendable with AutoCloseable with Flushable): Flog = Flog(Logger(a))
 
   /**
    * Method to create a Flog from a PrintStream.
@@ -701,7 +701,7 @@ object Logger {
    * @param a an instance of Appendable
    * @return a new instance of GenericLogger.
    */
-  def apply(a: Appendable & AutoCloseable & Flushable): Logger = AppendableLogger(a)
+  def apply(a: Appendable with AutoCloseable with Flushable): Logger = AppendableLogger(a)
 
   /**
    * Method to create a Logger which does nothing (and does not evaluate the log message).
@@ -807,7 +807,7 @@ case class GenericLogger(logFunction: LogFunction) extends Logger {
  *
  * @param appendable an instance of Appendable with is also AutoCloseable and Flushable.
  */
-case class AppendableLogger(appendable: Appendable & AutoCloseable & Flushable) extends Logger {
+case class AppendableLogger(appendable: Appendable with AutoCloseable with Flushable) extends Logger {
   /**
    * Method to return a logging function specifically for trace-level messages.
    *

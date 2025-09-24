@@ -86,7 +86,7 @@ trait Loggables {
     def z(k: K, t: T): String = k.toString + ":" + implicitly[Loggable[T]].toLog(t)
 
     require(bookends.length == 2, "Bookends must have exactly two characters")
-    tKm.map(z.tupled).mkString(bookends.substring(0, 1), ",", bookends.substring(1, 2))
+    tKm.map((z _).tupled).mkString(bookends.substring(0, 1), ",", bookends.substring(1, 2))
   }
 
   /**
