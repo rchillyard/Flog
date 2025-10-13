@@ -9,7 +9,6 @@
 
 # Flog
 This is a set of utilities for functional logging.
-Flog is not yet released to maven central, but you may copy the jar files, etc. from the _releases_ directory.
 
 ## Introduction and Usage
 _Flog_ is a functional logger:
