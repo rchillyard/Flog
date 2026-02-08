@@ -230,6 +230,12 @@ See also unit tests $bang$bang 1 and $bang$bang 1a for more detail.
   of the current scope.
   
 # Version
+1.0.13 Added implicit Loggable instances for Map[K, V] and Option[Map[K, V]] to enable logging of maps and optional maps.
+
+1.0.12 Removed unnecessary logback files;
+
+1.0.11 Migrated to Scala 3.
+
 1.0.10 Added logger for iterator and made available for Scala 3.
 
 1.0.9 Issue #20: Alternative means of getting a Loggable when no explicit Loggable\[T] is available.
