@@ -134,4 +134,40 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
     val complicated = Complicated9("Robin", LocalDateTime.of(2021, 1, 1, 12, 0), Some(1), Some(Math.PI), 42, y = true, 3.1415927, BigDecimal("3.1415927"), BigInt(99))
     loggable.toLog(complicated) shouldBe "Complicated9(name:Robin,date:2021-01-01T12:00,a:Some(1),b:Some(3.141592653589793),x:42,y:true,z:3.1415927,q:3.1415927,r:99)"
   }
+
+  behavior of "additional Claude-generated tests"
+  it should "loggableOptionSeq" in {
+    implicit val seqLog: Loggable[Seq[Int]] = iterableLoggable[Int]()
+    implicit val target: Loggable[Option[Seq[Int]]] = optionLoggable[Seq[Int]]
+    target.toLog(Some(Seq(1, 2, 3))) shouldBe "Some([1, 2, 3])"
+    target.toLog(None) shouldBe "None"
+  }
+
+  it should "kVLoggable for tuples" in {
+    val target = kVLoggable[String, Int]
+    target.toLog(("key", 42)) shouldBe "key->42"
+  }
+
+  it should "loggableOptionMap with Int keys and Int values" in {
+    val target: Loggable[Option[Map[Int, Int]]] = Loggable.loggableOptionMap[Int, Int]
+    target.toLog(Some(Map(1 -> 2, 3 -> 4))) shouldBe "Some({1:2,3:4})"
+    target.toLog(None) shouldBe "None"
+  }
+
+  it should "loggableOptionMap with String keys and Double values" in {
+    val target: Loggable[Option[Map[String, Double]]] = Loggable.loggableOptionMap[String, Double]
+    target.toLog(Some(Map("pi" -> 3.14159, "e" -> 2.71828))) shouldBe "Some({pi:3.14159,e:2.71828})"
+    target.toLog(None) shouldBe "None"
+  }
+
+  it should "work with Flog for Option[Map[Int, Int]]" in {
+    val flog = Flog[LoggablesSpec]
+    import flog.*
+
+    val result = "Testing optional map" !! Some(Map(2 -> 4, 3 -> 9))
+    result shouldBe Some(Map(2 -> 4, 3 -> 9))
+
+    val emptyResult = "Testing None map" !! None.asInstanceOf[Option[Map[Int, Int]]]
+    emptyResult shouldBe None
+  }
 }

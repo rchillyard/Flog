@@ -2,14 +2,14 @@ organization := "com.phasmidsoftware"
 
 name := "flog"
 
-version := "1.0.11"
+version := "1.0.13"
 
 scalaVersion := "3.7.3"
 
 Compile / scalacOptions ++= Seq("-deprecation")
 
 val scalaTestVersion = "3.2.19"
-val logBackVersion = "1.5.19"
+val logBackVersion = "1.5.28"
 val slf4jVersion = "2.0.17"
 
 libraryDependencies ++= Seq(

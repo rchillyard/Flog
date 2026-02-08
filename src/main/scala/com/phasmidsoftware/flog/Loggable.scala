@@ -312,6 +312,30 @@ object Loggable {
   implicit object LoggableOptionString extends LoggableOption[String]
 
   /**
+   * Implicit def providing a `Loggable` instance for `Map[K, V]` types.
+   * Enables logging functionality for map values.
+   *
+   * @tparam K the type of the map keys, which must provide implicit evidence of being Loggable
+   * @tparam V the type of the map values, which must provide implicit evidence of being Loggable
+   * @return a Loggable instance for Map[K, V]
+   */
+  implicit def loggableMap[K: Loggable, V: Loggable]: Loggable[Map[K, V]] =
+    new Loggables {}.mapLoggable[K, V]()
+
+  /**
+   * Implicit def providing a `Loggable` instance for `Option[Map[K, V]]` types.
+   * Enables logging functionality for optional map values by composing the existing
+   * `optionLoggable` and `mapLoggable` instances.
+   *
+   * @tparam K the type of the map keys, which must provide implicit evidence of being Loggable
+   * @tparam V the type of the map values, which must provide implicit evidence of being Loggable
+   * @return a Loggable instance for Option[Map[K, V]]
+   */
+  implicit def loggableOptionMap[K: Loggable, V: Loggable]: Loggable[Option[Map[K, V]]] = {
+    implicit val mapLog: Loggable[Map[K, V]] = new Loggables {}.mapLoggable[K, V]()
+    new Loggables {}.optionLoggable[Map[K, V]]
+  }
+  /**
    * A trait that extends the `Loggable` type class to provide logging functionality
    * for types that implement the `Temporal` interface.
    *
