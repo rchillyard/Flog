@@ -37,7 +37,7 @@ import scala.util.{Failure, Success, Try}
  * @param logger the Logger which is to be used by this Flog.
  */
 case class Flog(logger: Logger) extends AutoCloseable with Loggables {
-  import Flog._
+  import Flog.*
 
   /**
    * Implicit class to implement functional logging.
@@ -323,7 +323,7 @@ case class Flog(logger: Logger) extends AutoCloseable with Loggables {
      * @tparam X the underlying type of xy.
      * @return if xy is successful, then xy, otherwise if Failure(e) then Failure(LoggedException(e)).
      */
-    def !!![X: Loggable](xy: Try[X]): Try[X] = xy.transform(Success(_), e => {
+    def !!![X](xy: Try[X]): Try[X] = xy.transform(Success(_), e => {
       logger.error(s"$message", e)
       Failure(LoggedException(e))
     })
@@ -518,7 +518,7 @@ object Flog {
    * @param a the Appendable, which must also be AutoCloseable and Flushable.
    * @return an instance of Flog.
    */
-  def apply(a: Appendable with AutoCloseable with Flushable): Flog = Flog(Logger(a))
+  def apply(a: Appendable & AutoCloseable & Flushable): Flog = Flog(Logger(a))
 
   /**
    * Method to create a Flog from a PrintStream.
@@ -698,7 +698,7 @@ object Logger {
    * @param a an instance of Appendable
    * @return a new instance of GenericLogger.
    */
-  def apply(a: Appendable with AutoCloseable with Flushable): Logger = AppendableLogger(a)
+  def apply(a: Appendable & AutoCloseable & Flushable): Logger = AppendableLogger(a)
 
   /**
    * Method to create a Logger which does nothing (and does not evaluate the log message).
@@ -804,7 +804,7 @@ case class GenericLogger(logFunction: LogFunction) extends Logger {
  *
  * @param appendable an instance of Appendable with is also AutoCloseable and Flushable.
  */
-case class AppendableLogger(appendable: Appendable with AutoCloseable with Flushable) extends Logger {
+case class AppendableLogger(appendable: Appendable & AutoCloseable & Flushable) extends Logger {
   /**
    * Method to return a logging function specifically for trace-level messages.
    *

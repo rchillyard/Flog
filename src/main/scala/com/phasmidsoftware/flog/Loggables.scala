@@ -5,7 +5,6 @@
 package com.phasmidsoftware.flog
 
 import com.phasmidsoftware.flog.Loggables.fieldNames
-
 import scala.collection.immutable.LazyList.#::
 import scala.collection.{SeqMap, View}
 import scala.reflect.ClassTag
@@ -19,7 +18,7 @@ trait Loggables {
 
   /**
    * Backstop method to yield a String from a T.
-   * NOTE: use this when you need an implicit Loggable to log a container which includes an unsupported type.
+   * NOTE: use this when you need a Loggable to log a container which includes an unsupported type.
    *
    * @tparam T the type of t.
    * @return a Loggable[T] which uses toString.
@@ -33,7 +32,7 @@ trait Loggables {
    * @return a Loggable[ Option[T] ].
    */
   def optionLoggable[T: Loggable]: Loggable[Option[T]] = {
-    case Some(t) => s"Some(${implicitly[Loggable[T]].toLog(t)})"
+    case Some(t) => s"Some(${summon[Loggable[T]].toLog(t)})"
     case _ => "None"
   }
 
@@ -41,9 +40,10 @@ trait Loggables {
    * Method to create a Loggable of an Iterable[T].
    * The elements of the result are then logged utilizing the !! method.
    *
-   * @param bookends (optional) an String of length two specifying the first and last characters of
+   * @param bookends (optional) a String of length two specifying the first and last characters of
    *                 the resulting String for a given Iterable. Defaults to "[]".
-   * @param atLeast the minimum number of elements to show in the log message before the ellipsis section starts.
+   *
+   * @param atLeast  the minimum number of elements to show in the log message before the ellipsis section starts.
    * @tparam T the underlying type of the elements to be logged. Must provide evidence of Loggable[T].
    * @return Loggable[ Iterable[T] ].
    */
@@ -55,7 +55,7 @@ trait Loggables {
     case _: View[T] =>
       "<view>"
     case ts =>
-      val tl = implicitly[Loggable[T]]
+      val tl = summon[Loggable[T]]
       val ws = ts map tl.toLog
       val init = ws.init
       val n = init.size
@@ -63,8 +63,8 @@ trait Loggables {
       val remainder =
         if (z > 0)
           s"... ($z element" + (
-              (if (z > 1) "s" else "")
-                  + "), ... ")
+                  (if (z > 1) "s" else "")
+                          + "), ... ")
         else ""
       val prefixString = if (prefix.nonEmpty) prefix.mkString("", ", ", ", ") else ""
       require(bookends.length == 2, "Bookends must have exactly two characters")
@@ -76,30 +76,30 @@ trait Loggables {
    *
    * NOTE: unless the Map (passed as the bound variable) is a SeqMap, the order of the key-value pairs is undefined.
    *
-   * @param bookends (optional) an String of length two specifying the first and last characters of
+   * @param bookends (optional) a String of length two specifying the first and last characters of
    *                 the resulting String for a given Map. Defaults to "{}".
    * @tparam K the type of the keys.
    * @tparam T the underlying type of the values.
    * @return a Loggable[ Map[K, T] ]
    */
   def mapLoggable[K, T: Loggable](bookends: String = "{}"): Loggable[Map[K, T]] = (tKm: Map[K, T]) => {
-    def z(k: K, t: T): String = k.toString + ":" + implicitly[Loggable[T]].toLog(t)
+    def z(k: K, t: T): String = k.toString + ":" + summon[Loggable[T]].toLog(t)
 
     require(bookends.length == 2, "Bookends must have exactly two characters")
-    tKm.map((z _).tupled).mkString(bookends.substring(0, 1), ",", bookends.substring(1, 2))
+    tKm.map(z.tupled).mkString(bookends.substring(0, 1), ",", bookends.substring(1, 2))
   }
 
   /**
-   * Method to return a Loggable[ Either[T,U] ].
+   * Method to return a Loggable[ Either[L, R] ].
    *
    * @tparam L the "left" type of any Either which is to be logged.
    * @tparam R the "right" type of any Either which is to be logged.
-   * @return a Loggable[ Either[T,U] ].
+   * @return a Loggable[ Either[L, R] ].
    */
   def eitherLoggable[L: Loggable, R: Loggable]: Loggable[Either[L, R]] = {
-    case Left(l: L@unchecked) => s"Left(${implicitly[Loggable[L]].toLog(l)})"
+    case Left(l: L @unchecked) => s"Left(${summon[Loggable[L]].toLog(l)})"
     case Right(ls: Iterable[L]@unchecked) => val lv = new Loggables {}.iterableLoggable[L](); s"Right(${lv.toLog(ls)})"
-    case Right(r: R@unchecked) => s"Right(${implicitly[Loggable[R]].toLog(r)})"
+    case Right(r: R @unchecked) => s"Right(${summon[Loggable[R]].toLog(r)})"
   }
 
   /**
@@ -109,21 +109,21 @@ trait Loggables {
    * @return a Loggable[ Try[T] ].
    */
   def tryLoggable[T: Loggable]: Loggable[Try[T]] = {
-    case Success(t) => s"Success(${implicitly[Loggable[T]].toLog(t)})"
+    case Success(t) => s"Success(${summon[Loggable[T]].toLog(t)})"
     case Failure(x) => s"Failure(${x.getLocalizedMessage})"
   }
 
   /**
    * TESTME
    *
-   * Method which maps an Iterable of X with a function to an Iterable of Try[X].
+   * Method which maps an Iterable of X with a function to an Iterable of Try[Y].
    * The elements of the result are then logged utilizing the !! method.
    * NOTE that the returned value will only include the successful elements.
    *
-   * @param f a function X => Try[X].
+   * @param f a function X => Try[Y].
    * @tparam X the underlying type of xs.
    * @tparam Y the underlying type of the intermediate type (must be Loggable).
-   * @return an Iterable of Try[X] such that all the failures have been logged but not included in the result.
+   * @return an Iterable of Try[Y] such that all the failures have been logged but not included in the result.
    */
   def triedIterableLoggable[X, Y: Loggable](f: X => Try[Y]): Loggable[Iterable[X]] = (xs: Iterable[X]) => {
     implicit val q: Loggable[Try[Y]] = tryLoggable
@@ -138,18 +138,18 @@ trait Loggables {
    *
    * @tparam K the key type.
    * @tparam V the value type.
-   * @return a String rendition.
+   * @return a Loggable[(K, V)].
    */
-  def kVLoggable[K: Loggable, V: Loggable]: Loggable[(K, V)] = (t: (K, V)) => s"${implicitly[Loggable[K]].toLog(t._1)}->${implicitly[Loggable[V]].toLog(t._2)}"
+  def kVLoggable[K: Loggable, V: Loggable]: Loggable[(K, V)] =
+    (t: (K, V)) => s"${summon[Loggable[K]].toLog(t._1)}->${summon[Loggable[V]].toLog(t._2)}"
 
   /**
-   * Method to return a Loggable[T] where T is a 1-ary Product and which is based on a function to convert a P into a T.
+   * Method to return a Loggable[T] where T is a 1-ary Product and which is based on a function to convert a P0 into a T.
    *
    * NOTE: be careful using this particular method it only applies where T is a 1-tuple (e.g. a case class with one field -- not common).
    * It probably shouldn't ever be used in practice. It can cause strange initialization errors!
-   * This note may be irrelevant now that we have overridden convertString to fix issue #1.
    *
-   * @param construct a function P => T, usually the apply method of a case class.
+   * @param construct a function P0 => T, usually the apply method of a case class.
    *                  The sole purpose of this function is for type inference--it is never actually invoked.
    * @param fields    (optional parameter) an explicit list of one field name.
    * @tparam P0 the type of the (single) field of the Product type T.
@@ -158,17 +158,13 @@ trait Loggables {
    */
   def loggable1[P0: Loggable, T <: Product : ClassTag](construct: P0 => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
     val Array(p0) = fieldNames(fields, "loggable1")
-    t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(p0 -> valueToLog[P0, T](t, 0)
-    )
-    )
+    t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(p0 -> valueToLog[P0, T](t, 0)))
   }
 
   /**
-   * Method to return a Loggable[T] where T is a 2-ary Product and which is based on a function to convert a (P1,P2) into a T.
+   * Method to return a Loggable[T] where T is a 2-ary Product and which is based on a function to convert a (P0, P1) into a T.
    *
-   * NOTE: please see project TableParser for ideas on how to define toLogN+1 in terms of toLogN.
-   *
-   * @param construct a function (P1,P2) => T, usually the apply method of a case class.
+   * @param construct a function (P0, P1) => T, usually the apply method of a case class.
    *                  The sole purpose of this function is for type inference--it is never actually invoked.
    * @param fields    (optional parameter) an explicit list of 2 field names.
    * @tparam P0 the type of the first field of the Product type T.
@@ -181,14 +177,13 @@ trait Loggables {
     t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(
       p0 -> valueToLog[P0, T](t, 0),
       p1 -> valueToLog[P1, T](t, 1)
-    )
-    )
+    ))
   }
 
   /**
-   * Method to return a Loggable[T] where T is a 3-ary Product and which is based on a function to convert a (P1,P2,P3) into a T.
+   * Method to return a Loggable[T] where T is a 3-ary Product and which is based on a function to convert a (P0, P1, P2) into a T.
    *
-   * @param construct a function (P1,P2,P3) => T, usually the apply method of a case class.
+   * @param construct a function (P0, P1, P2) => T, usually the apply method of a case class.
    *                  The sole purpose of this function is for type inference--it is never actually invoked.
    * @param fields    (optional parameter) an explicit list of 3 field names.
    * @tparam P0 the type of the first field of the Product type T.
@@ -204,14 +199,13 @@ trait Loggables {
       p0 -> valueToLog[P0, T](t, 0),
       p1 -> valueToLog[P1, T](t, 1),
       p2 -> valueToLog[P2, T](t, 2)
-    )
-    )
+    ))
   }
 
   /**
-   * Method to return a Loggable[T] where T is a 4-ary Product and which is based on a function to convert a (P0,P1,P2,P3) into a T.
+   * Method to return a Loggable[T] where T is a 4-ary Product and which is based on a function to convert a (P0, P1, P2, P3) into a T.
    *
-   * @param construct a function (P0,P1,P2,P3) => T, usually the apply method of a case class.
+   * @param construct a function (P0, P1, P2, P3) => T, usually the apply method of a case class.
    *                  The sole purpose of this function is for type inference--it is never actually invoked.
    * @param fields    (optional parameter) an explicit list of 4 field names.
    * @tparam P0 the type of the first field of the Product type T.
@@ -229,15 +223,14 @@ trait Loggables {
       p1 -> valueToLog[P1, T](t, 1),
       p2 -> valueToLog[P2, T](t, 2),
       p3 -> valueToLog[P3, T](t, 3)
-    )
-    )
+    ))
   }
 
   /**
    * Method to return a Loggable[T] where T is a 5-ary Product and which is based on a function to
-   * convert a (P0,P1,P2,P3,P4) into a T.
+   * convert a (P0, P1, P2, P3, P4) into a T.
    *
-   * @param construct a function (P0,P1,P2,P3,P4) => T, usually the apply method of a case class.
+   * @param construct a function (P0, P1, P2, P3, P4) => T, usually the apply method of a case class.
    *                  The sole purpose of this function is for type inference--it is never actually invoked.
    * @param fields    (optional parameter) an explicit list of 5 field names.
    * @tparam P0 the type of the first field of the Product type T.
@@ -257,15 +250,14 @@ trait Loggables {
       p2 -> valueToLog[P2, T](t, 2),
       p3 -> valueToLog[P3, T](t, 3),
       p4 -> valueToLog[P4, T](t, 4)
-    )
-    )
+    ))
   }
 
   /**
    * Method to return a Loggable[T] where T is a 6-ary Product and which is based on a function to
-   * convert a (P0,P1,P2,P3,P4,P5) into a T.
+   * convert a (P0, P1, P2, P3, P4, P5) into a T.
    *
-   * @param construct a function (P0,P1,P2,P3,P4,P5) => T, usually the apply method of a case class.
+   * @param construct a function (P0, P1, P2, P3, P4, P5) => T, usually the apply method of a case class.
    *                  The sole purpose of this function is for type inference--it is never actually invoked.
    * @param fields    (optional parameter) an explicit list of 6 field names.
    * @tparam P0 the type of the first field of the Product type T.
@@ -287,15 +279,14 @@ trait Loggables {
       p3 -> valueToLog[P3, T](t, 3),
       p4 -> valueToLog[P4, T](t, 4),
       p5 -> valueToLog[P5, T](t, 5)
-    )
-    )
+    ))
   }
 
   /**
    * Method to return a Loggable[T] where T is a 7-ary Product and which is based on a function to
-   * convert a (P0,P1,P2,P3,P4,P5,P6) into a T.
+   * convert a (P0, P1, P2, P3, P4, P5, P6) into a T.
    *
-   * @param construct a function (P0,P1,P2,P3,P4,P5,P6) => T, usually the apply method of a case class.
+   * @param construct a function (P0, P1, P2, P3, P4, P5, P6) => T, usually the apply method of a case class.
    *                  The sole purpose of this function is for type inference--it is never actually invoked.
    * @param fields    (optional parameter) an explicit list of 7 field names.
    * @tparam P0 the type of the first field of the Product type T.
@@ -319,15 +310,14 @@ trait Loggables {
       p4 -> valueToLog[P4, T](t, 4),
       p5 -> valueToLog[P5, T](t, 5),
       p6 -> valueToLog[P6, T](t, 6)
-    )
-    )
+    ))
   }
 
   /**
    * Method to return a Loggable[T] where T is a 8-ary Product and which is based on a function to
-   * convert a (P0,P1,P2,P3,P4,P5,P6,P7) into a T.
+   * convert a (P0, P1, P2, P3, P4, P5, P6, P7) into a T.
    *
-   * @param construct a function (P0,P1,P2,P3,P4,P5,P6,P7) => T, usually the apply method of a case class.
+   * @param construct a function (P0, P1, P2, P3, P4, P5, P6, P7) => T, usually the apply method of a case class.
    *                  The sole purpose of this function is for type inference--it is never actually invoked.
    * @param fields    (optional parameter) an explicit list of 8 field names.
    * @tparam P0 the type of the first field of the Product type T.
@@ -343,7 +333,7 @@ trait Loggables {
    */
   def loggable8[P0: Loggable, P1: Loggable, P2: Loggable, P3: Loggable, P4: Loggable, P5: Loggable, P6: Loggable, P7: Loggable, T <: Product : ClassTag]
   (construct: (P0, P1, P2, P3, P4, P5, P6, P7) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
-    val Array(p0, p1, p2, p3, p4, p5, p6, p7) = fieldNames(fields, "loggable7")
+    val Array(p0, p1, p2, p3, p4, p5, p6, p7) = fieldNames(fields, "loggable8")
     t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(
       p0 -> valueToLog[P0, T](t, 0),
       p1 -> valueToLog[P1, T](t, 1),
@@ -353,15 +343,14 @@ trait Loggables {
       p5 -> valueToLog[P5, T](t, 5),
       p6 -> valueToLog[P6, T](t, 6),
       p7 -> valueToLog[P7, T](t, 7)
-    )
-    )
+    ))
   }
 
   /**
    * Method to return a Loggable[T] where T is a 9-ary Product and which is based on a function to
-   * convert a (P0,P1,P2,P3,P4,P5,P6,P7,P8) into a T.
+   * convert a (P0, P1, P2, P3, P4, P5, P6, P7, P8) into a T.
    *
-   * @param construct a function (P0,P1,P2,P3,P4,P5,P6,P7,P8) => T, usually the apply method of a case class.
+   * @param construct a function (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T, usually the apply method of a case class.
    *                  The sole purpose of this function is for type inference--it is never actually invoked.
    * @param fields    (optional parameter) an explicit list of 9 field names.
    * @tparam P0 the type of the first field of the Product type T.
@@ -378,7 +367,7 @@ trait Loggables {
    */
   def loggable9[P0: Loggable, P1: Loggable, P2: Loggable, P3: Loggable, P4: Loggable, P5: Loggable, P6: Loggable, P7: Loggable, P8: Loggable, T <: Product : ClassTag]
   (construct: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
-    val Array(p0, p1, p2, p3, p4, p5, p6, p7, p8) = fieldNames(fields, "loggable7")
+    val Array(p0, p1, p2, p3, p4, p5, p6, p7, p8) = fieldNames(fields, "loggable9")
     t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(
       p0 -> valueToLog[P0, T](t, 0),
       p1 -> valueToLog[P1, T](t, 1),
@@ -389,11 +378,11 @@ trait Loggables {
       p6 -> valueToLog[P6, T](t, 6),
       p7 -> valueToLog[P7, T](t, 7),
       p8 -> valueToLog[P8, T](t, 8)
-    )
-    )
+    ))
   }
 
-  private def valueToLog[P: Loggable, T <: Product](t: T, i: Int): String = implicitly[Loggable[P]].toLog(t.productElement(i).asInstanceOf[P])
+  private def valueToLog[P: Loggable, T <: Product](t: T, i: Int): String =
+    summon[Loggable[P]].toLog(t.productElement(i).asInstanceOf[P])
 }
 
 object Loggables {
@@ -411,7 +400,7 @@ object Loggables {
    * @return an array of field names either derived from the input sequence or extracted based on the provided type and method.
    */
   private def fieldNames[T: ClassTag](fields: Seq[String], method: String): Array[String] = fields match {
-    case Nil => extractFieldNames(implicitly[ClassTag[T]], method)
+    case Nil => extractFieldNames(summon[ClassTag[T]], method)
     case ps => ps.toArray
   }
 
@@ -435,7 +424,7 @@ object Loggables {
       val copyDefaultMethods = clazz.getMethods.filter(_.getName.startsWith("copy$default$")).sortBy(
         _.getName.drop("copy$default$".length).takeWhile(_ != '(').toInt)
       val fields = clazz.getDeclaredFields.filterNot { f =>
-        import Modifier._
+        import Modifier.*
         (f.getModifiers & (TRANSIENT | STATIC | 0x1000 /* SYNTHETIC*/)) > 0
       }
       if (copyDefaultMethods.length != fields.length)
@@ -445,7 +434,7 @@ object Loggables {
       fields.map(f => f.getName)
     } catch {
       case NonFatal(ex) => throw new RuntimeException("Cannot automatically determine case class field names and order " +
-          s"for '${clazz.getName}', please provide an explicit list of fields in the second parameter of method $method", ex)
+              s"for '${clazz.getName}', please provide an explicit list of fields in the second parameter of method $method", ex)
     }
   }
 }
