@@ -64,7 +64,7 @@ object Loggable {
    * providing an empty string as the log representation. It is useful for scenarios
    * where logging requires a `Unit` data type to be handled consistently.
    */
-  implicit object LoggableUnit extends LoggableUnit
+  given LoggableUnit: LoggableUnit with {}
 
   /**
    * A trait that provides a loggable representation for Boolean values.
@@ -85,7 +85,7 @@ object Loggable {
    * An implicit object extending LoggableBoolean to provide a Loggable implementation for Boolean values.
    * This enables automatic conversion of Boolean values into their string representation for logging purposes.
    */
-  implicit object LoggableBoolean extends LoggableBoolean
+  given LoggableBoolean: LoggableBoolean with {}
 
   /**
    * An implementation of the `Loggable` trait for the `Byte` type, providing
@@ -110,7 +110,7 @@ object Loggable {
    * Converts `Byte` values into their `String` representation for logging purposes.
    * Inherits the functionality from the `Loggable[Byte]` trait.
    */
-  implicit object LoggableByte extends LoggableByte
+  given LoggableByte: LoggableByte with {}
 
   /**
    * Enables instances of `Short` to be logged by converting them to a string representation.
@@ -129,7 +129,7 @@ object Loggable {
    * representation via the `toString` method. It extends the `LoggableShort` trait, which
    * defines the specific behavior for logging `Short` values.
    */
-  implicit object LoggableShort extends LoggableShort
+  given LoggableShort: LoggableShort with {}
 
   /**
    * A specific implementation of the `Loggable` type class for `Int`.
@@ -152,7 +152,7 @@ object Loggable {
    * This enables logging functionality for `Int` by converting it to a string.
    * Used as an implicit instance of the `Loggable` type class for `Int`.
    */
-  implicit object LoggableInt extends LoggableInt
+  given LoggableInt: LoggableInt with {}
 
   /**
    * A trait that extends the `Loggable` type class to provide a default implementation
@@ -177,7 +177,7 @@ object Loggable {
    * It allows Long values to be logged in a consistent format wherever
    * a Loggable[Long] is implicitly required.
    */
-  implicit object LoggableLong extends LoggableLong
+  given LoggableLong: LoggableLong with {}
 
   /**
    * A trait representing a `Loggable` instance for values of type `BigInt`.
@@ -200,7 +200,7 @@ object Loggable {
    * Implicit object providing a Loggable implementation for the BigInt type.
    * Converts a BigInt instance to its string representation for logging purposes.
    */
-  implicit object LoggableBigInt extends LoggableBigInt
+  given LoggableBigInt: LoggableBigInt with {}
 
   /**
    * A specialized implementation of the `Loggable` type class for the `String` type.
@@ -222,7 +222,7 @@ object Loggable {
    * Provides an implicit implementation of the Loggable trait for Strings.
    * Converts a String to its loggable representation by simply returning the string itself.
    */
-  implicit object LoggableString extends LoggableString
+  given LoggableString: LoggableString with {}
 
   /**
    * A trait that provides a logging implementation for the `Double` type.
@@ -245,7 +245,7 @@ object Loggable {
    *
    * Converts a Double into its string representation for logging purposes.
    */
-  implicit object LoggableDouble extends LoggableDouble
+  given LoggableDouble: LoggableDouble with {}
 
   /**
    * A trait providing a specific implementation of the `Loggable` type class for the type `BigDecimal`.
@@ -268,7 +268,7 @@ object Loggable {
    * Implicit object providing a `Loggable` implementation for `BigDecimal`.
    * This allows a `BigDecimal` to be logged by converting it to its string representation.
    */
-  implicit object LoggableBigDecimal extends LoggableBigDecimal
+  given LoggableBigDecimal: LoggableBigDecimal with {}
 
   /**
    * An abstract class that provides logging capability for `Option` values by extending
@@ -301,7 +301,7 @@ object Loggable {
    * a specific implementation of the `toLog` method through the extension
    * of the `LoggableOption` class using `Int` as the type parameter.
    */
-  implicit object LoggableOptionInt extends LoggableOption[Int]
+  given LoggableOptionInt: LoggableOption[Int] with {}
 
   /**
    * Implicit object providing a `Loggable` instance for `Option[String]` types.
@@ -309,7 +309,7 @@ object Loggable {
    * Automatically derives logging behavior by combining the `Loggable` instance for `String`
    * with the logic defined in `LoggableOption`.
    */
-  implicit object LoggableOptionString extends LoggableOption[String]
+  given LoggableOptionString: LoggableOption[String] with {}
 
   /**
    * Implicit def providing a `Loggable` instance for `Map[K, V]` types.
@@ -364,6 +364,5 @@ object Loggable {
    * representation, which can be used in logging frameworks or other contexts 
    * requiring a string-based representation of date-time values.
    */
-  implicit object LoggableTemporal extends LoggableTemporal
-
+  given LoggableTemporal: LoggableTemporal with {}
 }

@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 2021. Phasmid Software
  */
-
 package com.phasmidsoftware.flog
 
 import com.phasmidsoftware.flog.Loggable.loggableAny
@@ -37,8 +36,7 @@ import scala.util.{Failure, Success, Try}
  *
  * @param logger the Logger which is to be used by this Flog.
  */
-case class Flog(logger: Logger) extends AutoCloseable {
-
+case class Flog(logger: Logger) extends AutoCloseable with Loggables {
   import Flog._
 
   /**
@@ -46,7 +44,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
    *
    * @param message the (call-by-name) message which will be evaluated only any logging takes place.
    */
-  implicit class Flogger(message: => String) extends Loggables {
+  extension(message: => String) {
     /**
      * Method to generate an INFO-level log entry for a (Loggable) value of X.
      * Logging is performed as a side effect.
@@ -205,7 +203,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X the underlying type of the given input.
      * @return the value of xf.
      */
-    def !![X: Loggable](xf: => Future[X])(implicit ec: ExecutionContext): Future[X] = logFuture(logger.info, xf)
+    def !![X: Loggable](xf: => Future[X])(using ec: ExecutionContext): Future[X] = logFuture(logger.info, xf)
 
     /**
      * Method to generate a debug log entry for an Iterable of a (Loggable) X.
@@ -248,7 +246,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X the underlying type of the given input.
      * @return the value of xf.
      */
-    def !?[X: Loggable](xf: => Future[X])(implicit ec: ExecutionContext): Future[X] = logFuture(logger.debug, xf)
+    def !?[X: Loggable](xf: => Future[X])(using ec: ExecutionContext): Future[X] = logFuture(logger.debug, xf)
 
     /**
      * Method to generate a trace log entry for an Iterable of a (Loggable) X.
@@ -291,7 +289,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X the underlying type of the given input.
      * @return the value of xf.
      */
-    def !??[X: Loggable](xf: => Future[X])(implicit ec: ExecutionContext): Future[X] = logFuture(logger.trace, xf)
+    def !??[X: Loggable](xf: => Future[X])(using ec: ExecutionContext): Future[X] = logFuture(logger.trace, xf)
 
     /**
      * Method to generate a log entry for a type which is not itself Loggable.
@@ -388,20 +386,19 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @tparam X The type of the value contained within the future.
      * @return The original future with its lifecycle events logged.
      */
-    private def logFuture[X: Loggable](logFunction: LogFunction, xf: => Future[X])(implicit ec: ExecutionContext): Future[X] = {
+    private def logFuture[X: Loggable](logFunction: LogFunction, xf: => Future[X])(using ec: ExecutionContext): Future[X] = {
       val uuid = java.util.UUID.randomUUID
       implicit val xtl: Loggable[Try[X]] = tryLoggable
       xf.onComplete(xy => logLoggable(logFunction)(message)(s"future [$uuid] completed : ${xtl.toLog(xy)}"))
       tee[Future[X]](_ => logLoggable(logFunction)(message)(s"future promise [$uuid] created... "))(xf)
     }
-
     /**
      * Converts an optional value of type X to a loggable string representation.
      *
      * @param y An optional value of type X that needs to be logged.
      * @return A string representation of the optional value, processed by the loggable instance.
      */
-    private def toLog[X: Loggable](y: Option[X]): String = optionLoggable[String].toLog(y map implicitly[Loggable[X]].toLog)
+    private def toLog[X: Loggable](y: Option[X]): String = optionLoggable[String].toLog(y map summon[Loggable[X]].toLog)
 
     /**
      * Converts an iterable of elements of type X to its corresponding log string representation.
@@ -409,7 +406,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @param y an iterable containing elements of type X, where X must have an implicit Loggable implementation
      * @return a string representing the loggable form of the provided iterable
      */
-    private def toLog[X: Loggable](y: Iterable[X]): String = iterableLoggable[String]().toLog(y map implicitly[Loggable[X]].toLog)
+    private def toLog[X: Loggable](y: Iterable[X]): String = iterableLoggable[String]().toLog(y map summon[Loggable[X]].toLog)
 
     /**
      * Converts a map of key-value pairs into a loggable string representation.
@@ -418,7 +415,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
      * @param kVl an implicit Loggable instance for key-value pairs
      * @return a string representation suitable for logging the map
      */
-    private def toLog[K, V](y: Map[K, V])(implicit kVl: Loggable[(K, V)]): String = iterableLoggable[String]("{}").toLog(y map kVl.toLog)
+    private def toLog[K, V](y: Map[K, V])(using kVl: Loggable[(K, V)]): String = iterableLoggable[String]("{}").toLog(y map kVl.toLog)
   }
 
   /**
@@ -453,7 +450,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
 
   /**
    * Method to generate a log message based on x, pass it to the logFunc, and return the x value.
-   * The value of x will be rendered as a String but invoking toLog on the implicit value of Loggable[X].
+   * The value of x will be rendered as a String but invoking toLog on the given value of Loggable[X].
    *
    * @param prefix the message prefix.
    * @param x      the value to be logged and returned.
@@ -461,7 +458,7 @@ case class Flog(logger: Logger) extends AutoCloseable {
    * @return the value of x.
    */
   private def logLoggable[X: Loggable](function: LogFunction)(prefix: => String)(x: => X): X =
-    tee[X](y => function(s"$prefix: ${implicitly[Loggable[X]].toLog(y)}"))(x)
+    tee[X](y => function(s"$prefix: ${summon[Loggable[X]].toLog(y)}"))(x)
 
   /**
    * Method to generate a log message, pass it to the logFunc, and return the x value.
@@ -674,7 +671,7 @@ object Logger {
    * @tparam T the class for which you require a Logger.
    * @return a new instance of Slf4jLogger.
    */
-  def apply[T: ClassTag]: Logger = forClass(implicitly[ClassTag[T]].runtimeClass)
+  def apply[T: ClassTag]: Logger = forClass(summon[ClassTag[T]].runtimeClass)
 
   /**
    * Method to create a Logger based on a LogFunction.
