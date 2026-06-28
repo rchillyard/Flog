@@ -2,9 +2,9 @@ organization := "com.phasmidsoftware"
 
 name := "flog"
 
-version := "1.0.14"
+version := "1.0.15"
 
-scalaVersion := "3.7.3"
+scalaVersion := "3.3.6"
 
 Compile / scalacOptions ++= Seq(
   "-deprecation",
