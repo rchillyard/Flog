@@ -1,5 +1,5 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/aa3d2f49a67f4ce58b702f4403092290)](https://www.codacy.com/gh/rchillyard/Flog/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rchillyard/Flog&amp;utm_campaign=Badge_Grade)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.phasmidsoftware/flog_2.13/badge.svg?color=blue)](https://maven-badges.herokuapp.com/maven-central/com.phasmidsoftware_2.13/flog/)
+![Sonatype Central](https://maven-badges.sml.io/sonatype-central/com.phasmidsoftware/flog_3/badge.svg?color=blue)
 [![CircleCI](https://circleci.com/gh/rchillyard/Flog.svg?style=svg)](https://circleci.com/gh/rchillyard/Flog)
 ![GitHub Top Languages](https://img.shields.io/github/languages/top/rchillyard/Flog)
 ![GitHub](https://img.shields.io/github/license/rchillyard/Flog)
@@ -9,6 +9,10 @@
 
 # Flog
 This is a set of utilities for functional logging.
+
+## API Documentation
+
+Full Scaladoc is available via [javadoc.io](https://javadoc.io/doc/com.phasmidsoftware/flog_3).
 
 ## Introduction and Usage
 _Flog_ is a functional logger:
