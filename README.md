@@ -1,5 +1,5 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/aa3d2f49a67f4ce58b702f4403092290)](https://www.codacy.com/gh/rchillyard/Flog/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rchillyard/Flog&amp;utm_campaign=Badge_Grade)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.phasmidsoftware/flog_2.13/badge.svg?color=blue)](https://maven-badges.herokuapp.com/maven-central/com.phasmidsoftware_2.13/flog/)
+[![Sonatype Central](https://maven-badges.sml.io/sonatype-central/com.phasmidsoftware/flog_3/badge.svg?color=blue)](https://central.sonatype.com/artifact/com.phasmidsoftware/flog_3)
 [![CircleCI](https://circleci.com/gh/rchillyard/Flog.svg?style=svg)](https://circleci.com/gh/rchillyard/Flog)
 ![GitHub Top Languages](https://img.shields.io/github/languages/top/rchillyard/Flog)
 ![GitHub](https://img.shields.io/github/license/rchillyard/Flog)
@@ -9,6 +9,10 @@
 
 # Flog
 This is a set of utilities for functional logging.
+
+## API Documentation
+
+Full Scaladoc is available via [javadoc.io](https://javadoc.io/doc/com.phasmidsoftware/flog_3).
 
 ## Introduction and Usage
 _Flog_ is a functional logger:
@@ -230,6 +234,12 @@ See also unit tests $bang$bang 1 and $bang$bang 1a for more detail.
   of the current scope.
   
 # Version
+1.0.13 Added implicit Loggable instances for Map[K, V] and Option[Map[K, V]] to enable logging of maps and optional maps.
+
+1.0.12 Removed unnecessary logback files;
+
+1.0.11 Migrated to Scala 3.
+
 1.0.10 Added logger for iterator and made available for Scala 3.
 
 1.0.9 Issue #20: Alternative means of getting a Loggable when no explicit Loggable\[T] is available.

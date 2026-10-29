@@ -18,7 +18,7 @@ import scala.reflect.ClassTag
  * @param sb       a StringBuilder to which we append messages
  */
 //noinspection TypeAnnotation,NotImplementedCode
-case class MockLogger(name: String, logLevel: String = "DEBUG", sb: StringBuilder = new StringBuilder()) extends Logger {
+case class MockLogger(name: String, logLevel: String = "DEBUG", sb: StringBuilder = new StringBuilder()) extends org.slf4j.Logger {
 
   def clear(): Unit = {
     sb.clear()
