@@ -1,5 +1,5 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/aa3d2f49a67f4ce58b702f4403092290)](https://www.codacy.com/gh/rchillyard/Flog/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rchillyard/Flog&amp;utm_campaign=Badge_Grade)
-![Sonatype Central](https://maven-badges.sml.io/sonatype-central/com.phasmidsoftware/flog_3/badge.svg?color=blue)
+[![Sonatype Central](https://maven-badges.sml.io/sonatype-central/com.phasmidsoftware/flog_3/badge.svg?color=blue)](https://central.sonatype.com/artifact/com.phasmidsoftware/flog_3)
 [![CircleCI](https://circleci.com/gh/rchillyard/Flog.svg?style=svg)](https://circleci.com/gh/rchillyard/Flog)
 ![GitHub Top Languages](https://img.shields.io/github/languages/top/rchillyard/Flog)
 ![GitHub](https://img.shields.io/github/license/rchillyard/Flog)
