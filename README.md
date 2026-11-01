@@ -1,18 +1,19 @@
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/aa3d2f49a67f4ce58b702f4403092290)](https://www.codacy.com/gh/rchillyard/Flog/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rchillyard/Flog&amp;utm_campaign=Badge_Grade)
 [![Sonatype Central](https://maven-badges.sml.io/sonatype-central/com.phasmidsoftware/flog_3/badge.svg?color=blue)](https://central.sonatype.com/artifact/com.phasmidsoftware/flog_3)
-[![CircleCI](https://circleci.com/gh/rchillyard/Flog.svg?style=svg)](https://circleci.com/gh/rchillyard/Flog)
-![GitHub Top Languages](https://img.shields.io/github/languages/top/rchillyard/Flog)
-![GitHub](https://img.shields.io/github/license/rchillyard/Flog)
-![GitHub last commit](https://img.shields.io/github/last-commit/rchillyard/Flog)
-![GitHub issues](https://img.shields.io/github/issues-raw/rchillyard/Flog)
-![GitHub issues by-label](https://img.shields.io/github/issues/rchillyard/Flog/bug)
+[![API Docs](https://img.shields.io/badge/api-docs-blue)](https://rchillyard.github.io/Flog/latest/api/)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/aa3d2f49a67f4ce58b702f4403092290)](https://app.codacy.com/gh/rchillyard/Flog/dashboard)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/rchillyard/Flog/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/rchillyard/Flog/tree/main)
+[![GitHub Top Languages](https://img.shields.io/github/languages/top/rchillyard/Flog)](https://github.com/rchillyard/Flog)
+[![GitHub](https://img.shields.io/github/license/rchillyard/Flog)](https://github.com/rchillyard/Flog/blob/main/LICENSE)
+[![GitHub last commit](https://img.shields.io/github/last-commit/rchillyard/Flog)](https://github.com/rchillyard/Flog/commits/main)
+[![GitHub issues](https://img.shields.io/github/issues-raw/rchillyard/Flog)](https://github.com/rchillyard/Flog/issues)
+[![GitHub issues by-label](https://img.shields.io/github/issues/rchillyard/Flog/bug)](https://github.com/rchillyard/Flog/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
 
 # Flog
 This is a set of utilities for functional logging.
 
 ## API Documentation
 
-Full Scaladoc is available via [javadoc.io](https://javadoc.io/doc/com.phasmidsoftware/flog_3).
+Full Scaladoc is at <https://rchillyard.github.io/Flog/latest/api/>.
 
 ## Introduction and Usage
 _Flog_ is a functional logger:
