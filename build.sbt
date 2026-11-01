@@ -23,8 +23,6 @@ libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % logBackVersion % "test"
 )
 
-// JUnit-style reports, collected by CircleCI
-Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-u", "target/test-reports")
 
 // Scaladoc is published to https://rchillyard.github.io/Flog/latest/api/ by `sbt ghpagesPushSite`
 enablePlugins(GhpagesPlugin, SiteScaladocPlugin)
