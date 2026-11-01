@@ -2,7 +2,7 @@ organization := "com.phasmidsoftware"
 
 name := "flog"
 
-version := "1.0.15"
+version := "1.1.0"
 
 scalaVersion := "3.9.0" // the current LTS
 
