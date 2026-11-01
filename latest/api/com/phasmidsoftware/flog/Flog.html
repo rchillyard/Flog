@@ -1,0 +1,2608 @@
+<!DOCTYPE html><html data-pathToRoot="../../../" data-rawLocation="com/phasmidsoftware/flog/Flog" data-dynamicSideMenu="false"><head><meta charset="utf-8"></meta><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"></meta><title>Flog</title><link rel="shortcut icon" type="image/x-icon" href="../../../favicon.ico"></link><script type="text/javascript" src="../../../scripts/theme.js"></script><script type="text/javascript" src="../../../scripts/searchData.js" defer="true"></script><script type="text/javascript" src="../../../scripts/scastieConfiguration.js" defer="true"></script><link rel="stylesheet" href="../../../styles/theme/bundle.css"></link><link rel="stylesheet" href="../../../styles/theme/components/bundle.css"></link><link rel="stylesheet" href="../../../styles/theme/components/button/bundle.css"></link><link rel="stylesheet" href="../../../styles/theme/layout/bundle.css"></link><link rel="stylesheet" href="../../../styles/dotty-icons.css"></link><link rel="stylesheet" href="../../../styles/filter-bar.css"></link><link rel="stylesheet" href="../../../styles/searchbar.css"></link><link rel="stylesheet" href="../../../styles/social-links.css"></link><link rel="stylesheet" href="../../../styles/versions-dropdown.css"></link><link rel="stylesheet" href="../../../styles/content-contributors.css"></link><script type="text/javascript" src="../../../hljs/highlight.pack.js" defer="true"></script><script type="text/javascript" src="../../../scripts/hljs-scala3.js" defer="true"></script><script type="text/javascript" src="../../../scripts/ux.js" defer="true"></script><script type="text/javascript" src="../../../scripts/common/component.js" defer="true"></script><script type="text/javascript" src="../../../scripts/common/utils.js" defer="true"></script><script type="text/javascript" src="../../../scripts/components/FilterBar.js" defer="true"></script><script type="text/javascript" src="../../../scripts/components/DocumentableList.js" defer="true"></script><script type="text/javascript" src="../../../scripts/components/Input.js" defer="true"></script><script type="text/javascript" src="../../../scripts/components/FilterGroup.js" defer="true"></script><script type="text/javascript" src="../../../scripts/components/Filter.js" defer="true"></script><script type="text/javascript" src="../../../scripts/scaladoc-scalajs.js" defer="true"></script><script type="text/javascript" src="../../../scripts/contributors.js" defer="true"></script><script type="text/javascript" src="https://d3js.org/d3.v6.min.js" defer="true"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/graphlib-dot@0.6.2/dist/graphlib-dot.min.js" defer="true"></script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dagre-d3/0.6.1/dagre-d3.min.js" defer="true"></script><script type="text/javascript" src="https://scastie.scala-lang.org/embedded.js" defer="true"></script><script type="text/javascript" src="../../../scripts/data.js" defer="true"></script><script>var pathToRoot = "../../../";</script></head><body><div id=""><div id="header" class="body-small"><div class="header-container-left"><a href="../../../" class="logo-container"><span class="project-name h300">flog</span></a><span onclick="dropdownHandler(event)" class="text-button with-arrow" id="dropdown-trigger"><a></a></span><div id="version-dropdown" class="dropdown-menu"></div></div><div class="header-container-right"><button id="search-toggle" class="icon-button"></button><span id="theme-toggle" class="icon-button"></span><span id="mobile-menu-toggle" class="icon-button hamburger"></span></div></div><div id="mobile-menu"><div class="mobile-menu-header body-small"><span class="mobile-menu-logo"><span class="project-name h300">flog</span></span><button id="mobile-menu-close" class="icon-button close"></button></div><div class="mobile-menu-container body-medium"><input id="mobile-scaladoc-searchbar-input" class="scaladoc-searchbar-input" type="search" placeholder="Find anything"></input><span id="mobile-theme-toggle" class="mobile-menu-item mode"></span></div></div><span id="mobile-sidebar-toggle" class="floating-button"></span><div id="leftColumn" class="body-small"><div class="switcher-container"><a id="api-nav-button" class="switcher h100 selected" href="../../../index.html">API</a></div><nav id="api-nav" class="side-menu"><div class="ni n0 expanded"><span class="nh h100 expanded cs"><button class="ar icon-button expanded"></button><a href="../flog.html"><span class="micon pa"></span><span>com.phasmidsoftware.flog</span></a></span><div class="ni n1 "><span class="nh "><a href="AppendableLogger.html"><span class="micon cl"></span><span>AppendableLogger</span></a></span></div><div class="ni n1 "><span class="nh "><a href="Flog$.html"><span class="micon ob"></span><span>Flog</span></a></span></div><div class="ni n1 expanded"><span class="nh h100 selected"><a href="#"><span class="micon cl"></span><span>Flog</span></a></span></div><div class="ni n1 "><span class="nh "><a href="GenericLogFunction.html"><span class="micon cl"></span><span>GenericLogFunction</span></a></span></div><div class="ni n1 "><span class="nh "><a href="GenericLogger.html"><span class="micon cl"></span><span>GenericLogger</span></a></span></div><div class="ni n1 "><span class="nh "><a href="LogFunction.html"><span class="micon tr"></span><span>LogFunction</span></a></span></div><div class="ni n1 "><span class="nh "><a href="LogFunction$.html"><span class="micon ob"></span><span>LogFunction</span></a></span></div><div class="ni n1"><span class="nh "><button class="ar icon-button "></button><a href="Loggable$.html"><span class="micon ob"></span><span>Loggable</span></a></span><div class="ni n2 "><span class="nh "><a href="Loggable$$LoggableOption.html"><span class="micon cl"></span><span>LoggableOption</span></a></span></div><div class="ni n2 "><span class="nh "><a href="Loggable$$given_LoggableOption_Int$.html"><span class="micon ob"></span><span>given_LoggableOption_Int</span></a></span></div><div class="ni n2 "><span class="nh "><a href="Loggable$$given_LoggableOption_String$.html"><span class="micon ob"></span><span>given_LoggableOption_String</span></a></span></div><div class="ni n2 "><span class="nh "><a href="Loggable$$given_Loggable_BigDecimal$.html"><span class="micon ob"></span><span>given_Loggable_BigDecimal</span></a></span></div><div class="ni n2 "><span class="nh "><a href="Loggable$$given_Loggable_BigInt$.html"><span class="micon ob"></span><span>given_Loggable_BigInt</span></a></span></div><div class="ni n2 "><span class="nh "><a href="Loggable$$given_Loggable_Boolean$.html"><span class="micon ob"></span><span>given_Loggable_Boolean</span></a></span></div><div class="ni n2 "><span class="nh "><a href="Loggable$$given_Loggable_Byte$.html"><span class="micon ob"></span><span>given_Loggable_Byte</span></a></span></div><div class="ni n2 "><span class="nh "><a href="Loggable$$given_Loggable_Double$.html"><span class="micon ob"></span><span>given_Loggable_Double</span></a></span></div><div class="ni n2 "><span class="nh "><a href="Loggable$$given_Loggable_Int$.html"><span class="micon ob"></span><span>given_Loggable_Int</span></a></span></div><div class="ni n2 "><span class="nh "><a href="Loggable$$given_Loggable_Long$.html"><span class="micon ob"></span><span>given_Loggable_Long</span></a></span></div><div class="ni n2 "><span class="nh "><a href="Loggable$$given_Loggable_Short$.html"><span class="micon ob"></span><span>given_Loggable_Short</span></a></span></div><div class="ni n2 "><span class="nh "><a href="Loggable$$given_Loggable_String$.html"><span class="micon ob"></span><span>given_Loggable_String</span></a></span></div><div class="ni n2 "><span class="nh "><a href="Loggable$$given_Loggable_Temporal$.html"><span class="micon ob"></span><span>given_Loggable_Temporal</span></a></span></div><div class="ni n2 "><span class="nh "><a href="Loggable$$given_Loggable_Unit$.html"><span class="micon ob"></span><span>given_Loggable_Unit</span></a></span></div></div><div class="ni n1 "><span class="nh "><a href="Loggable.html"><span class="micon tr"></span><span>Loggable</span></a></span></div><div class="ni n1 "><span class="nh "><a href="Loggables.html"><span class="micon tr"></span><span>Loggables</span></a></span></div><div class="ni n1 "><span class="nh "><a href="Loggables$.html"><span class="micon ob"></span><span>Loggables</span></a></span></div><div class="ni n1 "><span class="nh "><a href="LoggedException.html"><span class="micon cl"></span><span>LoggedException</span></a></span></div><div class="ni n1 "><span class="nh "><a href="Logger$.html"><span class="micon ob"></span><span>Logger</span></a></span></div><div class="ni n1 "><span class="nh "><a href="Logger.html"><span class="micon tr"></span><span>Logger</span></a></span></div><div class="ni n1 "><span class="nh "><a href="Slf4jLogger.html"><span class="micon cl"></span><span>Slf4jLogger</span></a></span></div><div class="ni n1 "><span class="nh "><a href="StringBuilderLogger.html"><span class="micon cl"></span><span>StringBuilderLogger</span></a></span></div></div></nav></div><div id="footer" class="body-small"><div class="left-container">Generated with</div><div class="right-container"><div class="text"></div></div><div class="text-mobile"></div></div><div id="scaladoc-searchBar"></div><div id="main"><div class="breadcrumbs container"><a href="../../../index.html">flog</a>/<a href="../flog.html">com.phasmidsoftware.flog</a>/<a href="Flog.html">Flog</a></div><div id="content" class="body-medium"><div><div class="cover-header">
+ <a href="Flog$.html"><span class="icon"><span class="micon cl"></span><span class="micon companion ob"></span></span></a>
+ <h1 class="h600 multi">Flog</h1>
+</div>
+<div class="fqname body-large">
+ <span>com.phasmidsoftware.flog.Flog</span>
+</div>
+<div class="companion-badge body-small">
+ <span>See the<span class="micon ob"></span><a href="Flog$.html">Flog</a> companion object</span>
+</div>
+<div class="main-signature mono-small-block">
+ <div class="signature">
+  <span class="signature-short"><span class="modifiers"><span t="k">case </span></span><span class="kind"><span t="k">class </span></span><a href="Flog.html" t="n" class="documentableName ">Flog</a>(<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">logger</span>: <a href="Logger.html" t="t">Logger</a>)<span t="k"> extends </span><span data-unresolved-link="" t="t">AutoCloseable</span><span t="k">, </span></span><span class="signature-long"><a href="Loggables.html" t="t">Loggables</a></span>
+ </div>
+</div>
+<div class="cover">
+ <div class="doc">
+  <p>Simple functional logging class.</p>
+  <p>Here are the steps you need to follow to enable logging:</p>
+  <ul>
+   <li>
+    <p>To instantiate a new instance of Flog, specifying the class for which you are logging: simply invoke the apply method: <code>Flog[MyClass]</code>. Assuming that you named the variable "flog", then "import flog._"</p>
+   </li>
+   <li>
+    <p>Create a String which will form the log message, follow it with "!!" (info), or "!?" (debug), or other method, and follow that with the expression you want to log. The construct in this form (including the message and "!!") will yield the value of the expression.</p>
+   </li>
+   <li>
+    <p>Most of the time, this is all you need to do (see README.md for much more information on this).</p>
+   </li>
+  </ul>
+  <p>There are several ways to turn logging off (temporarily or permanently) once you've added the log expressions:</p>
+  <p>(0)</p>
+  <dd>configure the logger (using logback.xml or similar) to ignore the particular log level;</dd>
+  (1)
+  <dd>replace the !! method with the |! method for each expression you wish to silence;</dd>
+  (2)
+  <dd>use a disabled Flog with flog.disabled (silences all flogging everywhere);</dd>
+  (3)
+  <dd>remove the !! expressions.</dd>
+  <p></p>
+ </div>
+ <section id="attributes">
+  <h2 class="h500">Value parameters</h2>
+  <dl class="attributes">
+   <dt class="body-small">logger</dt>
+   <dd class="body-medium">
+    <p>the Logger which is to be used by this Flog.</p>
+   </dd>
+  </dl>
+  <h2 class="h500">Attributes</h2>
+  <dl class="attributes">
+   <dt class="body-small">Companion</dt>
+   <dd class="body-medium">
+    <a href="Flog$.html">object</a>
+   </dd>
+   <dt class="body-small">Graph</dt>
+   <dd class="body-medium">
+    <div id="inheritance-diagram" class="diagram-class showGraph">
+     <button type="button" class="label-only-button" onclick="zoomOut()">Reset zoom</button><button type="button" class="label-only-button" onclick="hideGraph()">Hide graph</button><button type="button" class="label-only-button" onclick="showGraph()">Show graph</button>
+     <svg id="graph"></svg>
+     <script type="text/dot" id="dot"> digraph g {
+ node0 [id=node0, label="<span style=\"color: #FFFFFF;\">class <a href=\"Flog.html\" t=\"n\">Flog</a></span>", class="class vertex"];
+node1 [id=node1, label="<span style=\"color: #FFFFFF;\">class <span data-unresolved-link=\"\" t=\"n\">Object</span></span>", class="class vertex"];
+node2 [id=node2, label="<span style=\"color: #FFFFFF;\">class <span data-unresolved-link=\"\" t=\"n\">Any</span></span>", class="class vertex"];
+node3 [id=node3, label="<span style=\"color: #FFFFFF;\">trait <span data-unresolved-link=\"\" t=\"n\">Matchable</span></span>", class="trait vertex"];
+node4 [id=node4, label="<span style=\"color: #FFFFFF;\">trait <span data-unresolved-link=\"\" t=\"n\">AutoCloseable</span></span>", class="trait vertex"];
+node5 [id=node5, label="<span style=\"color: #FFFFFF;\">trait <a href=\"Loggables.html\" t=\"n\">Loggables</a></span>", class="trait vertex"];
+node6 [id=node6, label="<span style=\"color: #FFFFFF;\">trait <span data-unresolved-link=\"\" t=\"n\">Product</span></span>", class="trait vertex"];
+node7 [id=node7, label="<span style=\"color: #FFFFFF;\">trait <span data-unresolved-link=\"\" t=\"n\">Equals</span></span>", class="trait vertex"];
+node8 [id=node8, label="<span style=\"color: #FFFFFF;\">class <span data-unresolved-link=\"\" t=\"n\">Serializable</span></span>", class="class vertex"];
+
+
+ node0 -> node1;
+node1 -> node2;
+node1 -> node3;
+node3 -> node2;
+node0 -> node4;
+node4 -> node1;
+node0 -> node5;
+node5 -> node1;
+node0 -> node6;
+node6 -> node2;
+node6 -> node7;
+node7 -> node2;
+node0 -> node8;
+node8 -> node2;
+
+}
+</script>
+    </div>
+   </dd>
+   <dt class="body-small">Supertypes</dt>
+   <dd class="body-medium">
+    <div class="mono-small-block supertypes">
+     <div>
+      trait <span data-unresolved-link="" t="n">Serializable</span>
+     </div>
+     <div>
+      trait <span data-unresolved-link="" t="n">Product</span>
+     </div>
+     <div>
+      trait <span data-unresolved-link="" t="n">Equals</span>
+     </div>
+     <div>
+      trait <a href="Loggables.html" t="n">Loggables</a>
+     </div>
+     <div>
+      trait <span data-unresolved-link="" t="n">AutoCloseable</span>
+     </div>
+     <div>
+      class <span data-unresolved-link="" t="n">Object</span>
+     </div>
+     <div>
+      trait <span data-unresolved-link="" t="n">Matchable</span>
+     </div>
+     <div>
+      class <span data-unresolved-link="" t="n">Any</span>
+     </div>
+     <span class="show-all-code show-content text-button h100">Show all</span>
+    </div>
+   </dd>
+  </dl>
+ </section>
+</div>
+<section id="members-list">
+ <h2 class="h500">Members list</h2>
+ <div class="documentableFilter">
+  <div class="filtersContainer"></div>
+  <input class="filterableInput" placeholder="Filter by any phrase" data-test-id="filterBarInput" type="search"><button class="clearButton label-only-button" data-test-id="filterBarClearButton">Clear all</button>
+ </div>
+ <div class="membersList expand">
+  <div class="tabs">
+   <div class="contents">
+    <section id="Value-members">
+     <div data-togglable="Value members" class="tab expand">
+      <div class="member-group-header">
+       <h3 data-togglable="Value members" class="h400">Value members</h3>
+      </div>
+      <section id="Concrete-methods">
+       <div class="documentableList expand">
+        <div class="documentableList-expander">
+         <button class="icon-button show-content expand"></button>
+         <h4 class="groupHeader h200">Concrete methods</h4>
+        </div>
+        <div class="documentableElement" id="close-94c">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#close-94c" t="n" class="documentableName ">close</a>(<span t="k"></span>): <span data-unresolved-link="" t="t">Unit</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Close this Flog. For standard slf4j loggers, this does nothing. However, for Appendable loggers, this call will typically flush and close the appendable instance.</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Close this Flog. For standard slf4j loggers, this does nothing. However, for Appendable loggers, this call will typically flush and close the appendable instance.</p>
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small"></dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="disabled-0">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#disabled-0" t="n" class="documentableName ">disabled</a>: <a href="Flog.html" t="t">Flog</a>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Use this method to create a new Flog with logging disabled.</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Use this method to create a new Flog with logging disabled.</p>
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>a new instance of Flog.</p>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="toString-0" data-f-keywords="override">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"><span t="k">override </span></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#toString-0" t="n" class="documentableName ">toString</a>: <span data-unresolved-link="" t="t">String</span>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Method to capture any text held by this Flog. In the case of a "standard" slf4j logger, the returned value will is undefined.</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Method to capture any text held by this Flog. In the case of a "standard" slf4j logger, the returned value will is undefined.</p>
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>the value of logger.toString.</p>
+              </dd>
+              <dt class="body-small">Definition Classes</dt>
+              <dd class="body-medium">
+               <div>
+                <span data-unresolved-link="">Any</span>
+               </div>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="withLogger-24e">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#withLogger-24e" t="n" class="documentableName ">withLogger</a>(<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">logger</span>: <a href="Logger.html" t="t">Logger</a>): <a href="Flog.html" t="t">Flog</a>
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Use this method to create a new Flog based on the given logging function.</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Use this method to create a new Flog based on the given logging function.</p>
+             </div>
+             <h2 class="h200">Value parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">logger</dt>
+              <dd class="body-medium">
+               <p>an instance of LogFunction.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>a new instance of Flog.</p>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+      </section>
+      <section id="Inherited-methods">
+       <div class="documentableList expand">
+        <div class="documentableList-expander">
+         <button class="icon-button show-content expand"></button>
+         <h4 class="groupHeader h200">Inherited methods</h4>
+        </div>
+        <div class="documentableElement" id="anyLoggable-fffff606" data-f-inherited="Loggables">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#anyLoggable-fffff606" t="n" class="documentableName ">anyLoggable</a>[<span t="k"></span><span data-unresolved-link="" t="t">T</span>]: <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">T</span>]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Backstop method to yield a String from a T. NOTE: use this when you need a Loggable to log a container which includes an unsupported type.</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Backstop method to yield a String from a T. NOTE: use this when you need a Loggable to log a container which includes an unsupported type.</p>
+             </div>
+             <h2 class="h200">Type parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">T</dt>
+              <dd class="body-medium">
+               <p>the type of t.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>a Loggable[T] which uses toString.</p>
+              </dd>
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <a href="Loggables.html#anyLoggable-fffff606">Loggables</a>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="eitherLoggable-fffffbc5" data-f-inherited="Loggables">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#eitherLoggable-fffffbc5" t="n" class="documentableName ">eitherLoggable</a>[<span t="k"></span><span data-unresolved-link="" t="t">L</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">R</span> : <a href="Loggable.html" t="t">Loggable</a>]: <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">Either</span>[<span data-unresolved-link="" t="t">L</span>, <span data-unresolved-link="" t="t">R</span>]]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Method to return a Loggable[ Either[L, R] ].</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Method to return a Loggable[ Either[L, R] ].</p>
+             </div>
+             <h2 class="h200">Type parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">L</dt>
+              <dd class="body-medium">
+               <p>the "left" type of any Either which is to be logged.</p>
+              </dd>
+              <dt class="body-small">R</dt>
+              <dd class="body-medium">
+               <p>the "right" type of any Either which is to be logged.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>a Loggable[ Either[L, R] ].</p>
+              </dd>
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <a href="Loggables.html#eitherLoggable-fffffbc5">Loggables</a>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="iterableLoggable-9f1" data-f-inherited="Loggables">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#iterableLoggable-9f1" t="n" class="documentableName ">iterableLoggable</a>[<span t="k"></span><span data-unresolved-link="" t="t">T</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">bookends</span>: <span data-unresolved-link="" t="t">String</span> = ..., <span t="k"></span><span data-unresolved-link="" t="n">atLeast</span>: <span data-unresolved-link="" t="t">Int</span> = ...): <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">Iterable</span>[<span data-unresolved-link="" t="t">T</span>]]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Method to create a Loggable of an Iterable[T]. The elements of the result are then logged utilizing the !! method.</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Method to create a Loggable of an Iterable[T]. The elements of the result are then logged utilizing the !! method.</p>
+             </div>
+             <h2 class="h200">Type parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">T</dt>
+              <dd class="body-medium">
+               <p>the underlying type of the elements to be logged. Must provide evidence of Loggable[T].</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Value parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">atLeast</dt>
+              <dd class="body-medium">
+               <p>the minimum number of elements to show in the log message before the ellipsis section starts.</p>
+              </dd>
+              <dt class="body-small">bookends</dt>
+              <dd class="body-medium">
+               <p>(optional) a String of length two specifying the first and last characters of the resulting String for a given Iterable. Defaults to "[]".</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>Loggable[ Iterable[T] ].</p>
+              </dd>
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <a href="Loggables.html#iterableLoggable-9f1">Loggables</a>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="kVLoggable-fffffbc5" data-f-inherited="Loggables">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#kVLoggable-fffffbc5" t="n" class="documentableName ">kVLoggable</a>[<span t="k"></span><span data-unresolved-link="" t="t">K</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">V</span> : <a href="Loggable.html" t="t">Loggable</a>]: <a href="Loggable.html" t="t">Loggable</a>[(<span data-unresolved-link="" t="t">K</span>, <span data-unresolved-link="" t="t">V</span>)]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>This method creates a Loggable instance which works for a tuple (a K-V pair). It is an alternative to loggable2 but that method names the members whereas we don't want them named here.</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>This method creates a Loggable instance which works for a tuple (a K-V pair). It is an alternative to loggable2 but that method names the members whereas we don't want them named here.</p>
+             </div>
+             <h2 class="h200">Type parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">K</dt>
+              <dd class="body-medium">
+               <p>the key type.</p>
+              </dd>
+              <dt class="body-small">V</dt>
+              <dd class="body-medium">
+               <p>the value type.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>a Loggable[(K, V)].</p>
+              </dd>
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <a href="Loggables.html#kVLoggable-fffffbc5">Loggables</a>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="loggable1-af" data-f-inherited="Loggables">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#loggable1-af" t="n" class="documentableName ">loggable1</a>[<span t="k"></span><span data-unresolved-link="" t="t">P0</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">T</span><span t="k"> &lt;: </span><span data-unresolved-link="" t="t">Product</span> : <span data-unresolved-link="" t="t">ClassTag</span>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">construct</span>: <span data-unresolved-link="" t="t">P0</span> <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">T</span>, <span t="k"></span><span data-unresolved-link="" t="n">fields</span>: <span data-unresolved-link="" t="t">Seq</span>[<span data-unresolved-link="" t="t">String</span>] = ...): <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">T</span>]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Method to return a Loggable[T] where T is a 1-ary Product and which is based on a function to convert a P0 into a T.</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Method to return a Loggable[T] where T is a 1-ary Product and which is based on a function to convert a P0 into a T.</p>
+              <p>NOTE: be careful using this particular method it only applies where T is a 1-tuple (e.g. a case class with one field -- not common). It probably shouldn't ever be used in practice. It can cause strange initialization errors!</p>
+             </div>
+             <h2 class="h200">Type parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">P0</dt>
+              <dd class="body-medium">
+               <p>the type of the (single) field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">T</dt>
+              <dd class="body-medium">
+               <p>the underlying type of the first parameter of the input to the render method.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Value parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">construct</dt>
+              <dd class="body-medium">
+               <p>a function P0 =&gt; T, usually the apply method of a case class. The sole purpose of this function is for type inference--it is never actually invoked.</p>
+              </dd>
+              <dt class="body-small">fields</dt>
+              <dd class="body-medium">
+               <p>(optional parameter) an explicit list of one field name.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>a Loggable[T].</p>
+              </dd>
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <a href="Loggables.html#loggable1-af">Loggables</a>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="loggable2-312" data-f-inherited="Loggables">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#loggable2-312" t="n" class="documentableName ">loggable2</a>[<span t="k"></span><span data-unresolved-link="" t="t">P0</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P1</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">T</span><span t="k"> &lt;: </span><span data-unresolved-link="" t="t">Product</span> : <span data-unresolved-link="" t="t">ClassTag</span>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">construct</span>: (<span data-unresolved-link="" t="t">P0</span>, <span data-unresolved-link="" t="t">P1</span>) <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">T</span>, <span t="k"></span><span data-unresolved-link="" t="n">fields</span>: <span data-unresolved-link="" t="t">Seq</span>[<span data-unresolved-link="" t="t">String</span>] = ...): <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">T</span>]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Method to return a Loggable[T] where T is a 2-ary Product and which is based on a function to convert a (P0, P1) into a T.</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Method to return a Loggable[T] where T is a 2-ary Product and which is based on a function to convert a (P0, P1) into a T.</p>
+             </div>
+             <h2 class="h200">Type parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">P0</dt>
+              <dd class="body-medium">
+               <p>the type of the first field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P1</dt>
+              <dd class="body-medium">
+               <p>the type of the second field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">T</dt>
+              <dd class="body-medium">
+               <p>the underlying type of the first parameter of the input to the render method.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Value parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">construct</dt>
+              <dd class="body-medium">
+               <p>a function (P0, P1) =&gt; T, usually the apply method of a case class. The sole purpose of this function is for type inference--it is never actually invoked.</p>
+              </dd>
+              <dt class="body-small">fields</dt>
+              <dd class="body-medium">
+               <p>(optional parameter) an explicit list of 2 field names.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>a Loggable[T].</p>
+              </dd>
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <a href="Loggables.html#loggable2-312">Loggables</a>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="loggable3-fffff0cf" data-f-inherited="Loggables">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#loggable3-fffff0cf" t="n" class="documentableName ">loggable3</a>[<span t="k"></span><span data-unresolved-link="" t="t">P0</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P1</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P2</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">T</span><span t="k"> &lt;: </span><span data-unresolved-link="" t="t">Product</span> : <span data-unresolved-link="" t="t">ClassTag</span>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">construct</span>: (<span data-unresolved-link="" t="t">P0</span>, <span data-unresolved-link="" t="t">P1</span>, <span data-unresolved-link="" t="t">P2</span>) <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">T</span>, <span t="k"></span><span data-unresolved-link="" t="n">fields</span>: <span data-unresolved-link="" t="t">Seq</span>[<span data-unresolved-link="" t="t">String</span>] = ...): <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">T</span>]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Method to return a Loggable[T] where T is a 3-ary Product and which is based on a function to convert a (P0, P1, P2) into a T.</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Method to return a Loggable[T] where T is a 3-ary Product and which is based on a function to convert a (P0, P1, P2) into a T.</p>
+             </div>
+             <h2 class="h200">Type parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">P0</dt>
+              <dd class="body-medium">
+               <p>the type of the first field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P1</dt>
+              <dd class="body-medium">
+               <p>the type of the second field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P2</dt>
+              <dd class="body-medium">
+               <p>the type of the third field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">T</dt>
+              <dd class="body-medium">
+               <p>the underlying type of the first parameter of the input to the render method.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Value parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">construct</dt>
+              <dd class="body-medium">
+               <p>a function (P0, P1, P2) =&gt; T, usually the apply method of a case class. The sole purpose of this function is for type inference--it is never actually invoked.</p>
+              </dd>
+              <dt class="body-small">fields</dt>
+              <dd class="body-medium">
+               <p>(optional parameter) an explicit list of 3 field names.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>a Loggable[T].</p>
+              </dd>
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <a href="Loggables.html#loggable3-fffff0cf">Loggables</a>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="loggable4-fffffef2" data-f-inherited="Loggables">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#loggable4-fffffef2" t="n" class="documentableName ">loggable4</a>[<span t="k"></span><span data-unresolved-link="" t="t">P0</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P1</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P2</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P3</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">T</span><span t="k"> &lt;: </span><span data-unresolved-link="" t="t">Product</span> : <span data-unresolved-link="" t="t">ClassTag</span>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">construct</span>: (<span data-unresolved-link="" t="t">P0</span>, <span data-unresolved-link="" t="t">P1</span>, <span data-unresolved-link="" t="t">P2</span>, <span data-unresolved-link="" t="t">P3</span>) <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">T</span>, <span t="k"></span><span data-unresolved-link="" t="n">fields</span>: <span data-unresolved-link="" t="t">Seq</span>[<span data-unresolved-link="" t="t">String</span>] = ...): <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">T</span>]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Method to return a Loggable[T] where T is a 4-ary Product and which is based on a function to convert a (P0, P1, P2, P3) into a T.</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Method to return a Loggable[T] where T is a 4-ary Product and which is based on a function to convert a (P0, P1, P2, P3) into a T.</p>
+             </div>
+             <h2 class="h200">Type parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">P0</dt>
+              <dd class="body-medium">
+               <p>the type of the first field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P1</dt>
+              <dd class="body-medium">
+               <p>the type of the second field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P2</dt>
+              <dd class="body-medium">
+               <p>the type of the third field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P3</dt>
+              <dd class="body-medium">
+               <p>the type of the fourth field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">T</dt>
+              <dd class="body-medium">
+               <p>the underlying type of the first parameter of the input to the render method.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Value parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">construct</dt>
+              <dd class="body-medium">
+               <p>a function (P0, P1, P2, P3) =&gt; T, usually the apply method of a case class. The sole purpose of this function is for type inference--it is never actually invoked.</p>
+              </dd>
+              <dt class="body-small">fields</dt>
+              <dd class="body-medium">
+               <p>(optional parameter) an explicit list of 4 field names.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>a Loggable[T].</p>
+              </dd>
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <a href="Loggables.html#loggable4-fffffef2">Loggables</a>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="loggable5-8ef" data-f-inherited="Loggables">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#loggable5-8ef" t="n" class="documentableName ">loggable5</a>[<span t="k"></span><span data-unresolved-link="" t="t">P0</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P1</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P2</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P3</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P4</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">T</span><span t="k"> &lt;: </span><span data-unresolved-link="" t="t">Product</span> : <span data-unresolved-link="" t="t">ClassTag</span>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">construct</span>: (<span data-unresolved-link="" t="t">P0</span>, <span data-unresolved-link="" t="t">P1</span>, <span data-unresolved-link="" t="t">P2</span>, <span data-unresolved-link="" t="t">P3</span>, <span data-unresolved-link="" t="t">P4</span>) <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">T</span>, <span t="k"></span><span data-unresolved-link="" t="n">fields</span>: <span data-unresolved-link="" t="t">Seq</span>[<span data-unresolved-link="" t="t">String</span>] = ...): <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">T</span>]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Method to return a Loggable[T] where T is a 5-ary Product and which is based on a function to convert a (P0, P1, P2, P3, P4) into a T.</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Method to return a Loggable[T] where T is a 5-ary Product and which is based on a function to convert a (P0, P1, P2, P3, P4) into a T.</p>
+             </div>
+             <h2 class="h200">Type parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">P0</dt>
+              <dd class="body-medium">
+               <p>the type of the first field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P1</dt>
+              <dd class="body-medium">
+               <p>the type of the second field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P2</dt>
+              <dd class="body-medium">
+               <p>the type of the third field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P3</dt>
+              <dd class="body-medium">
+               <p>the type of the fourth field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P4</dt>
+              <dd class="body-medium">
+               <p>the type of the fifth field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">T</dt>
+              <dd class="body-medium">
+               <p>the underlying type of the first parameter of the input to the render method.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Value parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">construct</dt>
+              <dd class="body-medium">
+               <p>a function (P0, P1, P2, P3, P4) =&gt; T, usually the apply method of a case class. The sole purpose of this function is for type inference--it is never actually invoked.</p>
+              </dd>
+              <dt class="body-small">fields</dt>
+              <dd class="body-medium">
+               <p>(optional parameter) an explicit list of 5 field names.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>a Loggable[T].</p>
+              </dd>
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <a href="Loggables.html#loggable5-8ef">Loggables</a>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="loggable6-fffff2d2" data-f-inherited="Loggables">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#loggable6-fffff2d2" t="n" class="documentableName ">loggable6</a>[<span t="k"></span><span data-unresolved-link="" t="t">P0</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P1</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P2</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P3</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P4</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P5</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">T</span><span t="k"> &lt;: </span><span data-unresolved-link="" t="t">Product</span> : <span data-unresolved-link="" t="t">ClassTag</span>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">construct</span>: (<span data-unresolved-link="" t="t">P0</span>, <span data-unresolved-link="" t="t">P1</span>, <span data-unresolved-link="" t="t">P2</span>, <span data-unresolved-link="" t="t">P3</span>, <span data-unresolved-link="" t="t">P4</span>, <span data-unresolved-link="" t="t">P5</span>) <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">T</span>, <span t="k"></span><span data-unresolved-link="" t="n">fields</span>: <span data-unresolved-link="" t="t">Seq</span>[<span data-unresolved-link="" t="t">String</span>] = ...): <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">T</span>]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Method to return a Loggable[T] where T is a 6-ary Product and which is based on a function to convert a (P0, P1, P2, P3, P4, P5) into a T.</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Method to return a Loggable[T] where T is a 6-ary Product and which is based on a function to convert a (P0, P1, P2, P3, P4, P5) into a T.</p>
+             </div>
+             <h2 class="h200">Type parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">P0</dt>
+              <dd class="body-medium">
+               <p>the type of the first field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P1</dt>
+              <dd class="body-medium">
+               <p>the type of the second field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P2</dt>
+              <dd class="body-medium">
+               <p>the type of the third field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P3</dt>
+              <dd class="body-medium">
+               <p>the type of the fourth field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P4</dt>
+              <dd class="body-medium">
+               <p>the type of the fifth field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P5</dt>
+              <dd class="body-medium">
+               <p>the type of the sixth field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">T</dt>
+              <dd class="body-medium">
+               <p>the underlying type of the first parameter of the input to the render method.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Value parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">construct</dt>
+              <dd class="body-medium">
+               <p>a function (P0, P1, P2, P3, P4, P5) =&gt; T, usually the apply method of a case class. The sole purpose of this function is for type inference--it is never actually invoked.</p>
+              </dd>
+              <dt class="body-small">fields</dt>
+              <dd class="body-medium">
+               <p>(optional parameter) an explicit list of 6 field names.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>a Loggable[T].</p>
+              </dd>
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <a href="Loggables.html#loggable6-fffff2d2">Loggables</a>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="loggable7-90f" data-f-inherited="Loggables">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#loggable7-90f" t="n" class="documentableName ">loggable7</a>[<span t="k"></span><span data-unresolved-link="" t="t">P0</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P1</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P2</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P3</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P4</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P5</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P6</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">T</span><span t="k"> &lt;: </span><span data-unresolved-link="" t="t">Product</span> : <span data-unresolved-link="" t="t">ClassTag</span>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">construct</span>: (<span data-unresolved-link="" t="t">P0</span>, <span data-unresolved-link="" t="t">P1</span>, <span data-unresolved-link="" t="t">P2</span>, <span data-unresolved-link="" t="t">P3</span>, <span data-unresolved-link="" t="t">P4</span>, <span data-unresolved-link="" t="t">P5</span>, <span data-unresolved-link="" t="t">P6</span>) <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">T</span>, <span t="k"></span><span data-unresolved-link="" t="n">fields</span>: <span data-unresolved-link="" t="t">Seq</span>[<span data-unresolved-link="" t="t">String</span>] = ...): <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">T</span>]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Method to return a Loggable[T] where T is a 7-ary Product and which is based on a function to convert a (P0, P1, P2, P3, P4, P5, P6) into a T.</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Method to return a Loggable[T] where T is a 7-ary Product and which is based on a function to convert a (P0, P1, P2, P3, P4, P5, P6) into a T.</p>
+             </div>
+             <h2 class="h200">Type parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">P0</dt>
+              <dd class="body-medium">
+               <p>the type of the first field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P1</dt>
+              <dd class="body-medium">
+               <p>the type of the second field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P2</dt>
+              <dd class="body-medium">
+               <p>the type of the third field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P3</dt>
+              <dd class="body-medium">
+               <p>the type of the fourth field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P4</dt>
+              <dd class="body-medium">
+               <p>the type of the fifth field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P5</dt>
+              <dd class="body-medium">
+               <p>the type of the sixth field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P6</dt>
+              <dd class="body-medium">
+               <p>the type of the seventh field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">T</dt>
+              <dd class="body-medium">
+               <p>the underlying type of the first parameter of the input to the render method.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Value parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">construct</dt>
+              <dd class="body-medium">
+               <p>a function (P0, P1, P2, P3, P4, P5, P6) =&gt; T, usually the apply method of a case class. The sole purpose of this function is for type inference--it is never actually invoked.</p>
+              </dd>
+              <dt class="body-small">fields</dt>
+              <dd class="body-medium">
+               <p>(optional parameter) an explicit list of 7 field names.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>a Loggable[T].</p>
+              </dd>
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <a href="Loggables.html#loggable7-90f">Loggables</a>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="loggable8-eb2" data-f-inherited="Loggables">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#loggable8-eb2" t="n" class="documentableName ">loggable8</a>[<span t="k"></span><span data-unresolved-link="" t="t">P0</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P1</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P2</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P3</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P4</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P5</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P6</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P7</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">T</span><span t="k"> &lt;: </span><span data-unresolved-link="" t="t">Product</span> : <span data-unresolved-link="" t="t">ClassTag</span>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">construct</span>: (<span data-unresolved-link="" t="t">P0</span>, <span data-unresolved-link="" t="t">P1</span>, <span data-unresolved-link="" t="t">P2</span>, <span data-unresolved-link="" t="t">P3</span>, <span data-unresolved-link="" t="t">P4</span>, <span data-unresolved-link="" t="t">P5</span>, <span data-unresolved-link="" t="t">P6</span>, <span data-unresolved-link="" t="t">P7</span>) <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">T</span>, <span t="k"></span><span data-unresolved-link="" t="n">fields</span>: <span data-unresolved-link="" t="t">Seq</span>[<span data-unresolved-link="" t="t">String</span>] = ...): <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">T</span>]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Method to return a Loggable[T] where T is a 8-ary Product and which is based on a function to convert a (P0, P1, P2, P3, P4, P5, P6, P7) into a T.</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Method to return a Loggable[T] where T is a 8-ary Product and which is based on a function to convert a (P0, P1, P2, P3, P4, P5, P6, P7) into a T.</p>
+             </div>
+             <h2 class="h200">Type parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">P0</dt>
+              <dd class="body-medium">
+               <p>the type of the first field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P1</dt>
+              <dd class="body-medium">
+               <p>the type of the second field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P2</dt>
+              <dd class="body-medium">
+               <p>the type of the third field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P3</dt>
+              <dd class="body-medium">
+               <p>the type of the fourth field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P4</dt>
+              <dd class="body-medium">
+               <p>the type of the fifth field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P5</dt>
+              <dd class="body-medium">
+               <p>the type of the sixth field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P6</dt>
+              <dd class="body-medium">
+               <p>the type of the seventh field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P7</dt>
+              <dd class="body-medium">
+               <p>the type of the eighth field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">T</dt>
+              <dd class="body-medium">
+               <p>the underlying type of the first parameter of the input to the render method.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Value parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">construct</dt>
+              <dd class="body-medium">
+               <p>a function (P0, P1, P2, P3, P4, P5, P6, P7) =&gt; T, usually the apply method of a case class. The sole purpose of this function is for type inference--it is never actually invoked.</p>
+              </dd>
+              <dt class="body-small">fields</dt>
+              <dd class="body-medium">
+               <p>(optional parameter) an explicit list of 8 field names.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>a Loggable[T].</p>
+              </dd>
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <a href="Loggables.html#loggable8-eb2">Loggables</a>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="loggable9-fffff76a" data-f-inherited="Loggables">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#loggable9-fffff76a" t="n" class="documentableName ">loggable9</a>[<span t="k"></span><span data-unresolved-link="" t="t">P0</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P1</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P2</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P3</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P4</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P5</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P6</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P7</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">P8</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">T</span><span t="k"> &lt;: </span><span data-unresolved-link="" t="t">Product</span> : <span data-unresolved-link="" t="t">ClassTag</span>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">construct</span>: (<span data-unresolved-link="" t="t">P0</span>, <span data-unresolved-link="" t="t">P1</span>, <span data-unresolved-link="" t="t">P2</span>, <span data-unresolved-link="" t="t">P3</span>, <span data-unresolved-link="" t="t">P4</span>, <span data-unresolved-link="" t="t">P5</span>, <span data-unresolved-link="" t="t">P6</span>, <span data-unresolved-link="" t="t">P7</span>, <span data-unresolved-link="" t="t">P8</span>) <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">T</span>, <span t="k"></span><span data-unresolved-link="" t="n">fields</span>: <span data-unresolved-link="" t="t">Seq</span>[<span data-unresolved-link="" t="t">String</span>] = ...): <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">T</span>]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Method to return a Loggable[T] where T is a 9-ary Product and which is based on a function to convert a (P0, P1, P2, P3, P4, P5, P6, P7, P8) into a T.</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Method to return a Loggable[T] where T is a 9-ary Product and which is based on a function to convert a (P0, P1, P2, P3, P4, P5, P6, P7, P8) into a T.</p>
+             </div>
+             <h2 class="h200">Type parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">P0</dt>
+              <dd class="body-medium">
+               <p>the type of the first field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P1</dt>
+              <dd class="body-medium">
+               <p>the type of the second field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P2</dt>
+              <dd class="body-medium">
+               <p>the type of the third field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P3</dt>
+              <dd class="body-medium">
+               <p>the type of the fourth field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P4</dt>
+              <dd class="body-medium">
+               <p>the type of the fifth field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P5</dt>
+              <dd class="body-medium">
+               <p>the type of the sixth field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P6</dt>
+              <dd class="body-medium">
+               <p>the type of the seventh field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P7</dt>
+              <dd class="body-medium">
+               <p>the type of the eighth field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">P8</dt>
+              <dd class="body-medium">
+               <p>the type of the ninth field of the Product type T.</p>
+              </dd>
+              <dt class="body-small">T</dt>
+              <dd class="body-medium">
+               <p>the underlying type of the first parameter of the input to the render method.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Value parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">construct</dt>
+              <dd class="body-medium">
+               <p>a function (P0, P1, P2, P3, P4, P5, P6, P7, P8) =&gt; T, usually the apply method of a case class. The sole purpose of this function is for type inference--it is never actually invoked.</p>
+              </dd>
+              <dt class="body-small">fields</dt>
+              <dd class="body-medium">
+               <p>(optional parameter) an explicit list of 9 field names.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>a Loggable[T].</p>
+              </dd>
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <a href="Loggables.html#loggable9-fffff76a">Loggables</a>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="mapLoggable-fb7" data-f-inherited="Loggables">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#mapLoggable-fb7" t="n" class="documentableName ">mapLoggable</a>[<span t="k"></span><span data-unresolved-link="" t="t">K</span>, <span t="k"></span><span data-unresolved-link="" t="t">T</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">bookends</span>: <span data-unresolved-link="" t="t">String</span> = ...): <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">Map</span>[<span data-unresolved-link="" t="t">K</span>, <span data-unresolved-link="" t="t">T</span>]]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Method to return a Loggable[ Map[K, T] ].</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Method to return a Loggable[ Map[K, T] ].</p>
+              <p>NOTE: unless the Map (passed as the bound variable) is a SeqMap, the order of the key-value pairs is undefined.</p>
+             </div>
+             <h2 class="h200">Type parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">K</dt>
+              <dd class="body-medium">
+               <p>the type of the keys.</p>
+              </dd>
+              <dt class="body-small">T</dt>
+              <dd class="body-medium">
+               <p>the underlying type of the values.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Value parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">bookends</dt>
+              <dd class="body-medium">
+               <p>(optional) a String of length two specifying the first and last characters of the resulting String for a given Map. Defaults to "{}".</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>a Loggable[ Map[K, T] ]</p>
+              </dd>
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <a href="Loggables.html#mapLoggable-fb7">Loggables</a>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="optionLoggable-ed1" data-f-inherited="Loggables">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#optionLoggable-ed1" t="n" class="documentableName ">optionLoggable</a>[<span t="k"></span><span data-unresolved-link="" t="t">T</span> : <a href="Loggable.html" t="t">Loggable</a>]: <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">Option</span>[<span data-unresolved-link="" t="t">T</span>]]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Method to return a Loggable[ Option[T] ].</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Method to return a Loggable[ Option[T] ].</p>
+             </div>
+             <h2 class="h200">Type parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">T</dt>
+              <dd class="body-medium">
+               <p>the underlying type of the first parameter of the input to the render method.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>a Loggable[ Option[T] ].</p>
+              </dd>
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <a href="Loggables.html#optionLoggable-ed1">Loggables</a>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="productElementNames-0" data-f-inherited="Product">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#productElementNames-0" t="n" class="documentableName ">productElementNames</a>: <span data-unresolved-link="" t="t">Iterator</span>[<span data-unresolved-link="" t="t">String</span>]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>An iterator over the names of all the elements of this product.</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>An iterator over the names of all the elements of this product.</p>
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <span data-unresolved-link="">Product</span>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="productIterator-0" data-f-inherited="Product">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#productIterator-0" t="n" class="documentableName ">productIterator</a>: <span data-unresolved-link="" t="t">Iterator</span>[<span data-unresolved-link="" t="t">Any</span>]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>An iterator over all the elements of this product.</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>An iterator over all the elements of this product.</p>
+             </div>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>in the default implementation, an <code>Iterator[Any]</code></p>
+              </dd>
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <span data-unresolved-link="">Product</span>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="triedIterableLoggable-fffff53f" data-f-inherited="Loggables">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#triedIterableLoggable-fffff53f" t="n" class="documentableName ">triedIterableLoggable</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span>, <span t="k"></span><span data-unresolved-link="" t="t">Y</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">f</span>: <span data-unresolved-link="" t="t">X</span> <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">Try</span>[<span data-unresolved-link="" t="t">Y</span>]): <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">Iterable</span>[<span data-unresolved-link="" t="t">X</span>]]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>TESTME</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>TESTME</p>
+              <p>Method which maps an Iterable of X with a function to an Iterable of Try[Y]. The elements of the result are then logged utilizing the !! method. NOTE that the returned value will only include the successful elements.</p>
+             </div>
+             <h2 class="h200">Type parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">X</dt>
+              <dd class="body-medium">
+               <p>the underlying type of xs.</p>
+              </dd>
+              <dt class="body-small">Y</dt>
+              <dd class="body-medium">
+               <p>the underlying type of the intermediate type (must be Loggable).</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Value parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">f</dt>
+              <dd class="body-medium">
+               <p>a function X =&gt; Try[Y].</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>an Iterable of Try[Y] such that all the failures have been logged but not included in the result.</p>
+              </dd>
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <a href="Loggables.html#triedIterableLoggable-fffff53f">Loggables</a>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="tryLoggable-ed1" data-f-inherited="Loggables">
+         <div class="documentableElement-expander">
+          <button class="icon-button ar show-content"></button>
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#tryLoggable-ed1" t="n" class="documentableName ">tryLoggable</a>[<span t="k"></span><span data-unresolved-link="" t="t">T</span> : <a href="Loggable.html" t="t">Loggable</a>]: <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">Try</span>[<span data-unresolved-link="" t="t">T</span>]]
+           </div>
+          </div>
+         </div>
+         <div class="docs">
+          <span class="modifiers"></span>
+          <div>
+           <div class="originInfo"></div>
+           <div class="memberDocumentation">
+            <div class="documentableBrief doc">
+             <p>Method to return a Loggable[ Try[T] ].</p>
+            </div>
+            <div class="cover">
+             <div class="doc">
+              <p>Method to return a Loggable[ Try[T] ].</p>
+             </div>
+             <h2 class="h200">Type parameters</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">T</dt>
+              <dd class="body-medium">
+               <p>the underlying type of the first parameter of the input to the render method.</p>
+              </dd>
+             </dl>
+             <h2 class="h200">Attributes</h2>
+             <dl class="attributes attributes-small">
+              <dt class="body-small">Returns</dt>
+              <dd class="body-medium">
+               <p>a Loggable[ Try[T] ].</p>
+              </dd>
+              <dt class="body-small">Inherited from:</dt>
+              <dd class="body-medium">
+               <a href="Loggables.html#tryLoggable-ed1">Loggables</a>
+              </dd>
+             </dl>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+      </section>
+     </div>
+    </section>
+    <section id="Extensions">
+     <div data-togglable="Extensions" class="tab expand">
+      <div class="member-group-header">
+       <h3 data-togglable="Extensions" class="h400">Extensions</h3>
+      </div>
+      <section id="Extensions">
+       <div class="documentableList expand">
+        <div class="documentableList-expander">
+         <button class="icon-button show-content expand"></button>
+         <h4 class="groupHeader h200">Extensions</h4>
+        </div>
+        <div>
+         <span class="groupHeader"><span t="k">extension </span>(<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">message</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">String</span>)</span>
+         <div class="documentableElement" id="!!-abb">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#!!-abb" t="n" class="documentableName ">!!</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">x</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">X</span>): <span data-unresolved-link="" t="t">X</span>
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate an INFO-level log entry for a (Loggable) value of X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate an INFO-level log entry for a (Loggable) value of X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the type of x, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">x</dt>
+               <dd class="body-medium">
+                <p>the value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="!!-912">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#!!-912" t="n" class="documentableName ">!!</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">xs</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">Iterable</span>[<span data-unresolved-link="" t="t">X</span>]): <span data-unresolved-link="" t="t">Iterable</span>[<span data-unresolved-link="" t="t">X</span>]
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate an info log entry for an Iterable of a (Loggable) X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate an info log entry for an Iterable of a (Loggable) X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the underlying type of xs, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">xs</dt>
+               <dd class="body-medium">
+                <p>the Iterable value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="!!-d0e">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#!!-d0e" t="n" class="documentableName ">!!</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">xs</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">Iterator</span>[<span data-unresolved-link="" t="t">X</span>]): <span data-unresolved-link="" t="t">Iterator</span>[<span data-unresolved-link="" t="t">X</span>]
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate an info log entry for an Iterator of a (Loggable) X. Logging is performed as a side effect. Rendering of the x value is via the logIterable method.</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate an info log entry for an Iterator of a (Loggable) X. Logging is performed as a side effect. Rendering of the x value is via the logIterable method.</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the underlying type of xs, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">xs</dt>
+               <dd class="body-medium">
+                <p>the Iterator value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="!!-b65">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#!!-b65" t="n" class="documentableName ">!!</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">xo</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">Option</span>[<span data-unresolved-link="" t="t">X</span>]): <span data-unresolved-link="" t="t">Option</span>[<span data-unresolved-link="" t="t">X</span>]
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate an info log entry for an Option of a (Loggable) X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate an info log entry for an Option of a (Loggable) X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the underlying type of x, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">xo</dt>
+               <dd class="body-medium">
+                <p>the optional value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="!!-fffff0b6">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#!!-fffff0b6" t="n" class="documentableName ">!!</a>[<span t="k"></span><span data-unresolved-link="" t="t">K</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">V</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">kVm</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">Map</span>[<span data-unresolved-link="" t="t">K</span>, <span data-unresolved-link="" t="t">V</span>]): <span data-unresolved-link="" t="t">Map</span>[<span data-unresolved-link="" t="t">K</span>, <span data-unresolved-link="" t="t">V</span>]
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate an info log entry for a Map[K, V]. Logging is performed as a side effect.</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate an info log entry for a Map[K, V]. Logging is performed as a side effect.</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">K</dt>
+               <dd class="body-medium">
+                <p>the type of the map keys, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+               <dt class="body-small">V</dt>
+               <dd class="body-medium">
+                <p>the type of the map values, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">kVm</dt>
+               <dd class="body-medium">
+                <p>the Map to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="!!-774">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#!!-774" t="n" class="documentableName ">!!</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">xf</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">Future</span>[<span data-unresolved-link="" t="t">X</span>])(<span t="k">using </span><span t="k"></span><span data-unresolved-link="" t="n">evidence$1</span>: <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">X</span>], <span t="k"></span><span data-unresolved-link="" t="n">ec</span>: <span data-unresolved-link="" t="t">ExecutionContext</span>): <span data-unresolved-link="" t="t">Future</span>[<span data-unresolved-link="" t="t">X</span>]
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate an info log entry for a Future[X]. Logging is performed as a side effect.</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate an info log entry for a Future[X]. Logging is performed as a side effect.</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the underlying type of the given input.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">xf</dt>
+               <dd class="body-medium">
+                <p>the future value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of xf.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="!!!-8f">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#!!!-8f" t="n" class="documentableName ">!!!</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">xy</span>: <span data-unresolved-link="" t="t">Try</span>[<span data-unresolved-link="" t="t">X</span>]): <span data-unresolved-link="" t="t">Try</span>[<span data-unresolved-link="" t="t">X</span>]
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to log the value xy (a Try[X]) but which logs any failures using the errorFunction rather than the loggerFunction. NOTE that the returned value, if xy is a Failure, is not exactly the same as xy.</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to log the value xy (a Try[X]) but which logs any failures using the errorFunction rather than the loggerFunction. NOTE that the returned value, if xy is a Failure, is not exactly the same as xy.</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the underlying type of xy.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">xy</dt>
+               <dd class="body-medium">
+                <p>an instance of Try[X].</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>if xy is successful, then xy, otherwise if Failure(e) then Failure(LoggedException(e)).</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="!?-abb">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#!?-abb" t="n" class="documentableName ">!?</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">x</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">X</span>): <span data-unresolved-link="" t="t">X</span>
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate a DEBUG-level log entry for a (Loggable) value of X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate a DEBUG-level log entry for a (Loggable) value of X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the type of x, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">x</dt>
+               <dd class="body-medium">
+                <p>the value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="!?-912">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#!?-912" t="n" class="documentableName ">!?</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">xs</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">Iterable</span>[<span data-unresolved-link="" t="t">X</span>]): <span data-unresolved-link="" t="t">Iterable</span>[<span data-unresolved-link="" t="t">X</span>]
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate a debug log entry for an Iterable of a (Loggable) X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate a debug log entry for an Iterable of a (Loggable) X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the underlying type of x, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">xs</dt>
+               <dd class="body-medium">
+                <p>the Iterable value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="!?-b65">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#!?-b65" t="n" class="documentableName ">!?</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">xo</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">Option</span>[<span data-unresolved-link="" t="t">X</span>]): <span data-unresolved-link="" t="t">Option</span>[<span data-unresolved-link="" t="t">X</span>]
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate a debug log entry for an Option of a (Loggable) X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate a debug log entry for an Option of a (Loggable) X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the underlying type of x, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">xo</dt>
+               <dd class="body-medium">
+                <p>the optional value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="!?-fffff0b6">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#!?-fffff0b6" t="n" class="documentableName ">!?</a>[<span t="k"></span><span data-unresolved-link="" t="t">K</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">V</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">kVm</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">Map</span>[<span data-unresolved-link="" t="t">K</span>, <span data-unresolved-link="" t="t">V</span>]): <span data-unresolved-link="" t="t">Map</span>[<span data-unresolved-link="" t="t">K</span>, <span data-unresolved-link="" t="t">V</span>]
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate a trace log entry for a Map[K, V]. Logging is performed as a side effect.</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate a trace log entry for a Map[K, V]. Logging is performed as a side effect.</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">K</dt>
+               <dd class="body-medium">
+                <p>the type of the map keys, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+               <dt class="body-small">V</dt>
+               <dd class="body-medium">
+                <p>the type of the map values, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">kVm</dt>
+               <dd class="body-medium">
+                <p>the Map to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="!?-774">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#!?-774" t="n" class="documentableName ">!?</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">xf</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">Future</span>[<span data-unresolved-link="" t="t">X</span>])(<span t="k">using </span><span t="k"></span><span data-unresolved-link="" t="n">evidence$1</span>: <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">X</span>], <span t="k"></span><span data-unresolved-link="" t="n">ec</span>: <span data-unresolved-link="" t="t">ExecutionContext</span>): <span data-unresolved-link="" t="t">Future</span>[<span data-unresolved-link="" t="t">X</span>]
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate an debug log entry for a Future[X]. Logging is performed as a side effect.</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate an debug log entry for a Future[X]. Logging is performed as a side effect.</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the underlying type of the given input.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">xf</dt>
+               <dd class="body-medium">
+                <p>the future value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of xf.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="!??-abb">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#!??-abb" t="n" class="documentableName ">!??</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">x</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">X</span>): <span data-unresolved-link="" t="t">X</span>
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate a TRACE-level log entry for a (Loggable) value of X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate a TRACE-level log entry for a (Loggable) value of X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the type of x, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">x</dt>
+               <dd class="body-medium">
+                <p>the value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="!??-912">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#!??-912" t="n" class="documentableName ">!??</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">xs</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">Iterable</span>[<span data-unresolved-link="" t="t">X</span>]): <span data-unresolved-link="" t="t">Iterable</span>[<span data-unresolved-link="" t="t">X</span>]
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate a trace log entry for an Iterable of a (Loggable) X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate a trace log entry for an Iterable of a (Loggable) X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the underlying type of x, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">xs</dt>
+               <dd class="body-medium">
+                <p>the Iterable value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="!??-b65">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#!??-b65" t="n" class="documentableName ">!??</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">xo</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">Option</span>[<span data-unresolved-link="" t="t">X</span>]): <span data-unresolved-link="" t="t">Option</span>[<span data-unresolved-link="" t="t">X</span>]
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate a trace log entry for an Option of a (Loggable) X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate a trace log entry for an Option of a (Loggable) X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the underlying type of x, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">xo</dt>
+               <dd class="body-medium">
+                <p>the optional value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="!??-fffff0b6">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#!??-fffff0b6" t="n" class="documentableName ">!??</a>[<span t="k"></span><span data-unresolved-link="" t="t">K</span> : <a href="Loggable.html" t="t">Loggable</a>, <span t="k"></span><span data-unresolved-link="" t="t">V</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">kVm</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">Map</span>[<span data-unresolved-link="" t="t">K</span>, <span data-unresolved-link="" t="t">V</span>]): <span data-unresolved-link="" t="t">Map</span>[<span data-unresolved-link="" t="t">K</span>, <span data-unresolved-link="" t="t">V</span>]
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate a debug log entry for a Map[K, V]. Logging is performed as a side effect.</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate a debug log entry for a Map[K, V]. Logging is performed as a side effect.</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">K</dt>
+               <dd class="body-medium">
+                <p>the type of the map keys, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+               <dt class="body-small">V</dt>
+               <dd class="body-medium">
+                <p>the type of the map values, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">kVm</dt>
+               <dd class="body-medium">
+                <p>the Map to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="!??-774">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#!??-774" t="n" class="documentableName ">!??</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">xf</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">Future</span>[<span data-unresolved-link="" t="t">X</span>])(<span t="k">using </span><span t="k"></span><span data-unresolved-link="" t="n">evidence$1</span>: <a href="Loggable.html" t="t">Loggable</a>[<span data-unresolved-link="" t="t">X</span>], <span t="k"></span><span data-unresolved-link="" t="n">ec</span>: <span data-unresolved-link="" t="t">ExecutionContext</span>): <span data-unresolved-link="" t="t">Future</span>[<span data-unresolved-link="" t="t">X</span>]
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate a trace log entry for a Future[X]. Logging is performed as a side effect.</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate a trace log entry for a Future[X]. Logging is performed as a side effect.</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the underlying type of the given input.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">xf</dt>
+               <dd class="body-medium">
+                <p>the future value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of xf.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="!|-fffffc62">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#!|-fffffc62" t="n" class="documentableName ">!|</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">x</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">X</span>): <span data-unresolved-link="" t="t">X</span>
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate a log entry for a type which is not itself Loggable. Logging is performed as a side effect. Rendering of the x value is via the toString method.</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate a log entry for a type which is not itself Loggable. Logging is performed as a side effect. Rendering of the x value is via the toString method.</p>
+               <p>This !| method will be deprecated soon as Loggable is now contravariant in T and there is an implicit def loggableAny[T] which is available.</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the type of x.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">x</dt>
+               <dd class="body-medium">
+                <p>the value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="debug-abb">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#debug-abb" t="n" class="documentableName ">debug</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">x</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">X</span>): <span data-unresolved-link="" t="t">X</span>
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Synonym for: def !?[X: Loggable](x: =&gt; X): X.</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Synonym for: def !?[X: Loggable](x: =&gt; X): X.</p>
+               <p>Method to generate a DEBUG-level log entry for a (Loggable) value of X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the type of x, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">x</dt>
+               <dd class="body-medium">
+                <p>the value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="error-fffff40d">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#error-fffff40d" t="n" class="documentableName ">error</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">x</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">X</span>)(<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">t</span>: <span data-unresolved-link="" t="t">Throwable</span> = ...): <span data-unresolved-link="" t="t">X</span>
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate an ERROR-level log entry for a (Loggable) value of X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate an ERROR-level log entry for a (Loggable) value of X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+               <p>NOTE: there is a null coded here for the default value of t. It's justified because it is simply following the Java calling convention.</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the type of x, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">t</dt>
+               <dd class="body-medium">
+                <p>a Throwable (defaults to null) -- but don't forget the empty parentheses in that case.</p>
+               </dd>
+               <dt class="body-small">x</dt>
+               <dd class="body-medium">
+                <p>the value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="info-abb">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#info-abb" t="n" class="documentableName ">info</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">x</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">X</span>): <span data-unresolved-link="" t="t">X</span>
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Synonym for: def !![X: Loggable](x: =&gt; X): X</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Synonym for: def !![X: Loggable](x: =&gt; X): X</p>
+               <p>Method to generate an INFO-level log entry for a (Loggable) value of X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the type of x, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">x</dt>
+               <dd class="body-medium">
+                <p>the value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="trace-abb">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#trace-abb" t="n" class="documentableName ">trace</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">x</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">X</span>): <span data-unresolved-link="" t="t">X</span>
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Synonym for: def !??[X: Loggable](x: =&gt; X): X</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Synonym for: def !??[X: Loggable](x: =&gt; X): X</p>
+               <p>Method to generate a TRACE-level log entry for a (Loggable) value of X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the type of x, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">x</dt>
+               <dd class="body-medium">
+                <p>the value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="warn-abb">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#warn-abb" t="n" class="documentableName ">warn</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span> : <a href="Loggable.html" t="t">Loggable</a>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">x</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">X</span>): <span data-unresolved-link="" t="t">X</span>
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to generate a WARN-level log entry for a (Loggable) value of X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to generate a WARN-level log entry for a (Loggable) value of X. Logging is performed as a side effect. Rendering of the x value is via the toLog method of the implicit Loggable[X].</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the type of x, which must provide implicit evidence of being Loggable.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">x</dt>
+               <dd class="body-medium">
+                <p>the value to be logged.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="documentableElement" id="|!-fffffc62">
+          <div class="documentableElement-expander">
+           <button class="icon-button ar show-content"></button>
+           <div class="header monospace mono-medium">
+            <div class="signature">
+             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="Flog.html#|!-fffffc62" t="n" class="documentableName ">|!</a>[<span t="k"></span><span data-unresolved-link="" t="t">X</span>](<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">x</span>: <span t="k">=&gt;</span> <span data-unresolved-link="" t="t">X</span>): <span data-unresolved-link="" t="t">X</span>
+            </div>
+           </div>
+          </div>
+          <div class="docs">
+           <span class="modifiers"></span>
+           <div>
+            <div class="originInfo"></div>
+            <div class="memberDocumentation">
+             <div class="documentableBrief doc">
+              <p>Method to simply return the value of x without any logging.</p>
+             </div>
+             <div class="cover">
+              <div class="doc">
+               <p>Method to simply return the value of x without any logging.</p>
+              </div>
+              <h2 class="h200">Type parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">X</dt>
+               <dd class="body-medium">
+                <p>the type of x.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Value parameters</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">x</dt>
+               <dd class="body-medium">
+                <p>the value.</p>
+               </dd>
+              </dl>
+              <h2 class="h200">Attributes</h2>
+              <dl class="attributes attributes-small">
+               <dt class="body-small">Returns</dt>
+               <dd class="body-medium">
+                <p>the value of x.</p>
+               </dd>
+              </dl>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+      </section>
+     </div>
+    </section>
+   </div>
+  </div>
+ </div>
+</section></div><div id="toc" class="body-small"><div id="toc-container"><span class="toc-title h200">In this article</span><nav class="toc-nav"><ul class="toc-list"><li><a href="#attributes">Value parameters</a></li><li><a href="#members-list">Members list</a><ul><li><a href="#Value-members">Value members</a><ul><li><a href="#Concrete-methods">Concrete methods</a></li><li><a href="#Inherited-methods">Inherited methods</a></li></ul></li><li><a href="#Extensions">Extensions</a><ul><li><a href="#Extensions">Extensions</a></li></ul></li></ul></li></ul></nav></div></div></div><div id="footer" class="body-small mobile-footer"><div class="left-container">Generated with</div><div class="right-container"><div class="text"></div></div><div class="text-mobile"></div></div></div></div></body></html>
