@@ -11,6 +11,12 @@
 # Flog
 This is a set of utilities for functional logging.
 
+```scala
+libraryDependencies += "com.phasmidsoftware" %% "flog" % "1.1.0"
+```
+
+Flog 1.1.0 and later need Scala 3.9 or later; for Scala 3.3 to 3.8, use 1.0.15.
+
 ## API Documentation
 
 Full Scaladoc is at <https://rchillyard.github.io/Flog/latest/api/>.
