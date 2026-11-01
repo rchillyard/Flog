@@ -1,4 +1,4 @@
-# Scala CircleCI 2.1 configuration file
+# CircleCI configuration for Flog (the standard Phasmid template)
 #
 # Check https://circleci.com/docs/configuration-reference/ for more details
 #
@@ -10,7 +10,7 @@ jobs:
       # cimg/openjdk ships Maven and Gradle but not sbt, so sbt is installed below
       - image: cimg/openjdk:21.0
 
-    working_directory: ~/Flog
+    working_directory: ~/repo
 
     environment:
       # Customize the JVM maximum heap limit
@@ -34,7 +34,9 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v2-dependencies-
 
-      - run: cat /dev/null | sbt Test/compile
+      - run:
+          name: Compile
+          command: cat /dev/null | sbt Test/compile
 
       - save_cache:
           paths:
@@ -43,8 +45,17 @@ jobs:
             - ~/.cache/coursier
           key: v2-dependencies-{{ checksum "build.sbt" }}-{{ checksum "project/build.properties" }}-{{ checksum "project/plugins.sbt" }}
 
-      # run tests!
-      - run: cat /dev/null | sbt test
+      - run:
+          name: Test
+          command: cat /dev/null | sbt test
+
+      # Generate Scaladoc (catches doc warnings, and the docs are published to GitHub Pages)
+      - run:
+          name: Doc
+          command: cat /dev/null | sbt doc
+
+      - store_test_results:
+          path: target/test-reports
 
 workflows:
   build:
