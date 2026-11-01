@@ -235,6 +235,8 @@ See also unit tests $bang$bang 1 and $bang$bang 1a for more detail.
   of the current scope.
   
 # Version
+1.1.0 Built with Scala 3.9.0 (the current LTS), so it needs Scala 3.9 or later (for Scala 3.3, use 1.0.15); sbt 1.12.13; Scaladoc on GitHub Pages.
+
 1.0.13 Added implicit Loggable instances for Map[K, V] and Option[Map[K, V]] to enable logging of maps and optional maps.
 
 1.0.12 Removed unnecessary logback files;
