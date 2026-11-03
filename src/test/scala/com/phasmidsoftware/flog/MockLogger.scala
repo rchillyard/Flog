@@ -6,6 +6,7 @@ package com.phasmidsoftware.flog
 
 import org.slf4j.{Logger, Marker}
 
+import scala.annotation.nowarn
 import scala.reflect.ClassTag
 
 /**
@@ -18,6 +19,8 @@ import scala.reflect.ClassTag
  * @param sb       a StringBuilder to which we append messages
  */
 //noinspection TypeAnnotation,NotImplementedCode
+// The mock implements every slf4j Logger method, most of which ignore their arguments.
+@nowarn("msg=unused explicit parameter")
 case class MockLogger(name: String, logLevel: String = "DEBUG", sb: StringBuilder = new StringBuilder()) extends org.slf4j.Logger {
 
   def clear(): Unit = {

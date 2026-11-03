@@ -6,6 +6,7 @@ package com.phasmidsoftware.flog
 
 import com.phasmidsoftware.flog.Loggables.fieldNames
 import scala.collection.immutable.LazyList.#::
+import scala.annotation.unused
 import scala.collection.{SeqMap, View}
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
@@ -52,7 +53,7 @@ trait Loggables {
     case Loggables.lazyNil => "<empty lazy list>"
     case ll@_ #:: _ =>
       if (ll.knownSize >= 0) iterableLoggable[T](bookends).toLog(ll.toList) else "<LazyList>"
-    case _: View[T] =>
+    case _: View[?] =>
       "<view>"
     case ts =>
       val tl = summon[Loggable[T]]
@@ -156,7 +157,7 @@ trait Loggables {
    * @tparam T  the underlying type of the first parameter of the input to the render method.
    * @return a Loggable[T].
    */
-  def loggable1[P0: Loggable, T <: Product : ClassTag](construct: P0 => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
+  def loggable1[P0: Loggable, T <: Product : ClassTag](@unused construct: P0 => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
     val Array(p0) = fieldNames(fields, "loggable1")
     t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(p0 -> valueToLog[P0, T](t, 0)))
   }
@@ -172,7 +173,7 @@ trait Loggables {
    * @tparam T  the underlying type of the first parameter of the input to the render method.
    * @return a Loggable[T].
    */
-  def loggable2[P0: Loggable, P1: Loggable, T <: Product : ClassTag](construct: (P0, P1) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
+  def loggable2[P0: Loggable, P1: Loggable, T <: Product : ClassTag](@unused construct: (P0, P1) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
     val Array(p0, p1) = fieldNames(fields, "loggable2")
     t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(
       p0 -> valueToLog[P0, T](t, 0),
@@ -193,7 +194,7 @@ trait Loggables {
    * @return a Loggable[T].
    */
   def loggable3[P0: Loggable, P1: Loggable, P2: Loggable, T <: Product : ClassTag]
-  (construct: (P0, P1, P2) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
+  (@unused construct: (P0, P1, P2) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
     val Array(p0, p1, p2) = fieldNames(fields, "loggable3")
     t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(
       p0 -> valueToLog[P0, T](t, 0),
@@ -216,7 +217,7 @@ trait Loggables {
    * @return a Loggable[T].
    */
   def loggable4[P0: Loggable, P1: Loggable, P2: Loggable, P3: Loggable, T <: Product : ClassTag]
-  (construct: (P0, P1, P2, P3) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
+  (@unused construct: (P0, P1, P2, P3) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
     val Array(p0, p1, p2, p3) = fieldNames(fields, "loggable4")
     t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(
       p0 -> valueToLog[P0, T](t, 0),
@@ -242,7 +243,7 @@ trait Loggables {
    * @return a Loggable[T].
    */
   def loggable5[P0: Loggable, P1: Loggable, P2: Loggable, P3: Loggable, P4: Loggable, T <: Product : ClassTag]
-  (construct: (P0, P1, P2, P3, P4) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
+  (@unused construct: (P0, P1, P2, P3, P4) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
     val Array(p0, p1, p2, p3, p4) = fieldNames(fields, "loggable5")
     t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(
       p0 -> valueToLog[P0, T](t, 0),
@@ -270,7 +271,7 @@ trait Loggables {
    * @return a Loggable[T].
    */
   def loggable6[P0: Loggable, P1: Loggable, P2: Loggable, P3: Loggable, P4: Loggable, P5: Loggable, T <: Product : ClassTag]
-  (construct: (P0, P1, P2, P3, P4, P5) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
+  (@unused construct: (P0, P1, P2, P3, P4, P5) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
     val Array(p0, p1, p2, p3, p4, p5) = fieldNames(fields, "loggable6")
     t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(
       p0 -> valueToLog[P0, T](t, 0),
@@ -300,7 +301,7 @@ trait Loggables {
    * @return a Loggable[T].
    */
   def loggable7[P0: Loggable, P1: Loggable, P2: Loggable, P3: Loggable, P4: Loggable, P5: Loggable, P6: Loggable, T <: Product : ClassTag]
-  (construct: (P0, P1, P2, P3, P4, P5, P6) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
+  (@unused construct: (P0, P1, P2, P3, P4, P5, P6) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
     val Array(p0, p1, p2, p3, p4, p5, p6) = fieldNames(fields, "loggable7")
     t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(
       p0 -> valueToLog[P0, T](t, 0),
@@ -332,7 +333,7 @@ trait Loggables {
    * @return a Loggable[T].
    */
   def loggable8[P0: Loggable, P1: Loggable, P2: Loggable, P3: Loggable, P4: Loggable, P5: Loggable, P6: Loggable, P7: Loggable, T <: Product : ClassTag]
-  (construct: (P0, P1, P2, P3, P4, P5, P6, P7) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
+  (@unused construct: (P0, P1, P2, P3, P4, P5, P6, P7) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
     val Array(p0, p1, p2, p3, p4, p5, p6, p7) = fieldNames(fields, "loggable8")
     t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(
       p0 -> valueToLog[P0, T](t, 0),
@@ -366,7 +367,7 @@ trait Loggables {
    * @return a Loggable[T].
    */
   def loggable9[P0: Loggable, P1: Loggable, P2: Loggable, P3: Loggable, P4: Loggable, P5: Loggable, P6: Loggable, P7: Loggable, P8: Loggable, T <: Product : ClassTag]
-  (construct: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
+  (@unused construct: (P0, P1, P2, P3, P4, P5, P6, P7, P8) => T, fields: Seq[String] = Nil): Loggable[T] = (t: T) => {
     val Array(p0, p1, p2, p3, p4, p5, p6, p7, p8) = fieldNames(fields, "loggable9")
     t.productPrefix + mapLoggable[String, String]("()").toLog(SeqMap(
       p0 -> valueToLog[P0, T](t, 0),

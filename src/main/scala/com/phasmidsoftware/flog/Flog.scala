@@ -89,7 +89,7 @@ case class Flog(logger: Logger) extends AutoCloseable with Loggables {
      * @tparam X the type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def info[X: Loggable](x: => X): X = logLoggable(logger.info)(message)(x)
+    infix def info[X: Loggable](x: => X): X = logLoggable(logger.info)(message)(x)
 
     /**
      * Synonym for: def !?[X: Loggable](x: => X): X.
@@ -102,7 +102,7 @@ case class Flog(logger: Logger) extends AutoCloseable with Loggables {
      * @tparam X the type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def debug[X: Loggable](x: => X): X = logLoggable(logger.debug)(message)(x)
+    infix def debug[X: Loggable](x: => X): X = logLoggable(logger.debug)(message)(x)
 
     /**
      * Synonym for: def !??[X: Loggable](x: => X): X
@@ -115,7 +115,7 @@ case class Flog(logger: Logger) extends AutoCloseable with Loggables {
      * @tparam X the type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def trace[X: Loggable](x: => X): X = logLoggable(logger.trace)(message)(x)
+    infix def trace[X: Loggable](x: => X): X = logLoggable(logger.trace)(message)(x)
 
     /**
      * Method to generate a WARN-level log entry for a (Loggable) value of X.
@@ -126,7 +126,7 @@ case class Flog(logger: Logger) extends AutoCloseable with Loggables {
      * @tparam X the type of x, which must provide implicit evidence of being Loggable.
      * @return the value of x.
      */
-    def warn[X: Loggable](x: => X): X = logLoggable(logger.warn)(message)(x)
+    infix def warn[X: Loggable](x: => X): X = logLoggable(logger.warn)(message)(x)
 
     /**
      * Method to generate an ERROR-level log entry for a (Loggable) value of X.
@@ -363,7 +363,7 @@ case class Flog(logger: Logger) extends AutoCloseable with Loggables {
      */
     private def logIterator[X: Loggable](logFunction: LogFunction, xs: => Iterator[X]): Iterator[X] = {
       val seq = xs.toSeq
-      logIterable(logFunction, seq)
+      logIterable(logFunction, seq): Unit
       seq.iterator
     }
 
@@ -552,7 +552,7 @@ object Flog {
    * @tparam X the type of x (and the result).
    * @return x.
    */
-  private def tee[X](f: X => Unit)(x: => X): X = {
+  private def tee[X](f: X => Any)(x: => X): X = {
     lazy val xx: X = x
     Try(f(xx)) match {
       case Failure(e) => Logger[Flog].error("Exception thrown in tee function", e)
@@ -603,7 +603,7 @@ trait Logger extends AutoCloseable with Flushable {
    */
   def error: (String, Throwable) => Unit = (w, e) => {
     System.err.println(s"$w: exception:")
-    Option(e) map (t => t.printStackTrace(System.err))
+    Option(e).foreach(_.printStackTrace(System.err))
   }
 
   /**
@@ -961,7 +961,7 @@ case class GenericLogFunction(f: String => Any, enabled: Boolean = true) extends
    *
    * @param w a String to be logged.
    */
-  def apply(w: => String): Unit = if (enabled) f(w)
+  def apply(w: => String): Unit = if (enabled) f(w): Unit
 
   /**
    * Method to instantiate a new LogFunction with the same value of f, but with enabled set to false.

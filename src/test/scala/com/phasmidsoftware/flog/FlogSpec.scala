@@ -110,7 +110,6 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   // NOTE: sometimes this test will fail. Not to worry.
   it should "$bang$bang Future[Int]" in {
     val sb: StringBuilder = new StringBuilder()
-    implicit val sbLogger: Logger = Logger(sb) // TODO why is this not used?
     val flog = Flog(sb)
     import flog._
     import scala.concurrent.ExecutionContext.Implicits.global
@@ -177,7 +176,6 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     val sb: StringBuilder = new StringBuilder
     val flog = Flog(sb)
     import flog._
-    implicit val z: Loggable[Map[String, String]] = new Loggables {}.mapLoggable[String, String]() // XXX why not used?
     getString !! Map("a" -> "alpha", "b" -> "bravo")
     // NOTE sb should not be empty but it might be if you run this unit test on its own.
     sb.toString shouldBe "Hello: {a->alpha, b->bravo}\n"
@@ -343,7 +341,6 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   // NOTE: sometimes this test will fail. Not to worry.
   it should "debug 7" in {
     val sb: StringBuilder = new StringBuilder()
-    implicit val logger: Logger = Logger(sb) // XXX why not used?
     val flog = Flog(sb)
     import flog._
     import scala.concurrent.ExecutionContext.Implicits.global
@@ -426,7 +423,6 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   // NOTE: sometimes this test will fail. Not to worry.
   it should "trace 7" in {
     val sb: StringBuilder = new StringBuilder()
-    implicit val logger: Logger = Logger(sb) // XXX why not used?
     val flog = Flog(sb)
     import flog._
     import scala.concurrent.ExecutionContext.Implicits.global

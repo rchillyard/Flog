@@ -5,7 +5,7 @@
 package com.phasmidsoftware.flog
 
 import java.time.temporal.Temporal
-import scala.annotation.implicitNotFound
+import scala.annotation.{implicitNotFound, nowarn}
 
 /**
  * A type class to enable objects to be rendered laconically as Strings for the purpose of logging.
@@ -149,12 +149,16 @@ object Loggable {
   /**
    * Given instance of Loggable[Map[K, V]] for any K and V that are themselves Loggable.
    */
+  // Keys are logged with toString, so the Loggable[K] isn't used; it stays so that the given's signature doesn't change.
+  @nowarn("msg=unused implicit parameter")
   given loggableMap[K: Loggable, V: Loggable]: Loggable[Map[K, V]] =
   new Loggables {}.mapLoggable[K, V]()
 
   /**
    * Given instance of Loggable[Option[Map[K, V]]] for any K and V that are themselves Loggable.
    */
+  // Keys are logged with toString, so the Loggable[K] isn't used; it stays so that the given's signature doesn't change.
+  @nowarn("msg=unused implicit parameter")
   given loggableOptionMap[K: Loggable, V: Loggable]: Loggable[Option[Map[K, V]]] = {
     given mapLog: Loggable[Map[K, V]] = new Loggables {}.mapLoggable[K, V]()
     new Loggables {}.optionLoggable[Map[K, V]]
