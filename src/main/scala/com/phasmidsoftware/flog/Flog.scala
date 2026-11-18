@@ -465,7 +465,9 @@ case class Flog(logger: Logger) extends AutoCloseable with Loggables {
    * The difference between this method and the logLoggable method is that the value of x will be rendered as a String,
    * simply by invoking toString.
    *
-   * CONSIDER using loggableAny instead of anyLoggable.
+   * NOTE: this now uses loggableAny, as the former CONSIDER here suggested. The remaining
+   * question is that loggableAny and anyLoggable are the same function under transposed
+   * names — see issue #32.
    *
    * @param prefix the message prefix.
    * @param x      the value to be logged and returned.
@@ -842,7 +844,9 @@ case class AppendableLogger(appendable: Appendable & AutoCloseable & Flushable) 
   /**
    * Method to close the appendable.
    * NOTE: we close it by flushing (and nothing else).
-   * TODO figure out why it doesn't work if we try to close it too.
+   * TODO figure out why it doesn't work if we try to close it too. See issue #34, which
+   * covers both Appendable implementations; a close() that does not close is a leak by
+   * contract, so the reason wants recording.
    */
   override def close(): Unit = flush()
 
@@ -905,7 +909,9 @@ case class StringBuilderLogger(sb: StringBuilder) extends Logger {
   /**
    * Method to close the appendable.
    * NOTE: we close it by flushing (and nothing else).
-   * TODO figure out why it doesn't work if we try to close it too.
+   * TODO figure out why it doesn't work if we try to close it too. See issue #34, which
+   * covers both Appendable implementations; a close() that does not close is a leak by
+   * contract, so the reason wants recording.
    */
   override def close(): Unit = flush()
 
