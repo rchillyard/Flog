@@ -115,7 +115,7 @@ trait Loggables {
   }
 
   /**
-   * TESTME
+   * TESTME — see issue #33. Note the discard contract below is what most wants pinning.
    *
    * Method which maps an Iterable of X with a function to an Iterable of Try[Y].
    * The elements of the result are then logged utilizing the !! method.
