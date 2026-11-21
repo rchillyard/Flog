@@ -61,7 +61,7 @@ class LoggablesSpec extends flatspec.AnyFlatSpec with should.Matchers with Logga
     target.toLog(y) shouldBe "Left(1)"
   }
 
-  // TODO invoke these via PrivateMethodTester...
+  // TODO invoke these via PrivateMethodTester... (#39)
   //  it should "valueToLog" in {
   //    valueToLog[Int, (Int, Int)]((42, 99), 0) shouldBe "42"
   //    valueToLog[Int, (Int, Int)]((42, 99), 1) shouldBe "99"

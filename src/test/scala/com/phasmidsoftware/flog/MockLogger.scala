@@ -12,7 +12,7 @@ import scala.reflect.ClassTag
 /**
  * MockLogger for unit testing log messages
  *
- * TODO implement all of the unimplemented stuff
+ * TODO implement all of the unimplemented stuff (#40)
  *
  * @param name     the name of this logger
  * @param logLevel the level of this logger
