@@ -39,8 +39,8 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     val flog: Flog = Flog(sb)
     import flog._
     getString !! 1
-    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
-    if (sb.toString != "log: Hello: 1") println("sb should not be empty but it will be if you run this unit test on its own")
+    evaluated shouldBe true
+    sb.toString shouldBe "Hello: 1\n"
   }
 
   it should "$bang$bang 1" in {
@@ -48,8 +48,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     val flog: Flog = Flog(sb)
     import flog._
     getString !! List(1, 2, 3)
-    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
-    if (sb.toString.isEmpty) println("sb should not be empty but it will be if you run this unit test on its own")
+    evaluated shouldBe true
     sb.toString shouldBe "Hello: [1, 2, 3]\n"
   }
 
@@ -59,8 +58,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     import flog._
     val xs = getString !! List(1, 2, 3)
     xs shouldBe List(1, 2, 3)
-    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
-    if (sb.toString.isEmpty) println("sb should not be empty but it will be if you run this unit test on its own")
+    evaluated shouldBe true
     sb.toString shouldBe "Hello: [1, 2, 3]\n"
   }
 
@@ -284,8 +282,8 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     val flog = Flog(sb)
     import flog._
     getString debug 1
-    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
-    if (sb.toString != "log: Hello: 1") println("sb should not be empty but it will be if you run this unit test on its own")
+    evaluated shouldBe true
+    sb.toString shouldBe "Hello: 1\n"
   }
 
   it should "debug 2" in {
@@ -294,7 +292,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     import flog._
     getString debug 1
     logger.toString shouldBe "class com.phasmidsoftware.flog.FlogSpec: DEBUG: Hello: 1\n"
-    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+    evaluated shouldBe true
   }
 
   it should "debug 3" in {
@@ -302,7 +300,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
       f =>
         import f._
         getString debug 1
-        if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+        evaluated shouldBe true
       // Should see message in console.
     }
   }
@@ -312,7 +310,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
       f =>
         import f._
         getString !? Seq(1, 2, 3)
-        if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+        evaluated shouldBe true
       // Should see message in console.
     }
   }
@@ -322,7 +320,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
       f =>
         import f._
         getString !? Some(1)
-        if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+        evaluated shouldBe true
       // Should see message in console.
     }
   }
@@ -332,7 +330,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
       f =>
         import f._
         getString !? Map(1 -> "a", 2 -> "b")
-        if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+        evaluated shouldBe true
       // Should see message in console.
     }
   }
@@ -387,7 +385,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     getString trace 1
     // The following will be true only if TRACE is enabled.
     //    logger.toString shouldBe "class com.phasmidsoftware.flog.FlogSpec: TRACE: Hello: 1\n"
-    //    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+    //    evaluated shouldBe true
   }
 
   it should "trace 4" in {
@@ -395,7 +393,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
       f =>
         import f._
         getString !?? Seq(1, 2, 3)
-        if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+        evaluated shouldBe true
       // Should see message in console.
     }
   }
@@ -405,7 +403,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
       f =>
         import f._
         getString !?? Some(1)
-        if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+        evaluated shouldBe true
       // Should see message in console.
     }
   }
@@ -415,7 +413,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
       f =>
         import f._
         getString !?? Map(1 -> "a", 2 -> "b")
-        if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+        evaluated shouldBe true
       // Should see message in console.
     }
   }
@@ -459,7 +457,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     import flog._
     getString info 1
     logger.toString shouldBe "class com.phasmidsoftware.flog.FlogSpec: INFO: Hello: 1\n"
-    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+    evaluated shouldBe true
   }
 
   it should "warn" in {
@@ -475,7 +473,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     import flog._
     getString.error(1)(new Exception("test"))
     logger.toString shouldBe "class com.phasmidsoftware.flog.FlogSpec: ERROR: Hello: 1 threw an exception: test\n"
-    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+    evaluated shouldBe true
   }
 
   it should "error 2" in {
@@ -484,7 +482,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     import flog._
     getString.error(1)()
     logger.toString shouldBe "class com.phasmidsoftware.flog.FlogSpec: ERROR: Hello: 1\n"
-    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+    evaluated shouldBe true
   }
 
   it should "error 3" in {
@@ -493,7 +491,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     import flog._
     getString.error(1)(new Exception("test"))
     flog.toString shouldBe "Hello: 1: ERROR: test\n"
-    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+    evaluated shouldBe true
   }
 
   it should "error 4" in {
@@ -502,7 +500,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     import flog._
     getString.error(1)()
     flog.toString shouldBe "Hello: 1: ERROR\n"
-    if (!evaluated) println("evaluated should be true but it may not be if you run this unit test on its own")
+    evaluated shouldBe true
   }
 
   it should "write to Appendable" in {
