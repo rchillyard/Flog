@@ -107,7 +107,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     x shouldBe 99
   }
 
-  // NOTE: sometimes this test will fail. Not to worry.
+  // TODO sometimes this test will fail. Not to worry. (#42)
   it should "$bang$bang Future[Int]" in {
     val sb: StringBuilder = new StringBuilder()
     val flog = Flog(sb)
@@ -120,7 +120,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     whenReady(eventualInt) {
       result =>
         result shouldBe 1
-        // NOTE sb should not be empty but it might be if you run this unit test on its own.
+        // TODO sb should not be empty but it might be if you run this unit test on its own. (#43)
         val str = sb.toString().replaceAll("""\[\S+]""", "<UUID>")
         // NOTE occasionally, the completed message will precede the created message.
         println(str)
@@ -151,7 +151,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     val flog = Flog(sb)
     import flog._
     getString !! LazyList.from(1)
-    // NOTE sb should not be empty but it might be if you run this unit test on its own.
+    // TODO sb should not be empty but it might be if you run this unit test on its own. (#43)
     sb.toString shouldBe "Hello: <LazyList>\n"
   }
 
@@ -160,7 +160,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     val flog = Flog(sb)
     import flog._
     getString !! List(1, 2, 3).view.map(_.toString)
-    // NOTE sb should not be empty but it might be if you run this unit test on its own.
+    // TODO sb should not be empty but it might be if you run this unit test on its own. (#43)
     sb.toString shouldBe "Hello: <view>\n"
   }
 
@@ -177,7 +177,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     val flog = Flog(sb)
     import flog._
     getString !! Map("a" -> "alpha", "b" -> "bravo")
-    // NOTE sb should not be empty but it might be if you run this unit test on its own.
+    // TODO sb should not be empty but it might be if you run this unit test on its own. (#43)
     sb.toString shouldBe "Hello: {a->alpha, b->bravo}\n"
   }
 
@@ -187,7 +187,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     import flog._
     getString !! Seq(LocalDateTime.now)
     val dateTimeR: Regex = """Hello: \[(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3,})]\n""".r
-    // NOTE sb should not be empty but it might be if you run this unit test on its own.
+    // TODO sb should not be empty but it might be if you run this unit test on its own. (#43)
 
     sb.toString match {
       case dateTimeR(_) =>
@@ -338,7 +338,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
   }
 
 
-  // NOTE: sometimes this test will fail. Not to worry.
+  // TODO sometimes this test will fail. Not to worry. (#42)
   it should "debug 7" in {
     val sb: StringBuilder = new StringBuilder()
     val flog = Flog(sb)
@@ -351,7 +351,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     whenReady(eventualInt) {
       result =>
         result shouldBe 1
-        // NOTE sb should not be empty but it might be if you run this unit test on its own.
+        // TODO sb should not be empty but it might be if you run this unit test on its own. (#43)
         val str = sb.toString().replaceAll("""\[\S+]""", "<UUID>")
         // NOTE occasionally, the completed message will precede the created message.
         println(str)
@@ -420,7 +420,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     }
   }
 
-  // NOTE: sometimes this test will fail. Not to worry.
+  // TODO sometimes this test will fail. Not to worry. (#42)
   it should "trace 7" in {
     val sb: StringBuilder = new StringBuilder()
     val flog = Flog(sb)
@@ -433,7 +433,7 @@ class FlogSpec extends flatspec.AnyFlatSpec with should.Matchers with BeforeAndA
     whenReady(eventualInt) {
       result =>
         result shouldBe 1
-        // NOTE sb should not be empty but it might be if you run this unit test on its own.
+        // TODO sb should not be empty but it might be if you run this unit test on its own. (#43)
         val str = sb.toString().replaceAll("""\[\S+]""", "<UUID>")
         // NOTE occasionally, the completed message will precede the created message.
         println(str)
